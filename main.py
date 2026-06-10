@@ -14,7 +14,7 @@ import os
 import sys
 
 from analyzer.odds import build_legs, market_margin
-from analyzer.parlay import build_parlays, pick_two_slips, pick_risky_slip, Parlay
+from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip, Parlay
 from analyzer.report import render_report
 from analyzer.scraper_epicbet import fetch_epicbet_odds, load_local_odds
 
@@ -36,6 +36,8 @@ def main() -> int:
                     help="fetch consensus odds from the-odds-api.com (needs ODDS_API_KEY)")
     ap.add_argument("--sport-key", default="",
                     help="override The Odds API sport key (auto-discovered otherwise)")
+    ap.add_argument("--extra-markets", action="store_true",
+                    help="also fetch both-teams-to-score per event (uses more API quota)")
     ap.add_argument("--enrich", action="store_true",
                     help="auto-add reasoning: venues, weather, odds movement, AI news desk")
     ap.add_argument("--min", type=float, default=2.0)
@@ -48,7 +50,7 @@ def main() -> int:
         data = fetch_epicbet_odds()
     elif args.api:
         from analyzer.api_source import load_from_api, merge_sheet_adjustments
-        data = load_from_api(args.sport_key or None)
+        data = load_from_api(args.sport_key or None, extra_markets=args.extra_markets)
         if args.sheet:  # optional: overlay your notes/adjustments from the sheet
             from analyzer.sheet_source import load_from_sheet
             data = merge_sheet_adjustments(data, load_from_sheet(args.sheet))
@@ -76,7 +78,10 @@ def main() -> int:
         notes += [f"<b>{m['home']} v {m['away']}</b>: {n}"
                   for n in m.get("adjustments", {}).get("notes", [])]
 
-    parlays = build_parlays(legs, args.min, args.max, args.min_leg_prob)
+    band_min, band_max = band_for_day(legs, args.min, args.max)
+    if band_min != args.min:
+        print(f"[i] Short day (<=2 matches): slip A/B band widened to {band_min:.2f}-{band_max:.2f}")
+    parlays = build_parlays(legs, band_min, band_max, args.min_leg_prob)
     print(f"\n{len(parlays)} qualifying parlays in the {args.min:.2f}–{args.max:.2f} band.")
 
     slip_a, slip_b = pick_two_slips(parlays)
