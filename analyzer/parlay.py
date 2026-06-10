@@ -126,7 +126,13 @@ def _market_family(market: str) -> str:
     if market.startswith("over_under_"):
         return "totals"
     if market.startswith("handicap_"):
-        return "handicap"
+        # Handicaps are bets on the same underlying quantity as 1x2 and
+        # double chance (the goal margin). A -0.5 handicap IS "to win";
+        # a +1.5 line heavily overlaps double chance. Treating them as
+        # one "result" family stops short-day slips from combining e.g.
+        # "France to win" with "France -0.5" — the same event priced twice,
+        # which would multiply odds while adding zero real probability.
+        return "result"
     if market in {"1x2", "double_chance"}:
         return "result"
     if market == "btts":
