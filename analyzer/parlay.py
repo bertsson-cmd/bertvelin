@@ -140,6 +140,29 @@ def _market_family(market: str) -> str:
     return market
 
 
+def band_for_day(
+    legs: list[Leg],
+    min_odds: float = 2.0,
+    max_odds: float = 2.5,
+    short_day_min_odds: float = 1.8,
+    short_day_match_threshold: int = 2,
+) -> tuple[float, float]:
+    """Target odds band for slips A/B, widened on thin days.
+
+    With 3+ matches there are plenty of leg combinations, so the band stays
+    at 2.0-2.5. With <= 2 matches the floor drops to 1.8: two modest
+    favourites (e.g. 1.40 x 1.32 = 1.85) can then still form a slip instead
+    of forcing the builder to reach for shakier legs - or worse, stretch a
+    thin day into a slip that only exists to satisfy the band. Note the
+    floor only EXPANDS what qualifies; if nothing sensible exists, the
+    right output is still no slip.
+    """
+    total_matches_today = len({l.match_id for l in legs})
+    if total_matches_today <= short_day_match_threshold:
+        return short_day_min_odds, max_odds
+    return min_odds, max_odds
+
+
 def pick_two_slips(parlays: list[Parlay]) -> tuple[Parlay | None, Parlay | None]:
     """Slip A = best parlay. Slip B = best parlay sharing no matches with A when possible."""
     if not parlays:
