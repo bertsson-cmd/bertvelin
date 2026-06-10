@@ -174,7 +174,7 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
 <style>{CSS}</style></head><body><div class="wrap">
 
 <div class="logo">BERTPICKER <small>1.0</small></div>
-<div class="splash">Relatively safe!*</div>
+<div class="splash">Á ég að skjótast í búðina og sækja stuðla?</div>
 
 <div class="slips">{tickets}</div>
 
@@ -182,19 +182,17 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
   <div class="tbar"><span>reasoning.txt — Notepad</span>{WINDOW_BTNS}</div>
   <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>S</u>earch&nbsp;&nbsp;<u>H</u>elp</div>
   <div class="win-body"><ul>{notes_html}</ul>
-  <li class="warnline">*Slips A/B = most probable combos in the 2.0–2.5 band; Slip C is a
-  longshot and loses most days. EV is the honest number — negative on almost every real
-  parlay, because a parlay multiplies the bookmaker margin too. Markets already price
-  public news. Stake small, only what you can afford to lose; if it stops being fun:
-  SÁÁ (saa.is) or Red Cross helpline 1717.</li>
-  <li>Odds source: {source}. Check the real Epicbet price before placing.</li>
+  <li class="warnline">* Velur tvo líklegustu seðla til að detta á bilinu 2.0 og 2.5 í stuðli. Notast er aðallega við 1x2, over/unders og fjölda marka. Þriðji seðilinn er vibe seðill sem er með hærri stuðul.
+  Ef seðlar tapast þá bara it is what it is, gerir þetta á eigin ábyrgð kútur
+  <li>Odds source: {source}. Ekki hægt að taka beint frá Epicbet/Coolbet. Stuðlarnir kunna því að vera örlítið fráburgðnir Epicbet/Coolbet - þið metið þetta bara kútar.</li>
   </div>
 </div>
 
 </div>
 <div class="taskbar">
   <span class="start"><span class="flag">&#9632;&#9632;</span>Start</span>
-  <span class="task">&#127942; Bertpicker 1.0 — daily briefing</span>
+  <span class="task">&#127942; Bertpicker 1.0 </span>
+  <span class="task">&#127942; Búðin - úrval </span>
   <span class="clock">{today}</span>
 </div>
 </body></html>"""
