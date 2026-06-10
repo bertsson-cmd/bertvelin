@@ -22,7 +22,8 @@ import json
 import os
 import urllib.parse
 import urllib.request
-from datetime import date
+from datetime import date, datetime, time, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 BASE = "https://api.the-odds-api.com/v4"
 
@@ -51,26 +52,92 @@ def discover_world_cup_key() -> str:
     )
 
 
+def _daily_window_7am_reykjavik(now: datetime | None = None) -> tuple[str, str, date]:
+    """
+    Return the intended daily betting window:
+    07:00 Reykjavík today -> 07:00 Reykjavík tomorrow.
+
+    This uses the calendar day in Reykjavík, not the exact time the GitHub
+    Action happens to start. So if GitHub runs at 07:18, the window is still
+    07:00 today to 07:00 tomorrow.
+    """
+    tz = ZoneInfo("Atlantic/Reykjavik")
+    now_local = (now or datetime.now(tz)).astimezone(tz)
+
+    start_local = datetime.combine(now_local.date(), time(7, 0), tzinfo=tz)
+    end_local = start_local + timedelta(days=1)
+
+    start_utc = start_local.astimezone(timezone.utc)
+    end_utc = end_local.astimezone(timezone.utc)
+
+    def iso_z(dt: datetime) -> str:
+        return dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+    return iso_z(start_utc), iso_z(end_utc), start_local.date()
+
+
+def _in_window(commence_time: str, start_iso: str, end_iso: str) -> bool:
+    """
+    Defensive local filter.
+
+    Returns True only if the event kickoff is inside:
+
+        start_iso <= kickoff < end_iso
+
+    This protects the analyzer even if the API returns extra events.
+    """
+    def parse_z(s: str) -> datetime:
+        return datetime.fromisoformat(s.replace("Z", "+00:00"))
+
+    try:
+        kickoff = parse_z(commence_time)
+        start = parse_z(start_iso)
+        end = parse_z(end_iso)
+        return start <= kickoff < end
+    except Exception:
+        return False
+
+
 def load_from_api(sport_key: str | None = None, region: str = "eu") -> dict:
     key = sport_key or discover_world_cup_key()
-    events, meta = _get(f"/sports/{key}/odds", regions=region,
-                        markets="h2h,totals", oddsFormat="decimal")
-    print(f"[i] Odds API: {len(events)} events, ~{meta['remaining']} requests remaining this month")
+    commence_from, commence_to, window_date = _daily_window_7am_reykjavik()
+
+    events, meta = _get(
+        f"/sports/{key}/odds",
+        regions=region,
+        markets="h2h,totals",
+        oddsFormat="decimal",
+        commenceTimeFrom=commence_from,
+        commenceTimeTo=commence_to,
+    )
+
+    print(
+        f"[i] Odds API: {len(events)} events from {commence_from} to {commence_to}, "
+        f"~{meta['remaining']} requests remaining this month"
+    )
 
     matches = []
     for ev in events:
+        if not _in_window(ev.get("commence_time", ""), commence_from, commence_to):
+            continue
+
         if not ev.get("bookmakers"):
             continue
+
         home, away = ev["home_team"], ev["away_team"]
         m = {
             "id": ev["id"][:8],
             "kickoff": ev.get("commence_time", ""),
-            "home": home, "away": away,
-            "markets": {}, "adjustments": {"notes": []},
+            "home": home,
+            "away": away,
+            "markets": {},
+            "adjustments": {"notes": []},
         }
+
         # Median across bookmakers = a robust consensus price.
         h2h: dict[str, list[float]] = {"home": [], "draw": [], "away": []}
         totals: dict[str, list[float]] = {"over": [], "under": []}
+
         for bk in ev["bookmakers"]:
             for mkt in bk.get("markets", []):
                 if mkt["key"] == "h2h":
@@ -81,16 +148,21 @@ def load_from_api(sport_key: str | None = None, region: str = "eu") -> dict:
                     for o in mkt["outcomes"]:
                         if o.get("point") == 2.5:
                             totals[o["name"].lower()].append(o["price"])
+
         if all(h2h.values()):
             m["markets"]["1x2"] = {k: _median(v) for k, v in h2h.items()}
+
         if all(totals.values()):
             m["markets"]["over_under_2_5"] = {k: _median(v) for k, v in totals.items()}
+
         if m["markets"]:
             matches.append(m)
 
-    return {"date": date.today().isoformat(),
-            "bookmaker": f"market consensus ({region} region, median of books)",
-            "matches": matches}
+    return {
+        "date": window_date.isoformat(),
+        "bookmaker": f"market consensus ({region} region, median of books)",
+        "matches": matches,
+    }
 
 
 def merge_sheet_adjustments(api_data: dict, sheet_data: dict) -> dict:
