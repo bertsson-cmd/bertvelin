@@ -25,7 +25,6 @@ from __future__ import annotations
 import json
 import urllib.robotparser
 
-import requests
 
 BASE_URL = "https://epicbet.is"
 USER_AGENT = "wc26-analyzer (personal, low-volume)"
