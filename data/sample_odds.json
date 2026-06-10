@@ -1,0 +1,80 @@
+{
+  "_README": "DEMO DATA with illustrative odds — replace daily with real Epicbet prices. Adjustments are absolute probability points (+0.02 = +2pts), capped at ±0.05 by the analyzer. Put your team-news / injury / weather reasoning in 'notes' so the report shows WHY.",
+  "date": "2026-06-11",
+  "bookmaker": "epicbet.is (manual entry)",
+  "matches": [
+    {
+      "id": "M01",
+      "kickoff": "2026-06-11T20:00-06:00",
+      "home": "Mexico",
+      "away": "Demo Opponent A",
+      "venue": "Estadio Azteca, Mexico City",
+      "markets": {
+        "1x2": { "home": 1.45, "draw": 4.40, "away": 7.50 },
+        "double_chance": { "1x": 1.12, "x2": 2.55, "12": 1.22 },
+        "over_under_2_5": { "over": 2.10, "under": 1.76 }
+      },
+      "adjustments": {
+        "1x2": { "home": 0.02, "away": -0.02 },
+        "notes": [
+          "Azteca altitude (2,200m) + home opener atmosphere favours Mexico",
+          "Opponent arrived only 3 days ago; limited altitude acclimatisation"
+        ]
+      }
+    },
+    {
+      "id": "M02",
+      "kickoff": "2026-06-12T18:00-04:00",
+      "home": "Demo Favourite B",
+      "away": "Demo Underdog B",
+      "venue": "MetLife Stadium, New Jersey",
+      "markets": {
+        "1x2": { "home": 1.60, "draw": 4.00, "away": 5.80 },
+        "double_chance": { "1x": 1.16, "x2": 2.35, "12": 1.28 },
+        "over_under_2_5": { "over": 1.95, "under": 1.90 }
+      },
+      "adjustments": {
+        "1x2": { "home": -0.03, "draw": 0.02, "away": 0.01 },
+        "notes": [
+          "Favourite's starting striker doubtful (hamstring, missed two sessions)",
+          "Forecast 33°C with high humidity at kickoff — suppresses tempo, helps the deep block"
+        ]
+      }
+    },
+    {
+      "id": "M03",
+      "kickoff": "2026-06-12T21:00-07:00",
+      "home": "Demo Favourite C",
+      "away": "Demo Underdog C",
+      "venue": "SoFi Stadium, Los Angeles",
+      "markets": {
+        "1x2": { "home": 1.38, "draw": 4.80, "away": 8.50 },
+        "double_chance": { "1x": 1.09, "x2": 2.80, "12": 1.18 },
+        "over_under_2_5": { "over": 1.80, "under": 2.05 }
+      },
+      "adjustments": {
+        "notes": [
+          "Full squad available, indoor-roof stadium so weather neutral"
+        ]
+      }
+    },
+    {
+      "id": "M04",
+      "kickoff": "2026-06-13T15:00-05:00",
+      "home": "Demo Favourite D",
+      "away": "Demo Underdog D",
+      "venue": "AT&T Stadium, Dallas",
+      "markets": {
+        "1x2": { "home": 1.50, "draw": 4.20, "away": 6.80 },
+        "double_chance": { "1x": 1.14, "x2": 2.45, "12": 1.25 },
+        "over_under_2_5": { "over": 1.88, "under": 1.96 }
+      },
+      "adjustments": {
+        "1x2": { "home": 0.01 },
+        "notes": [
+          "Underdog D played extra-time in inter-confederation playoff warm-up cycle; squad fatigue flagged"
+        ]
+      }
+    }
+  ]
+}

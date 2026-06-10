@@ -1,0 +1,12 @@
+match_id,home,away,market,outcome,odds,adjustment,note
+M01,Mexico,Demo Opponent A,1x2,home,1.45,0.02,Altitude + home opener favours Mexico
+M01,Mexico,Demo Opponent A,1x2,draw,4.40,,
+M01,Mexico,Demo Opponent A,1x2,away,7.50,-0.02,
+M01,Mexico,Demo Opponent A,over_under_2_5,over,2.10,,
+M01,Mexico,Demo Opponent A,over_under_2_5,under,1.76,,
+M02,Demo Favourite B,Demo Underdog B,1x2,home,1.60,-0.03,Striker doubtful (hamstring)
+M02,Demo Favourite B,Demo Underdog B,1x2,draw,4.00,0.02,33C heat suppresses tempo
+M02,Demo Favourite B,Demo Underdog B,1x2,away,5.80,0.01,
+M03,Demo Favourite C,Demo Underdog C,1x2,home,1.38,,Full squad available
+M03,Demo Favourite C,Demo Underdog C,1x2,draw,4.80,,
+M03,Demo Favourite C,Demo Underdog C,1x2,away,8.50,,
