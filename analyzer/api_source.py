@@ -20,12 +20,16 @@ What you get vs. the Google Sheet route:
 from __future__ import annotations
 import json
 import os
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 BASE = "https://api.the-odds-api.com/v4"
+TOTAL_POINTS = {x + 0.5 for x in range(0, 7)}  # 0.5 through 6.5
+BASE_MARKETS = "h2h,totals,spreads"
+EXTRA_EVENT_MARKETS = "alternate_totals,alternate_spreads,btts,double_chance"
 
 
 def _get(path: str, **params) -> tuple[object, dict]:
@@ -55,9 +59,9 @@ def discover_world_cup_key() -> str:
 def _daily_window_7am_reykjavik(now: datetime | None = None) -> tuple[str, str, date]:
     """
     Return the intended daily betting window:
-    07:00 Reykjavík today -> 07:00 Reykjavík tomorrow.
+    07:00 Reykjavik today -> 07:00 Reykjavik tomorrow.
 
-    This uses the calendar day in Reykjavík, not the exact time the GitHub
+    This uses the calendar day in Reykjavik, not the exact time the GitHub
     Action happens to start. So if GitHub runs at 07:18, the window is still
     07:00 today to 07:00 tomorrow.
     """
@@ -105,18 +109,19 @@ def load_from_api(sport_key: str | None = None, region: str = "eu") -> dict:
     events, meta = _get(
         f"/sports/{key}/odds",
         regions=region,
-        markets="h2h,totals",
+        markets=BASE_MARKETS,
         oddsFormat="decimal",
         commenceTimeFrom=commence_from,
         commenceTimeTo=commence_to,
     )
 
     print(
-        f"[i] Odds API: {len(events)} events from {commence_from} to {commence_to}, "
+        f"[i] Odds API: {len(events)} base events from {commence_from} to {commence_to}, "
         f"~{meta['remaining']} requests remaining this month"
     )
 
     matches = []
+    extra_market_events = 0
     for ev in events:
         if not _in_window(ev.get("commence_time", ""), commence_from, commence_to):
             continue
@@ -134,35 +139,187 @@ def load_from_api(sport_key: str | None = None, region: str = "eu") -> dict:
             "adjustments": {"notes": []},
         }
 
-        # Median across bookmakers = a robust consensus price.
-        h2h: dict[str, list[float]] = {"home": [], "draw": [], "away": []}
-        totals: dict[str, list[float]] = {"over": [], "under": []}
+        market_prices = _collect_market_prices(ev.get("bookmakers", []), home, away)
 
-        for bk in ev["bookmakers"]:
-            for mkt in bk.get("markets", []):
-                if mkt["key"] == "h2h":
-                    for o in mkt["outcomes"]:
-                        slot = "home" if o["name"] == home else "away" if o["name"] == away else "draw"
-                        h2h[slot].append(o["price"])
-                elif mkt["key"] == "totals":
-                    for o in mkt["outcomes"]:
-                        if o.get("point") == 2.5:
-                            totals[o["name"].lower()].append(o["price"])
+        extra = _load_extra_event_markets(key, ev["id"], region)
+        if extra:
+            extra_market_events += 1
+            _merge_market_prices(
+                market_prices,
+                _collect_market_prices(extra.get("bookmakers", []), home, away),
+            )
 
-        if all(h2h.values()):
-            m["markets"]["1x2"] = {k: _median(v) for k, v in h2h.items()}
-
-        if all(totals.values()):
-            m["markets"]["over_under_2_5"] = {k: _median(v) for k, v in totals.items()}
+        for market_name, odds_map in market_prices.items():
+            if all(odds_map.values()):
+                m["markets"][market_name] = {k: _median(v) for k, v in odds_map.items()}
 
         if m["markets"]:
             matches.append(m)
+
+    if extra_market_events:
+        print(f"[i] Loaded additional per-event markets for {extra_market_events} events")
 
     return {
         "date": window_date.isoformat(),
         "bookmaker": f"market consensus ({region} region, median of books)",
         "matches": matches,
     }
+
+
+def _load_extra_event_markets(sport_key: str, event_id: str, region: str) -> dict | None:
+    """Fetch optional per-event markets. Fail soft if unavailable on the current plan/sport."""
+    try:
+        data, _ = _get(
+            f"/sports/{sport_key}/events/{event_id}/odds",
+            regions=region,
+            markets=EXTRA_EVENT_MARKETS,
+            oddsFormat="decimal",
+        )
+        return data if isinstance(data, dict) else None
+    except urllib.error.HTTPError as e:
+        print(f"[i] Extra markets unavailable for event {event_id[:8]} ({e.code}); continuing with base markets.")
+        return None
+    except Exception as e:
+        print(f"[i] Extra markets failed for event {event_id[:8]} ({e}); continuing with base markets.")
+        return None
+
+
+def _collect_market_prices(bookmakers: list[dict], home: str, away: str) -> dict[str, dict[str, list[float]]]:
+    """Collect raw bookmaker prices by internal market/outcome key."""
+    markets: dict[str, dict[str, list[float]]] = {}
+
+    def ensure(market: str, outcomes: list[str]) -> dict[str, list[float]]:
+        return markets.setdefault(market, {outcome: [] for outcome in outcomes})
+
+    for bk in bookmakers:
+        for mkt in bk.get("markets", []):
+            key = mkt.get("key")
+            outcomes = mkt.get("outcomes", [])
+
+            if key in {"h2h", "h2h_3_way"}:
+                bucket = ensure("1x2", ["home", "draw", "away"])
+                for o in outcomes:
+                    slot = _side_or_draw(o.get("name", ""), home, away)
+                    if slot in bucket:
+                        bucket[slot].append(float(o["price"]))
+
+            elif key in {"totals", "alternate_totals"}:
+                for o in outcomes:
+                    point = _point(o.get("point"))
+                    if point not in TOTAL_POINTS:
+                        continue
+                    outcome = o.get("name", "").lower()
+                    if outcome not in {"over", "under"}:
+                        continue
+                    market = f"over_under_{_point_key(point)}"
+                    ensure(market, ["over", "under"])[outcome].append(float(o["price"]))
+
+            elif key in {"spreads", "alternate_spreads"}:
+                for o in outcomes:
+                    point = _point(o.get("point"))
+                    if point is None:
+                        continue
+                    side = _team_side(o.get("name", ""), home, away)
+                    if side not in {"home", "away"}:
+                        continue
+
+                    # Store each two-way handicap line by the home team's point.
+                    # Example: home -1.5 / away +1.5 -> market handicap_minus_1_5
+                    # with outcomes {"home", "away"}. If alternate spreads also
+                    # include home +1.5 / away -1.5, that becomes a separate
+                    # market handicap_plus_1_5 instead of colliding.
+                    home_point = point if side == "home" else -point
+                    market = f"handicap_{_signed_point_key(home_point)}"
+                    bucket = markets.setdefault(market, {"home": [], "away": []})
+                    bucket[side].append(float(o["price"]))
+
+            elif key == "btts":
+                bucket = ensure("btts", ["yes", "no"])
+                for o in outcomes:
+                    outcome = o.get("name", "").strip().lower()
+                    if outcome in bucket:
+                        bucket[outcome].append(float(o["price"]))
+
+            elif key == "double_chance":
+                bucket = ensure("double_chance", ["1x", "x2", "12"])
+                for o in outcomes:
+                    outcome = _double_chance_outcome(o.get("name", ""), home, away)
+                    if outcome in bucket:
+                        bucket[outcome].append(float(o["price"]))
+
+    return _complete_handicap_markets(markets)
+
+
+def _complete_handicap_markets(markets: dict[str, dict[str, list[float]]]) -> dict[str, dict[str, list[float]]]:
+    """Keep handicap markets only when each line has both home and away prices."""
+    out: dict[str, dict[str, list[float]]] = {}
+    for market, odds_map in markets.items():
+        if market.startswith("handicap_"):
+            if odds_map.get("home") and odds_map.get("away"):
+                out[market] = {"home": odds_map["home"], "away": odds_map["away"]}
+        else:
+            out[market] = odds_map
+    return out
+
+
+def _merge_market_prices(base: dict[str, dict[str, list[float]]], extra: dict[str, dict[str, list[float]]]) -> None:
+    for market, outcomes in extra.items():
+        target = base.setdefault(market, {})
+        for outcome, prices in outcomes.items():
+            target.setdefault(outcome, []).extend(prices)
+
+
+def _team_side(name: str, home: str, away: str) -> str | None:
+    name_l = name.strip().lower()
+    if name_l == home.strip().lower():
+        return "home"
+    if name_l == away.strip().lower():
+        return "away"
+    return None
+
+
+def _side_or_draw(name: str, home: str, away: str) -> str | None:
+    if name.strip().lower() == "draw":
+        return "draw"
+    return _team_side(name, home, away)
+
+
+def _double_chance_outcome(name: str, home: str, away: str) -> str | None:
+    text = name.strip().lower().replace(" ", "")
+    if text in {"1x", "homeordraw"}:
+        return "1x"
+    if text in {"x2", "draworaway"}:
+        return "x2"
+    if text in {"12", "homeoraway"}:
+        return "12"
+
+    raw = name.strip().lower()
+    has_home = home.strip().lower() in raw
+    has_away = away.strip().lower() in raw
+    has_draw = "draw" in raw
+    if has_home and has_draw:
+        return "1x"
+    if has_away and has_draw:
+        return "x2"
+    if has_home and has_away:
+        return "12"
+    return None
+
+
+def _point(value: object) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _point_key(point: float) -> str:
+    return f"{point:g}".replace(".", "_")
+
+
+def _signed_point_key(point: float) -> str:
+    prefix = "plus_" if point > 0 else "minus_" if point < 0 else "zero_"
+    return prefix + _point_key(abs(point))
 
 
 def merge_sheet_adjustments(api_data: dict, sheet_data: dict) -> dict:

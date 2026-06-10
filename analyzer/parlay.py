@@ -4,8 +4,8 @@ Parlay construction.
 Searches all 1-3 leg combinations whose combined decimal odds land in the
 target band (default 2.0-2.5), then ranks them by estimated probability of
 winning ("most likely outcome, relatively safe"), with expected value as a
-tiebreaker. Produces two slips that share no matches, so one bad result
-can't sink both.
+tiebreaker. Produces two slips that share no matches when possible, so one
+bad result is less likely to sink both.
 
 Honest math you should keep in mind:
 - A parlay multiplies probabilities AND multiplies the bookmaker margin.
@@ -13,9 +13,10 @@ Honest math you should keep in mind:
 - "Safe" here means "highest estimated hit rate inside the odds band",
   not safe in any absolute sense. A 2.20 parlay built from fair prices
   wins ~45% of the time at best. Expect losing days and losing weeks.
-- Legs from the SAME match are correlated (e.g. "Mexico to win" and
-  "under 2.5 goals" are not independent), so the builder never combines
-  two legs from one match.
+- Same-match legs are correlated. On normal days the builder allows only
+  one leg from each match. On short days with fewer than three matches, it
+  may use 2-3 different market families from the same match, but blocks
+  duplicate families such as over 1.5 + over 2.5.
 """
 
 from __future__ import annotations
@@ -36,9 +37,9 @@ class Parlay:
 
     @property
     def est_probability(self) -> float:
-        # Independence assumption: legs are from different matches.
-        # Same-day group games can still be mildly correlated; treat the
-        # number as an estimate, not a measurement.
+        # Independence assumption: legs are usually from different matches.
+        # Short-day same-match slips are more correlated than this number shows;
+        # treat those estimates as rough sorting scores, not true probabilities.
         return prod(l.adj_prob for l in self.legs)
 
     @property
@@ -57,21 +58,41 @@ def build_parlays(
     max_odds: float = 2.5,
     min_leg_prob: float = 0.55,
     max_legs: int = 3,
+    allow_same_match_on_short_days: bool = True,
+    short_day_match_threshold: int = 2,
+    max_legs_per_match_short_day: int = 3,
 ) -> list[Parlay]:
     """All valid 1..max_legs combinations inside the odds band.
 
-    min_leg_prob filters out individually risky legs before combining:
-    the 'relatively safe' constraint. 0.55 keeps legs the market itself
-    thinks are clear favourites (odds roughly <= 1.75 after vig removal).
+    Normal days with 3+ matches:
+      - only one leg per match.
+
+    Short days with <= short_day_match_threshold matches:
+      - allow 2-3 legs from the same match,
+      - never allow two legs from the same market family in the same match.
+
+    This lets a one- or two-game day produce a slip without allowing obvious
+    duplicates such as over 1.5 + over 2.5, home win + draw, or two handicaps.
     """
     safe_legs = [l for l in legs if l.adj_prob >= min_leg_prob]
     out: list[Parlay] = []
 
+    total_matches_today = len({l.match_id for l in legs})
+    short_day = (
+        allow_same_match_on_short_days
+        and total_matches_today <= short_day_match_threshold
+    )
+
     for n in range(1, max_legs + 1):
         for combo in combinations(safe_legs, n):
-            ids = [l.match_id for l in combo]
-            if len(set(ids)) != n:          # no two legs from one match
-                continue
+            if short_day:
+                if not _valid_short_day_combo(combo, max_legs_per_match_short_day):
+                    continue
+            else:
+                ids = [l.match_id for l in combo]
+                if len(set(ids)) != n:          # no two legs from one match
+                    continue
+
             p = Parlay(list(combo))
             if min_odds <= p.combined_odds <= max_odds:
                 out.append(p)
@@ -81,12 +102,48 @@ def build_parlays(
     return out
 
 
+def _valid_short_day_combo(
+    combo: tuple[Leg, ...],
+    max_legs_per_match: int,
+) -> bool:
+    """Validate same-match combos for days with very few games."""
+    legs_by_match: dict[str, list[Leg]] = {}
+    for leg in combo:
+        legs_by_match.setdefault(leg.match_id, []).append(leg)
+
+    for match_legs in legs_by_match.values():
+        if len(match_legs) > max_legs_per_match:
+            return False
+
+        families = [_market_family(leg.market) for leg in match_legs]
+        if len(families) != len(set(families)):
+            return False
+
+    return True
+
+
+def _market_family(market: str) -> str:
+    if market.startswith("over_under_"):
+        return "totals"
+    if market.startswith("handicap_"):
+        return "handicap"
+    if market in {"1x2", "double_chance"}:
+        return "result"
+    if market == "btts":
+        return "btts"
+    return market
+
+
 def pick_two_slips(parlays: list[Parlay]) -> tuple[Parlay | None, Parlay | None]:
-    """Slip A = best parlay. Slip B = best parlay sharing no matches with A."""
+    """Slip A = best parlay. Slip B = best parlay sharing no matches with A when possible."""
     if not parlays:
         return None, None
     slip_a = parlays[0]
     slip_b = next((p for p in parlays[1:] if not (p.match_ids & slip_a.match_ids)), None)
+    if slip_b is None:
+        # On one- or two-match days, every useful slip may share a match. In that
+        # case, still return the next-best different parlay rather than no Slip B.
+        slip_b = next((p for p in parlays[1:] if p.legs != slip_a.legs), None)
     return slip_a, slip_b
 
 

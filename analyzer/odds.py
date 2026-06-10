@@ -98,6 +98,22 @@ def build_legs(match: dict, max_adjustment: float = 0.05) -> list[Leg]:
 
 def _label(match: dict, market: str, outcome: str) -> str:
     home, away = match["home"], match["away"]
+
+    if market.startswith("over_under_"):
+        point = _display_point(market.replace("over_under_", ""))
+        if outcome == "over":
+            return f"{home} vs {away}: over {point} goals"
+        if outcome == "under":
+            return f"{home} vs {away}: under {point} goals"
+
+    if market.startswith("handicap_"):
+        home_point = _parse_handicap_market_point(market)
+        if home_point is not None:
+            if outcome == "home":
+                return f"{home} handicap {home_point}"
+            if outcome == "away":
+                return f"{away} handicap {_opposite_point(home_point)}"
+
     names = {
         ("1x2", "home"): f"{home} to win",
         ("1x2", "draw"): f"{home} vs {away}: draw",
@@ -105,9 +121,31 @@ def _label(match: dict, market: str, outcome: str) -> str:
         ("double_chance", "1x"): f"{home} or draw",
         ("double_chance", "x2"): f"{away} or draw",
         ("double_chance", "12"): f"{home} or {away} (no draw)",
-        ("over_under_2_5", "over"): f"{home} vs {away}: over 2.5 goals",
-        ("over_under_2_5", "under"): f"{home} vs {away}: under 2.5 goals",
         ("btts", "yes"): f"{home} vs {away}: both teams to score",
         ("btts", "no"): f"{home} vs {away}: not both teams to score",
     }
     return names.get((market, outcome), f"{home} vs {away}: {market}/{outcome}")
+
+
+def _display_point(key: str) -> str:
+    return key.replace("_", ".")
+
+
+def _parse_handicap_market_point(market: str) -> str | None:
+    """Parse market keys like handicap_minus_1_5 or handicap_plus_2."""
+    raw = market.replace("handicap_", "", 1)
+    if raw.startswith("minus_"):
+        return "-" + _display_point(raw[len("minus_"):])
+    if raw.startswith("plus_"):
+        return "+" + _display_point(raw[len("plus_"):])
+    if raw.startswith("zero_"):
+        return "0"
+    return None
+
+
+def _opposite_point(point: str) -> str:
+    if point.startswith("-"):
+        return "+" + point[1:]
+    if point.startswith("+"):
+        return "-" + point[1:]
+    return "0"
