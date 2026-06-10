@@ -1,0 +1,59 @@
+name: Bertpicker
+
+on:
+  schedule:
+    # 07:00 UTC = 07:00 in Reykjavík (Iceland is UTC year-round).
+    # GitHub cron can lag 5-30 min; fine for a morning briefing.
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}   # "Run workflow" button for a manual refresh
+
+permissions:
+  contents: write   # to commit data/history.json (odds-movement memory)
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build briefing (odds + auto reasoning + 3 slips)
+        env:
+          # Repo Settings -> Secrets and variables -> Actions:
+          #   ODDS_API_KEY      required  free, the-odds-api.com   -> odds
+          #   FOOTBALL_DATA_KEY optional  free, football-data.org  -> venues + weather
+          #   ANTHROPIC_API_KEY optional  paid (~cents/day)        -> AI news desk
+          #   ODDS_SHEET_URL    optional  your sheet overlay still works
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          FOOTBALL_DATA_KEY: ${{ secrets.FOOTBALL_DATA_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ODDS_SHEET_URL: ${{ secrets.ODDS_SHEET_URL }}
+        run: |
+          python3 main.py --api --enrich --out reports/index.html
+
+      - name: Remember today's odds (powers tomorrow's movement notes)
+        run: |
+          git config user.name "wc26-bot"
+          git config user.email "wc26-bot@users.noreply.github.com"
+          git add data/history.json
+          git commit -m "odds history $(date -u +%F)" || echo "no change"
+          git push || true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: reports
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
