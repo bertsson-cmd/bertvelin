@@ -1,8 +1,8 @@
 {
  "2026-06-11": {
   "A": {
-   "combined_odds": 1.8468,
-   "est_probability": 0.486,
+   "combined_odds": 1.8256,
+   "est_probability": 0.4923,
    "legs": [
     {
      "match_id": "80d82d11",
@@ -11,7 +11,7 @@
      "away": "South Africa",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.62
+     "odds": 1.63
     },
     {
      "match_id": "384cbb5d",
@@ -20,19 +20,19 @@
      "away": "Czech Republic",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.14
+     "odds": 1.12
     }
    ]
   },
   "B": {
-   "combined_odds": 1.9152,
-   "est_probability": 0.4678,
+   "combined_odds": 1.8816,
+   "est_probability": 0.4769,
    "legs": [
     {
-     "match_id": "80d82d11",
-     "label": "Mexico vs South Africa: under 2.5 goals",
-     "home": "Mexico",
-     "away": "South Africa",
+     "match_id": "384cbb5d",
+     "label": "South Korea vs Czech Republic: under 2.5 goals",
+     "home": "South Korea",
+     "away": "Czech Republic",
      "market": "over_under_2_5",
      "outcome": "under",
      "odds": 1.68
@@ -44,23 +44,14 @@
      "away": "Czech Republic",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.14
+     "odds": 1.12
     }
    ]
   },
   "C": {
-   "combined_odds": 3.1026,
-   "est_probability": 0.2745,
+   "combined_odds": 3.067,
+   "est_probability": 0.2786,
    "legs": [
-    {
-     "match_id": "80d82d11",
-     "label": "Mexico vs South Africa: under 2.5 goals",
-     "home": "Mexico",
-     "away": "South Africa",
-     "market": "over_under_2_5",
-     "outcome": "under",
-     "odds": 1.68
-    },
     {
      "match_id": "80d82d11",
      "label": "South Africa handicap +1.5",
@@ -68,7 +59,16 @@
      "away": "South Africa",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.62
+     "odds": 1.63
+    },
+    {
+     "match_id": "384cbb5d",
+     "label": "South Korea vs Czech Republic: under 2.5 goals",
+     "home": "South Korea",
+     "away": "Czech Republic",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.68
     },
     {
      "match_id": "384cbb5d",
@@ -77,7 +77,7 @@
      "away": "Czech Republic",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.14
+     "odds": 1.12
     }
    ]
   }
