@@ -104,13 +104,16 @@ def _in_window(commence_time: str, start_iso: str, end_iso: str) -> bool:
 
 def load_from_api(sport_key: str | None = None, region: str = "eu",
                   extra_markets: bool = False) -> dict:
-    """extra_markets=True also fetches alternate totals/spreads, BTTS and
-    double chance via one per-event request per match. Quota math: that's
-    ~4-5 extra credits per match per day; a busy group-stage month would
-    blow past the free tier's 500. Default OFF — base h2h+totals+spreads
-    already feed the parlay builder well. Enable via --extra-markets."""
+    """Load odds from The Odds API.
+
+    extra_markets=True also fetches alternate totals/spreads, BTTS and double
+    chance via one per-event request per match. Quota math: that is roughly
+    4-5 extra credits per match per day, so the default is OFF. Base
+    h2h+totals+spreads already feed the parlay builder well. Enable via
+    --extra-markets when you want the extra markets and accept the quota cost.
+    """
     key = sport_key or discover_world_cup_key()
-     print(f"[i] Using sport key: {key}")
+    print(f"[i] Using sport key: {key}")
 
     commence_from, commence_to, window_date = _daily_window_7am_reykjavik()
 
@@ -130,6 +133,7 @@ def load_from_api(sport_key: str | None = None, region: str = "eu",
 
     matches = []
     extra_market_events = 0
+
     for ev in events:
         if not _in_window(ev.get("commence_time", ""), commence_from, commence_to):
             continue
@@ -227,22 +231,16 @@ def _collect_market_prices(bookmakers: list[dict], home: str, away: str) -> dict
                 for o in outcomes:
                     point = _point(o.get("point"))
                     if point is None or abs(point) % 1 != 0.5:
-                        # Whole-number handicaps (-1, 0, +2...) can PUSH:
-                        # the stake is refunded, a third outcome the two-way
-                        # vig-removal math can't represent, and a pushed leg
-                        # voids to 1.0 inside a parlay, which the EV math
-                        # doesn't model. Half-point lines only — same rule
-                        # the totals branch already applies via TOTAL_POINTS.
+                        # Whole-number handicaps can push. A pushed leg voids to
+                        # 1.0 inside a parlay, which this EV model does not handle.
+                        # Half-point lines only.
                         continue
                     side = _team_side(o.get("name", ""), home, away)
                     if side not in {"home", "away"}:
                         continue
 
                     # Store each two-way handicap line by the home team's point.
-                    # Example: home -1.5 / away +1.5 -> market handicap_minus_1_5
-                    # with outcomes {"home", "away"}. If alternate spreads also
-                    # include home +1.5 / away -1.5, that becomes a separate
-                    # market handicap_plus_1_5 instead of colliding.
+                    # Example: home -1.5 / away +1.5 -> handicap_minus_1_5.
                     home_point = point if side == "home" else -point
                     market = f"handicap_{_signed_point_key(home_point)}"
                     bucket = markets.setdefault(market, {"home": [], "away": []})
