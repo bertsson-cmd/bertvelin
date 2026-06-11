@@ -1,23 +1,18 @@
-"""
-The Odds API source (the-odds-api.com) -- fully automatic odds, no daily typing.
+"""The Odds API source (the-odds-api.com) -- fully automatic odds, no daily typing.
 
-Setup (once):
-  1. Get a free API key at https://the-odds-api.com (free tier ~500 requests/mo;
-     one request per day uses ~30 of them, so it comfortably covers the tournament).
-  2. Locally:  export ODDS_API_KEY=yourkey
-     GitHub:   repo Settings -> Secrets -> Actions -> new secret ODDS_API_KEY
-  3. Run:      python3 main.py --api
-
-What you get vs. the Google Sheet route:
-  + zero daily effort; the site updates itself with current market odds
-  - consensus EU bookmaker prices, not necessarily Epicbet's exact ones
-    (usually within a few percent -- check the real price before placing)
-  - no analyst adjustments/notes, unless you ALSO keep the sheet: run with
-    both --api and --sheet and your sheet's adjustment/note columns are
-    merged onto the API odds by team names.
+This version:
+  - Uses a 07:00 Reykjavik -> 07:00 Reykjavik daily window.
+  - Strongly prefers the known FIFA World Cup sport key: soccer_fifa_world_cup.
+  - Uses a wider default region set: us,uk,eu,au.
+  - Fetches base markets: h2h, totals, spreads.
+  - Optionally fetches extra per-event markets with --extra-markets:
+      alternate_totals, alternate_spreads, btts, double_chance.
+  - Keeps a defensive local time-window filter even though the API request
+    already includes commenceTimeFrom/commenceTimeTo.
 """
 
 from __future__ import annotations
+
 import json
 import os
 import urllib.error
@@ -27,43 +22,68 @@ from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 BASE = "https://api.the-odds-api.com/v4"
-TOTAL_POINTS = {x + 0.5 for x in range(0, 7)}  # 0.5 through 6.5
+
+# Keep all football total-goals lines from 0.5 through 6.5.
+TOTAL_POINTS = {x + 0.5 for x in range(0, 7)}
+
+# These are the cheaper/base markets fetched from the sport odds endpoint.
 BASE_MARKETS = "h2h,totals,spreads"
+
+# These are attempted only when --extra-markets is passed.
+# They may be unavailable depending on sport, bookmaker, API plan, or event.
 EXTRA_EVENT_MARKETS = "alternate_totals,alternate_spreads,btts,double_chance"
+
+# Prefer the known World Cup key before doing fuzzy discovery.
+PREFERRED_WORLD_CUP_KEY = "soccer_fifa_world_cup"
 
 
 def _get(path: str, **params) -> tuple[object, dict]:
     params["apiKey"] = os.environ.get("ODDS_API_KEY", "")
     if not params["apiKey"]:
-        raise RuntimeError("Set the ODDS_API_KEY environment variable (see module docstring).")
+        raise RuntimeError("Set the ODDS_API_KEY environment variable.")
+
     url = f"{BASE}{path}?{urllib.parse.urlencode(params)}"
     req = urllib.request.Request(url, headers={"User-Agent": "wc26-analyzer"})
+
     with urllib.request.urlopen(req, timeout=30) as resp:
         remaining = resp.headers.get("x-requests-remaining", "?")
         return json.loads(resp.read().decode("utf-8")), {"remaining": remaining}
 
 
 def discover_world_cup_key() -> str:
-    """Find the FIFA World Cup sport key instead of hardcoding it."""
+    """Find the FIFA World Cup sport key, preferring the known official key."""
     sports, _ = _get("/sports", all="true")
+
     for s in sports:
-        if "world_cup" in s.get("key", "") and "soccer" in s.get("key", "") \
-                and "winner" not in s.get("key", ""):
-            return s["key"]
+        if s.get("key") == PREFERRED_WORLD_CUP_KEY:
+            return PREFERRED_WORLD_CUP_KEY
+
+    candidates = [
+        s for s in sports
+        if "world_cup" in s.get("key", "")
+        and "soccer" in s.get("key", "")
+        and "winner" not in s.get("key", "")
+    ]
+
+    if candidates:
+        print("[i] World Cup sport-key candidates:")
+        for s in candidates:
+            print(f"    - {s.get('key')} ({s.get('title', 'untitled')})")
+        return candidates[0]["key"]
+
     raise RuntimeError(
-        "No FIFA World Cup sport key found. Inspect the /v4/sports response "
-        "and set it manually via the --sport-key flag."
+        "No FIFA World Cup sport key found. Inspect /v4/sports and pass "
+        "--sport-key manually if The Odds API changed the key."
     )
 
 
 def _daily_window_7am_reykjavik(now: datetime | None = None) -> tuple[str, str, date]:
     """
-    Return the intended daily betting window:
-    07:00 Reykjavik today -> 07:00 Reykjavik tomorrow.
+    Return the daily betting window:
+        07:00 Reykjavik today -> 07:00 Reykjavik tomorrow.
 
-    This uses the calendar day in Reykjavik, not the exact time the GitHub
-    Action happens to start. So if GitHub runs at 07:18, the window is still
-    07:00 today to 07:00 tomorrow.
+    The window is anchored to the Reykjavik calendar day, not to the exact
+    minute the GitHub Action starts.
     """
     tz = ZoneInfo("Atlantic/Reykjavik")
     now_local = (now or datetime.now(tz)).astimezone(tz)
@@ -81,15 +101,7 @@ def _daily_window_7am_reykjavik(now: datetime | None = None) -> tuple[str, str, 
 
 
 def _in_window(commence_time: str, start_iso: str, end_iso: str) -> bool:
-    """
-    Defensive local filter.
-
-    Returns True only if the event kickoff is inside:
-
-        start_iso <= kickoff < end_iso
-
-    This protects the analyzer even if the API returns extra events.
-    """
+    """Defensive local filter: start_iso <= kickoff < end_iso."""
     def parse_z(s: str) -> datetime:
         return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
@@ -102,18 +114,20 @@ def _in_window(commence_time: str, start_iso: str, end_iso: str) -> bool:
         return False
 
 
-def load_from_api(sport_key: str | None = None, region: str = "eu",
-                  extra_markets: bool = False) -> dict:
-    """Load odds from The Odds API.
+def load_from_api(
+    sport_key: str | None = None,
+    region: str = "us,uk,eu,au",
+    extra_markets: bool = False,
+) -> dict:
+    """
+    Fetch odds from The Odds API and convert them into the analyzer's match format.
 
-    extra_markets=True also fetches alternate totals/spreads, BTTS and double
-    chance via one per-event request per match. Quota math: that is roughly
-    4-5 extra credits per match per day, so the default is OFF. Base
-    h2h+totals+spreads already feed the parlay builder well. Enable via
-    --extra-markets when you want the extra markets and accept the quota cost.
+    The wider default region set makes demos more resilient than EU-only.
+    If you specifically want European books only, call with region="eu".
     """
     key = sport_key or discover_world_cup_key()
     print(f"[i] Using sport key: {key}")
+    print(f"[i] Using regions: {region}")
 
     commence_from, commence_to, window_date = _daily_window_7am_reykjavik()
 
@@ -142,7 +156,7 @@ def load_from_api(sport_key: str | None = None, region: str = "eu",
             continue
 
         home, away = ev["home_team"], ev["away_team"]
-        m = {
+        match = {
             "id": ev["id"][:8],
             "kickoff": ev.get("commence_time", ""),
             "home": home,
@@ -164,10 +178,15 @@ def load_from_api(sport_key: str | None = None, region: str = "eu",
 
         for market_name, odds_map in market_prices.items():
             if all(odds_map.values()):
-                m["markets"][market_name] = {k: _median(v) for k, v in odds_map.items()}
+                match["markets"][market_name] = {
+                    outcome: _median(prices)
+                    for outcome, prices in odds_map.items()
+                }
 
-        if m["markets"]:
-            matches.append(m)
+        if match["markets"]:
+            matches.append(match)
+
+    print(f"[i] Kept {len(matches)} matches after bookmaker/market filtering")
 
     if extra_market_events:
         print(f"[i] Loaded additional per-event markets for {extra_market_events} events")
@@ -180,7 +199,7 @@ def load_from_api(sport_key: str | None = None, region: str = "eu",
 
 
 def _load_extra_event_markets(sport_key: str, event_id: str, region: str) -> dict | None:
-    """Fetch optional per-event markets. Fail soft if unavailable on the current plan/sport."""
+    """Fetch optional per-event markets. Fail soft if unavailable."""
     try:
         data, _ = _get(
             f"/sports/{sport_key}/events/{event_id}/odds",
@@ -190,7 +209,10 @@ def _load_extra_event_markets(sport_key: str, event_id: str, region: str) -> dic
         )
         return data if isinstance(data, dict) else None
     except urllib.error.HTTPError as e:
-        print(f"[i] Extra markets unavailable for event {event_id[:8]} ({e.code}); continuing with base markets.")
+        print(
+            f"[i] Extra markets unavailable for event {event_id[:8]} "
+            f"({e.code}); continuing with base markets."
+        )
         return None
     except Exception as e:
         print(f"[i] Extra markets failed for event {event_id[:8]} ({e}); continuing with base markets.")
@@ -221,9 +243,11 @@ def _collect_market_prices(bookmakers: list[dict], home: str, away: str) -> dict
                     point = _point(o.get("point"))
                     if point not in TOTAL_POINTS:
                         continue
+
                     outcome = o.get("name", "").lower()
                     if outcome not in {"over", "under"}:
                         continue
+
                     market = f"over_under_{_point_key(point)}"
                     ensure(market, ["over", "under"])[outcome].append(float(o["price"]))
 
@@ -231,15 +255,15 @@ def _collect_market_prices(bookmakers: list[dict], home: str, away: str) -> dict
                 for o in outcomes:
                     point = _point(o.get("point"))
                     if point is None or abs(point) % 1 != 0.5:
-                        # Whole-number handicaps can push. A pushed leg voids to
-                        # 1.0 inside a parlay, which this EV model does not handle.
-                        # Half-point lines only.
+                        # Whole-number handicaps can push; this analyzer models
+                        # two-way win/loss legs only, so keep half-point lines.
                         continue
+
                     side = _team_side(o.get("name", ""), home, away)
                     if side not in {"home", "away"}:
                         continue
 
-                    # Store each two-way handicap line by the home team's point.
+                    # Store each handicap line by the home team's point.
                     # Example: home -1.5 / away +1.5 -> handicap_minus_1_5.
                     home_point = point if side == "home" else -point
                     market = f"handicap_{_signed_point_key(home_point)}"
@@ -266,12 +290,14 @@ def _collect_market_prices(bookmakers: list[dict], home: str, away: str) -> dict
 def _complete_handicap_markets(markets: dict[str, dict[str, list[float]]]) -> dict[str, dict[str, list[float]]]:
     """Keep handicap markets only when each line has both home and away prices."""
     out: dict[str, dict[str, list[float]]] = {}
+
     for market, odds_map in markets.items():
         if market.startswith("handicap_"):
             if odds_map.get("home") and odds_map.get("away"):
                 out[market] = {"home": odds_map["home"], "away": odds_map["away"]}
         else:
             out[market] = odds_map
+
     return out
 
 
@@ -299,6 +325,7 @@ def _side_or_draw(name: str, home: str, away: str) -> str | None:
 
 def _double_chance_outcome(name: str, home: str, away: str) -> str | None:
     text = name.strip().lower().replace(" ", "")
+
     if text in {"1x", "homeordraw"}:
         return "1x"
     if text in {"x2", "draworaway"}:
@@ -307,15 +334,20 @@ def _double_chance_outcome(name: str, home: str, away: str) -> str | None:
         return "12"
 
     raw = name.strip().lower()
-    has_home = home.strip().lower() in raw
-    has_away = away.strip().lower() in raw
+    home_l = home.strip().lower()
+    away_l = away.strip().lower()
+
+    has_home = home_l in raw
+    has_away = away_l in raw
     has_draw = "draw" in raw
+
     if has_home and has_draw:
         return "1x"
     if has_away and has_draw:
         return "x2"
     if has_home and has_away:
         return "12"
+
     return None
 
 
@@ -336,14 +368,19 @@ def _signed_point_key(point: float) -> str:
 
 
 def merge_sheet_adjustments(api_data: dict, sheet_data: dict) -> dict:
-    """Overlay your sheet's adjustments/notes onto API odds, matched by team names."""
-    by_teams = {(m["home"].lower(), m["away"].lower()): m for m in api_data["matches"]}
+    """Overlay sheet adjustments/notes onto API odds, matched by team names."""
+    by_teams = {
+        (m["home"].lower(), m["away"].lower()): m
+        for m in api_data["matches"]
+    }
+
     for sm in sheet_data["matches"]:
-        m = by_teams.get((sm["home"].lower(), sm["away"].lower()))
-        if m and sm.get("adjustments"):
-            notes = m["adjustments"].get("notes", []) + sm["adjustments"].get("notes", [])
-            m["adjustments"].update(sm["adjustments"])
-            m["adjustments"]["notes"] = notes
+        match = by_teams.get((sm["home"].lower(), sm["away"].lower()))
+        if match and sm.get("adjustments"):
+            notes = match["adjustments"].get("notes", []) + sm["adjustments"].get("notes", [])
+            match["adjustments"].update(sm["adjustments"])
+            match["adjustments"]["notes"] = notes
+
     return api_data
 
 
