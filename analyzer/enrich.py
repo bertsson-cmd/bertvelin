@@ -47,17 +47,104 @@ def _nudge(match: dict, market: str, outcome: str, delta: float) -> None:
 
 # ---------------------------------------------------------------- 1. venues
 
+SCHEDULE_FEED = "https://fixturedownload.com/feed/json/fifa-world-cup-2026"
+
+
+def _fetch_schedule() -> list[dict]:
+    """Full official schedule with stadiums, keyless. Source: fixturedownload.com.
+    Every match (group + knockout) carries a Location like 'Mexico City Stadium'."""
+    data = _http_json(SCHEDULE_FEED)
+    return data if isinstance(data, list) else []
+
+
+def _attach_venues_from_schedule(matches: list[dict]) -> int:
+    """Primary venue source. Matches by teams AND kickoff proximity, because
+    teams play at different stadiums in different rounds. Returns #resolved."""
+    from .teams import team_match, normalize as _norm
+    try:
+        schedule = _fetch_schedule()
+        print(f"[i] Venue layer: schedule feed returned {len(schedule)} fixtures")
+    except Exception as e:
+        print(f"[!] Venue layer: schedule feed failed ({e})")
+        return 0
+    if not schedule:
+        return 0
+
+    venues = json.load(open(os.path.join(DATA_DIR, "venues.json")))["venues"]
+
+    def find_venue(text: str):
+        t = _norm(text)
+        return next((v for v in venues if any(_norm(k) in t for k in v["match"])), None)
+
+    def kickoff_ts(m):
+        try:
+            return datetime.fromisoformat(m["kickoff"].replace("Z", "+00:00")).timestamp()
+        except Exception:
+            return None
+
+    def sched_ts(row):
+        try:
+            return datetime.fromisoformat(
+                row.get("DateUtc", "").replace(" ", "T").replace("Z", "+00:00")).timestamp()
+        except Exception:
+            return None
+
+    resolved = 0
+    for m in matches:
+        if m.get("venue_info"):
+            continue
+        mts = kickoff_ts(m)
+        best = None
+        for row in schedule:
+            if not (team_match(m["home"], row.get("HomeTeam", "")) and
+                    team_match(m["away"], row.get("AwayTeam", ""))):
+                continue
+            sts = sched_ts(row)
+            # same fixture can recur across rounds -> require kickoff within 36h
+            if mts is not None and sts is not None and abs(mts - sts) > 36 * 3600:
+                continue
+            best = row
+            break
+        if not best:
+            print(f"[i] Venue layer: no schedule row for {m['home']} vs {m['away']} "
+                  f"(kickoff {m.get('kickoff','?')})")
+            continue
+        v = find_venue(best.get("Location", ""))
+        if v:
+            m["venue_info"] = v
+            m["venue"] = v["name"]
+            resolved += 1
+            print(f"[i] Venue matched (schedule): {m['home']} vs {m['away']} -> "
+                  f"{v['name']} [feed said {best.get('Location','')!r}]")
+            if v["altitude"] >= 1500:
+                _note(m, f"Played at altitude ({v['altitude']}m, {v['name']}) — "
+                         "favours the acclimatised side, typically the CONCACAF host")
+        else:
+            print(f"[i] Venue layer: schedule location not recognized: {best.get('Location','')!r} "
+                  f"for {m['home']} vs {m['away']} — add it to data/venues.json match keywords")
+    return resolved
+
+
+
 def attach_venues(matches: list[dict]) -> None:
-    """Match fixtures to venues via football-data.org (FOOTBALL_DATA_KEY)."""
+    """Resolve stadiums. Primary: the keyless fixturedownload schedule feed
+    (football-data sends no stadium for World Cup fixtures — its venue field
+    is empty and the area fallback is just 'World'). Secondary: football-data,
+    kept only in case the feed is down AND they start populating venues."""
     print(f"[i] Venue layer: checking {len(matches)} match(es)")
 
     if not matches:
         print("[i] Venue layer: no matches loaded, so weather cannot run.")
         return
 
+    resolved = _attach_venues_from_schedule(matches)
+    if all(m.get("venue_info") for m in matches):
+        print(f"[i] Venue layer: all {resolved} venue(s) resolved from schedule feed.")
+        return
+
     key = os.environ.get("FOOTBALL_DATA_KEY", "")
     if not key:
-        print("[i] FOOTBALL_DATA_KEY not set — skipping venue/weather layer.")
+        print("[i] FOOTBALL_DATA_KEY not set — skipping football-data venue fallback.")
         return
 
     print("[i] FOOTBALL_DATA_KEY is set — fetching football-data.org fixtures for venue lookup.")
