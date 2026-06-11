@@ -159,7 +159,7 @@ def _scoreboard(sb: dict | None) -> str:
     if sb["n"] == 0:
         pend = (f" {len(sb['pending_days'])} day(s) pending settlement."
                 if sb.get("pending_days") else "")
-        body = f'<div class="settled">Engin uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
+        body = f'<div class="settled">Ekkert enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
     else:
         units_cls = "pos" if sb["units"] > 0 else "neg" if sb["units"] < 0 else ""
         s, c = sb["safe"], sb["longshot"]
