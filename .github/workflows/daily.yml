@@ -3,12 +3,11 @@ name: Bertpicker
 on:
   schedule:
     # 07:00 UTC = 07:00 in Reykjavík (Iceland is UTC year-round).
-    # GitHub cron can lag 5-30 min; fine for a morning briefing.
     - cron: "0 7 * * *"
   workflow_dispatch: {}   # "Run workflow" button for a manual refresh
 
 permissions:
-  contents: write   # to commit data/history.json (odds-movement memory)
+  contents: write   # commits history/picks/results/archive back to the repo
   pages: write
   id-token: write
 
@@ -29,13 +28,21 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build briefing (odds + auto reasoning + 3 slips)
+      - name: Code integrity check (fails loudly if any file has wrong content)
+        run: |
+          python3 -m py_compile main.py analyzer/*.py
+          python3 -c "
+          from analyzer.odds import build_legs, market_margin
+          from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip
+          from analyzer.api_source import load_from_api
+          from analyzer.report import render_report
+          from analyzer.enrich import enrich
+          from analyzer.results import settle_pending, record_picks
+          from analyzer.archive import archive_report
+          print('integrity OK: every module is in its right file')"
+
+      - name: Build briefing (settle yesterday + odds + reasoning + 3 slips + archive)
         env:
-          # Repo Settings -> Secrets and variables -> Actions:
-          #   ODDS_API_KEY      required  free, the-odds-api.com   -> odds
-          #   FOOTBALL_DATA_KEY optional  free, football-data.org  -> venues + weather
-          #   ANTHROPIC_API_KEY optional  paid (~cents/day)        -> AI news desk
-          #   ODDS_SHEET_URL    optional  your sheet overlay still works
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           FOOTBALL_DATA_KEY: ${{ secrets.FOOTBALL_DATA_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -43,12 +50,13 @@ jobs:
         run: |
           python3 main.py --api --enrich --out reports/index.html
 
-      - name: Remember today's odds (powers tomorrow's movement notes)
+      - name: Commit memory (odds history, picks ledger, results, archive)
         run: |
           git config user.name "wc26-bot"
           git config user.email "wc26-bot@users.noreply.github.com"
-          git add data/history.json
-          git commit -m "odds history $(date -u +%F)" || echo "no change"
+          git add data/history.json data/picks.json data/results.json reports/archive
+          git commit -m "daily memory $(date -u +%F)" || echo "no change"
+          git pull --rebase || true
           git push || true
 
       - uses: actions/upload-pages-artifact@v3
