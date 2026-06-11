@@ -1,21 +1,213 @@
 {
-  "_README": "All 16 World Cup 2026 venues. Used to match fixtures to coordinates for weather forecasts. 'roof' venues skip weather adjustments. Altitude in metres.",
-  "venues": [
-    { "match": ["azteca", "mexico city", "ciudad de méxico", "estadio banorte"], "name": "Estadio Azteca, Mexico City", "lat": 19.3029, "lon": -99.1505, "altitude": 2200, "roof": false },
-    { "match": ["akron", "guadalajara"], "name": "Estadio Akron, Guadalajara", "lat": 20.6817, "lon": -103.4626, "altitude": 1600, "roof": false },
-    { "match": ["bbva", "monterrey"], "name": "Estadio BBVA, Monterrey", "lat": 25.6692, "lon": -100.2444, "altitude": 500, "roof": false },
-    { "match": ["bc place", "vancouver"], "name": "BC Place, Vancouver", "lat": 49.2767, "lon": -123.1119, "altitude": 0, "roof": true },
-    { "match": ["bmo", "toronto"], "name": "BMO Field, Toronto", "lat": 43.6332, "lon": -79.4186, "altitude": 76, "roof": false },
-    { "match": ["lumen", "seattle"], "name": "Lumen Field, Seattle", "lat": 47.5952, "lon": -122.3316, "altitude": 0, "roof": false },
-    { "match": ["levi", "santa clara", "san francisco"], "name": "Levi's Stadium, SF Bay Area", "lat": 37.4030, "lon": -121.9696, "altitude": 0, "roof": false },
-    { "match": ["sofi", "inglewood", "los angeles"], "name": "SoFi Stadium, Los Angeles", "lat": 33.9535, "lon": -118.3392, "altitude": 30, "roof": true },
-    { "match": ["mercedes", "atlanta"], "name": "Mercedes-Benz Stadium, Atlanta", "lat": 33.7554, "lon": -84.4010, "altitude": 300, "roof": true },
-    { "match": ["gillette", "boston", "foxborough"], "name": "Gillette Stadium, Boston", "lat": 42.0909, "lon": -71.2643, "altitude": 90, "roof": false },
-    { "match": ["at&t", "att stadium", "dallas", "arlington"], "name": "AT&T Stadium, Dallas", "lat": 32.7473, "lon": -97.0945, "altitude": 180, "roof": true },
-    { "match": ["nrg", "houston"], "name": "NRG Stadium, Houston", "lat": 29.6847, "lon": -95.4107, "altitude": 15, "roof": true },
-    { "match": ["arrowhead", "kansas city", "geha"], "name": "Arrowhead Stadium, Kansas City", "lat": 39.0489, "lon": -94.4839, "altitude": 270, "roof": false },
-    { "match": ["hard rock", "miami"], "name": "Hard Rock Stadium, Miami", "lat": 25.9580, "lon": -80.2389, "altitude": 2, "roof": false },
-    { "match": ["metlife", "new york", "new jersey", "east rutherford"], "name": "MetLife Stadium, New York/NJ", "lat": 40.8128, "lon": -74.0742, "altitude": 2, "roof": false },
-    { "match": ["lincoln", "philadelphia"], "name": "Lincoln Financial Field, Philadelphia", "lat": 39.9008, "lon": -75.1675, "altitude": 12, "roof": false }
-  ]
+ "_README": "All 16 World Cup 2026 venues. Used to match fixtures to coordinates for weather forecasts. 'roof' venues skip weather adjustments. Altitude in metres.",
+ "venues": [
+  {
+   "match": [
+    "azteca",
+    "mexico city",
+    "ciudad de méxico",
+    "estadio banorte",
+    "ciudad de mexico",
+    "mexico city stadium",
+    "estadio ciudad de mexico"
+   ],
+   "name": "Estadio Azteca, Mexico City",
+   "lat": 19.3029,
+   "lon": -99.1505,
+   "altitude": 2200,
+   "roof": false
+  },
+  {
+   "match": [
+    "akron",
+    "guadalajara",
+    "estadio guadalajara",
+    "guadalajara stadium"
+   ],
+   "name": "Estadio Akron, Guadalajara",
+   "lat": 20.6817,
+   "lon": -103.4626,
+   "altitude": 1600,
+   "roof": false
+  },
+  {
+   "match": [
+    "bbva",
+    "monterrey",
+    "estadio monterrey",
+    "monterrey stadium"
+   ],
+   "name": "Estadio BBVA, Monterrey",
+   "lat": 25.6692,
+   "lon": -100.2444,
+   "altitude": 500,
+   "roof": false
+  },
+  {
+   "match": [
+    "bc place",
+    "vancouver",
+    "vancouver stadium"
+   ],
+   "name": "BC Place, Vancouver",
+   "lat": 49.2767,
+   "lon": -123.1119,
+   "altitude": 0,
+   "roof": true
+  },
+  {
+   "match": [
+    "bmo",
+    "toronto",
+    "toronto stadium"
+   ],
+   "name": "BMO Field, Toronto",
+   "lat": 43.6332,
+   "lon": -79.4186,
+   "altitude": 76,
+   "roof": false
+  },
+  {
+   "match": [
+    "lumen",
+    "seattle",
+    "seattle stadium"
+   ],
+   "name": "Lumen Field, Seattle",
+   "lat": 47.5952,
+   "lon": -122.3316,
+   "altitude": 0,
+   "roof": false
+  },
+  {
+   "match": [
+    "levi",
+    "santa clara",
+    "san francisco",
+    "san francisco bay area stadium",
+    "bay area stadium"
+   ],
+   "name": "Levi's Stadium, SF Bay Area",
+   "lat": 37.403,
+   "lon": -121.9696,
+   "altitude": 0,
+   "roof": false
+  },
+  {
+   "match": [
+    "sofi",
+    "inglewood",
+    "los angeles",
+    "los angeles stadium"
+   ],
+   "name": "SoFi Stadium, Los Angeles",
+   "lat": 33.9535,
+   "lon": -118.3392,
+   "altitude": 30,
+   "roof": true
+  },
+  {
+   "match": [
+    "mercedes",
+    "atlanta",
+    "atlanta stadium"
+   ],
+   "name": "Mercedes-Benz Stadium, Atlanta",
+   "lat": 33.7554,
+   "lon": -84.401,
+   "altitude": 300,
+   "roof": true
+  },
+  {
+   "match": [
+    "gillette",
+    "boston",
+    "foxborough",
+    "boston stadium"
+   ],
+   "name": "Gillette Stadium, Boston",
+   "lat": 42.0909,
+   "lon": -71.2643,
+   "altitude": 90,
+   "roof": false
+  },
+  {
+   "match": [
+    "at&t",
+    "att stadium",
+    "dallas",
+    "arlington",
+    "dallas stadium"
+   ],
+   "name": "AT&T Stadium, Dallas",
+   "lat": 32.7473,
+   "lon": -97.0945,
+   "altitude": 180,
+   "roof": true
+  },
+  {
+   "match": [
+    "nrg",
+    "houston",
+    "houston stadium"
+   ],
+   "name": "NRG Stadium, Houston",
+   "lat": 29.6847,
+   "lon": -95.4107,
+   "altitude": 15,
+   "roof": true
+  },
+  {
+   "match": [
+    "arrowhead",
+    "kansas city",
+    "geha",
+    "kansas city stadium"
+   ],
+   "name": "Arrowhead Stadium, Kansas City",
+   "lat": 39.0489,
+   "lon": -94.4839,
+   "altitude": 270,
+   "roof": false
+  },
+  {
+   "match": [
+    "hard rock",
+    "miami",
+    "miami stadium"
+   ],
+   "name": "Hard Rock Stadium, Miami",
+   "lat": 25.958,
+   "lon": -80.2389,
+   "altitude": 2,
+   "roof": false
+  },
+  {
+   "match": [
+    "metlife",
+    "new york",
+    "new jersey",
+    "east rutherford",
+    "new york new jersey stadium",
+    "new york stadium"
+   ],
+   "name": "MetLife Stadium, New York/NJ",
+   "lat": 40.8128,
+   "lon": -74.0742,
+   "altitude": 2,
+   "roof": false
+  },
+  {
+   "match": [
+    "lincoln",
+    "philadelphia",
+    "philadelphia stadium"
+   ],
+   "name": "Lincoln Financial Field, Philadelphia",
+   "lat": 39.9008,
+   "lon": -75.1675,
+   "altitude": 12,
+   "roof": false
+  }
+ ]
 }
