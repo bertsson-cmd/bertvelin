@@ -159,7 +159,7 @@ def _scoreboard(sb: dict | None) -> str:
     if sb["n"] == 0:
         pend = (f" {len(sb['pending_days'])} day(s) pending settlement."
                 if sb.get("pending_days") else "")
-        body = f'<div class="settled">Engin uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
+        body = f'<div class="settled">Ekkert uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
     else:
         units_cls = "pos" if sb["units"] > 0 else "neg" if sb["units"] < 0 else ""
         s, c = sb["safe"], sb["longshot"]
@@ -172,7 +172,7 @@ def _scoreboard(sb: dict | None) -> str:
                     f'&nbsp;&nbsp;{"&#10003;" if l["won"] else "&#10007;"} {l["label"]} ({l["score"]})'
                     for l in r["legs"])
                 rows.append(f'Slip {r["slip"]} @ {r["combined_odds"]:.2f} — {tag} ({r["profit"]:+.2f}u)<br>{legs}')
-            latest = (f'<div class="settled"><b>Síðasta uppgjör ({sb["latest_day"]}):</b><br>'
+            latest = (f'<div class="settled"><b>Síðasti dagur ({sb["latest_day"]}):</b><br>'
                       + "<br>".join(rows) + "</div>")
         pend = (f'<div class="settled">({len(sb["pending_days"])} day(s) awaiting final scores)</div>'
                 if sb.get("pending_days") else "")
