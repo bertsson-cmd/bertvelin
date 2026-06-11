@@ -1,8 +1,8 @@
 {
  "2026-06-11": {
   "A": {
-   "combined_odds": 1.8468,
-   "est_probability": 0.486,
+   "combined_odds": 1.8306,
+   "est_probability": 0.4947,
    "legs": [
     {
      "match_id": "80d82d11",
@@ -20,22 +20,22 @@
      "away": "Czech Republic",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.14
+     "odds": 1.13
     }
    ]
   },
   "B": {
-   "combined_odds": 1.9038,
-   "est_probability": 0.469,
+   "combined_odds": 1.8532,
+   "est_probability": 0.4861,
    "legs": [
     {
-     "match_id": "384cbb5d",
-     "label": "South Korea vs Czech Republic: under 2.5 goals",
-     "home": "South Korea",
-     "away": "Czech Republic",
+     "match_id": "80d82d11",
+     "label": "Mexico vs South Africa: under 2.5 goals",
+     "home": "Mexico",
+     "away": "South Africa",
      "market": "over_under_2_5",
      "outcome": "under",
-     "odds": 1.67
+     "odds": 1.64
     },
     {
      "match_id": "384cbb5d",
@@ -44,14 +44,23 @@
      "away": "Czech Republic",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.14
+     "odds": 1.13
     }
    ]
   },
   "C": {
-   "combined_odds": 3.0842,
-   "est_probability": 0.2752,
+   "combined_odds": 3.0022,
+   "est_probability": 0.2877,
    "legs": [
+    {
+     "match_id": "80d82d11",
+     "label": "Mexico vs South Africa: under 2.5 goals",
+     "home": "Mexico",
+     "away": "South Africa",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.64
+    },
     {
      "match_id": "80d82d11",
      "label": "South Africa handicap +1.5",
@@ -63,21 +72,12 @@
     },
     {
      "match_id": "384cbb5d",
-     "label": "South Korea vs Czech Republic: under 2.5 goals",
-     "home": "South Korea",
-     "away": "Czech Republic",
-     "market": "over_under_2_5",
-     "outcome": "under",
-     "odds": 1.67
-    },
-    {
-     "match_id": "384cbb5d",
      "label": "Czech Republic handicap +1.5",
      "home": "South Korea",
      "away": "Czech Republic",
      "market": "handicap_minus_1_5",
      "outcome": "away",
-     "odds": 1.14
+     "odds": 1.13
     }
    ]
   }
