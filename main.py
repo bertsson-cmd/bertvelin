@@ -41,7 +41,7 @@ def main() -> int:
     ap.add_argument("--enrich", action="store_true",
                     help="auto-add reasoning: venues, weather, odds movement, AI news desk")
     ap.add_argument("--min", type=float, default=2.0)
-    ap.add_argument("--max", type=float, default=2.5)
+    ap.add_argument("--max", type=float, default=2.99)
     ap.add_argument("--min-leg-prob", type=float, default=0.55)
     ap.add_argument("--out", default="reports/daily.html")
     args = ap.parse_args()
