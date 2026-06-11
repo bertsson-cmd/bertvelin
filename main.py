@@ -65,9 +65,17 @@ def main() -> int:
                   f"Replace with real odds before reading anything into the output.")
         data = load_local_odds(path)
 
+    print(f"[i] Enrich flag: {args.enrich}")
+    print(f"[i] Matches available before enrichment: {len(data.get('matches', []))}")
+
     if args.enrich:
+        print("[i] Running enrichment layer...")
+        print(f"[i] FOOTBALL_DATA_KEY present: {bool(os.environ.get('FOOTBALL_DATA_KEY'))}")
+        print(f"[i] ANTHROPIC_API_KEY present: {bool(os.environ.get('ANTHROPIC_API_KEY'))}")
         from analyzer.enrich import enrich
         enrich(data["matches"])
+    else:
+        print("[i] Enrichment disabled — run with --enrich to enable venues/weather/news.")
 
     legs, notes = [], []
     print(f"\nWC26 Parlay Analyzer — {data.get('date','?')} — source: {data.get('bookmaker','?')}")
