@@ -70,9 +70,7 @@ def attach_venues(matches: list[dict]) -> None:
         t = (venue_text or "").lower()
         return next((v for v in venues if any(k in t for k in v["match"])), None)
 
-    def team_match(a: str, b: str) -> bool:
-        a, b = a.lower(), b.lower()
-        return a in b or b in a or _initials(a) == _initials(b)
+    from .teams import team_match
 
     for m in matches:
         for f in fixtures:

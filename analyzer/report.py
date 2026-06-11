@@ -90,6 +90,16 @@ body{background:var(--desktop);color:var(--ink);
 .notepad li::before{content:"> ";color:var(--navy)}
 .notepad .warnline{color:#a00000}
 
+/* ---- scoreboard ---- */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:4px;margin-bottom:10px}
+.score-cell{background:#fff;border:2px solid;padding:6px 8px;text-align:center;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.score-cell b{display:block;font-family:"VT323",monospace;font-size:26px;line-height:1}
+.score-cell span{font-size:10px;color:#444}
+.score-cell.pos b{color:#006400}.score-cell.neg b{color:#a00000}
+.settled{font-family:"VT323",monospace;font-size:16px;line-height:1.5}
+.settled .w{color:#006400;font-weight:bold}.settled .l{color:#a00000;font-weight:bold}
+
 /* ---- error dialog for empty days ---- */
 .dialog{max-width:430px;margin:0 auto 24px}
 .dialog .win-body{display:flex;gap:12px;align-items:flex-start}
@@ -143,9 +153,50 @@ def _ticket(name: str, p: Parlay, css: str = "") -> str:
     </div>"""
 
 
+def _scoreboard(sb: dict | None) -> str:
+    if not sb:
+        return ""
+    if sb["n"] == 0:
+        pend = (f" {len(sb['pending_days'])} day(s) pending settlement."
+                if sb.get("pending_days") else "")
+        body = f'<div class="settled">Engin uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
+    else:
+        units_cls = "pos" if sb["units"] > 0 else "neg" if sb["units"] < 0 else ""
+        s, c = sb["safe"], sb["longshot"]
+        latest = ""
+        if sb.get("latest"):
+            rows = []
+            for r in sb["latest"]:
+                tag = '<span class="w">WON</span>' if r["won"] else '<span class="l">LOST</span>'
+                legs = "<br>".join(
+                    f'&nbsp;&nbsp;{"&#10003;" if l["won"] else "&#10007;"} {l["label"]} ({l["score"]})'
+                    for l in r["legs"])
+                rows.append(f'Slip {r["slip"]} @ {r["combined_odds"]:.2f} — {tag} ({r["profit"]:+.2f}u)<br>{legs}')
+            latest = (f'<div class="settled"><b>Síðasta uppgjör ({sb["latest_day"]}):</b><br>'
+                      + "<br>".join(rows) + "</div>")
+        pend = (f'<div class="settled">({len(sb["pending_days"])} day(s) awaiting final scores)</div>'
+                if sb.get("pending_days") else "")
+        body = f"""
+        <div class="score-grid">
+          <div class="score-cell"><b>{sb['wins']}–{sb['n']-sb['wins']}</b><span>slips won–lost</span></div>
+          <div class="score-cell {units_cls}"><b>{sb['units']:+.2f}</b><span>units (1u/slip)</span></div>
+          <div class="score-cell"><b>{sb['actual_rate']:.0%}</b><span>actual hit rate</span></div>
+          <div class="score-cell"><b>{sb['est_rate']:.0%}</b><span>estimated hit rate</span></div>
+          <div class="score-cell"><b>{s['wins']}/{s['n']}</b><span>A+B ({s['units']:+.2f}u)</span></div>
+          <div class="score-cell"><b>{c['wins']}/{c['n']}</b><span>C ({c['units']:+.2f}u)</span></div>
+        </div>{latest}{pend}"""
+    return f"""
+<div class="win">
+  <div class="tbar"><span>stadan.exe — Scoreboard</span>{WINDOW_BTNS}</div>
+  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>V</u>iew&nbsp;&nbsp;<u>H</u>elp</div>
+  <div class="win-body">{body}</div>
+</div>"""
+
+
 def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
                   source: str, match_notes: list[str], out_path: str,
-                  slip_c: Parlay | None = None) -> str:
+                  slip_c: Parlay | None = None, scoreboard: dict | None = None,
+                  archive_href: str | None = None) -> str:
     today = date.today().strftime("%A %d %B %Y")
     tickets = ""
     if slip_a:
@@ -177,6 +228,7 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
 <div class="splash">Á ég að skjótast í búðina og sækja stuðla?</div>
 
 <div class="slips">{tickets}</div>
+{_scoreboard(scoreboard)}
 
 <div class="win notepad">
   <div class="tbar"><span>reasoning.txt — Notepad</span>{WINDOW_BTNS}</div>
@@ -194,6 +246,7 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
   <span class="start"><span class="flag">&#9632;&#9632;</span>Start</span>
   <span class="task">&#127942; Bertpicker 1.0 </span>
   <span class="task">&#127942; Búðin - úrval </span>
+  {f'<a class="task" style="text-decoration:none;color:#000" href="{archive_href}">&#128193; Gamlir seðlar</a>' if archive_href else ""}
   <span class="clock">{today}</span>
 </div>
 </body></html>"""

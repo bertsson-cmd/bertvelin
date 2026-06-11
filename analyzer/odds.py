@@ -43,6 +43,8 @@ class Leg:
     fair_prob: float      # vig-free market probability
     adj_prob: float       # after your news/weather/injury adjustments
     notes: list[str] = field(default_factory=list)
+    home: str = ""        # team names, used by results settlement
+    away: str = ""
 
     @property
     def edge(self) -> float:
@@ -92,6 +94,8 @@ def build_legs(match: dict, max_adjustment: float = 0.05) -> list[Leg]:
                 fair_prob=fair[outcome],
                 adj_prob=adj[outcome],
                 notes=notes,
+                home=match.get("home", ""),
+                away=match.get("away", ""),
             ))
     return legs
 

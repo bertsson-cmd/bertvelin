@@ -95,8 +95,24 @@ def main() -> int:
     if not slip_a:
         print("  No qualifying parlay today — that's a legitimate answer. Don't force a bet.")
 
+    day = data.get("date", "")
+    scoreboard = None
+    try:
+        from analyzer.results import settle_pending, record_picks
+        scoreboard = settle_pending(day)          # grade older picks first
+        record_picks(day, {"A": slip_a, "B": slip_b, "C": slip_c})
+    except Exception as e:
+        print(f"[!] Results tracking failed ({e}) — briefing continues without it.")
+
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    out = render_report(slip_a, slip_b, data.get("bookmaker", "manual"), notes, args.out, slip_c=slip_c)
+    out = render_report(slip_a, slip_b, data.get("bookmaker", "manual"), notes, args.out,
+                        slip_c=slip_c, scoreboard=scoreboard, archive_href="archive/index.html")
+    try:
+        from analyzer.archive import archive_report
+        archive_report(out, day, reports_dir=os.path.dirname(args.out) or "reports")
+        print(f"[i] Archived as {day}.html")
+    except Exception as e:
+        print(f"[!] Archiving failed ({e}) — briefing continues without it.")
     print(f"\nReport written to {out}\n")
     return 0
 
