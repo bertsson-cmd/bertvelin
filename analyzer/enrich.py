@@ -49,10 +49,19 @@ def _nudge(match: dict, market: str, outcome: str, delta: float) -> None:
 
 def attach_venues(matches: list[dict]) -> None:
     """Match fixtures to venues via football-data.org (FOOTBALL_DATA_KEY)."""
+    print(f"[i] Venue layer: checking {len(matches)} match(es)")
+
+    if not matches:
+        print("[i] Venue layer: no matches loaded, so weather cannot run.")
+        return
+
     key = os.environ.get("FOOTBALL_DATA_KEY", "")
     if not key:
         print("[i] FOOTBALL_DATA_KEY not set — skipping venue/weather layer.")
         return
+
+    print("[i] FOOTBALL_DATA_KEY is set — fetching football-data.org fixtures for venue lookup.")
+
     try:
         today = datetime.now(timezone.utc).date()
         fixtures = _http_json(
@@ -60,8 +69,9 @@ def attach_venues(matches: list[dict]) -> None:
             f"?dateFrom={today}&dateTo={today + timedelta(days=2)}",
             headers={"X-Auth-Token": key},
         ).get("matches", [])
+        print(f"[i] football-data.org returned {len(fixtures)} fixture(s) for venue lookup.")
     except Exception as e:
-        print(f"[!] football-data.org failed ({e}) — skipping venues.")
+        print(f"[!] football-data.org failed ({e}) — skipping venues/weather.")
         return
 
     venues = json.load(open(os.path.join(DATA_DIR, "venues.json")))["venues"]
@@ -70,21 +80,46 @@ def attach_venues(matches: list[dict]) -> None:
         t = (venue_text or "").lower()
         return next((v for v in venues if any(k in t for k in v["match"])), None)
 
-    from .teams import team_match
+    def team_match(a: str, b: str) -> bool:
+        a, b = a.lower(), b.lower()
+        return a in b or b in a or _initials(a) == _initials(b)
 
     for m in matches:
+        matched_fixture = False
+        matched_venue = False
+
         for f in fixtures:
             ht = f.get("homeTeam", {}).get("name", "")
             at = f.get("awayTeam", {}).get("name", "")
             if team_match(m["home"], ht) and team_match(m["away"], at):
-                v = find_venue(f.get("venue", "") or f.get("area", {}).get("name", ""))
+                matched_fixture = True
+                venue_text = f.get("venue", "") or f.get("area", {}).get("name", "")
+                v = find_venue(venue_text)
                 if v:
+                    matched_venue = True
                     m["venue_info"] = v
                     m["venue"] = v["name"]
+                    print(f"[i] Venue matched: {m['home']} vs {m['away']} -> {v['name']}")
                     if v["altitude"] >= 1500:
                         _note(m, f"Played at altitude ({v['altitude']}m, {v['name']}) — "
                                  "favours the acclimatised side, typically the CONCACAF host")
+                else:
+                    print(
+                        f"[i] Fixture matched but venue was not recognized for "
+                        f"{m['home']} vs {m['away']} | football-data venue text: {venue_text!r}"
+                    )
                 break
+
+        if not matched_fixture:
+            print(
+                f"[i] No football-data fixture match for {m['home']} vs {m['away']} — "
+                "weather skipped for this match."
+            )
+        elif not matched_venue:
+            print(
+                f"[i] No usable venue_info for {m['home']} vs {m['away']} — "
+                "weather skipped for this match."
+            )
 
 
 def _initials(s: str) -> str:
@@ -95,11 +130,16 @@ def _initials(s: str) -> str:
 
 def attach_weather(matches: list[dict]) -> None:
     """Open-Meteo forecast at kickoff + rule-based football reasoning."""
+    print(f"[i] Weather layer: checking {len(matches)} match(es)")
+
+    weather_checked = 0
     for m in matches:
         v = m.get("venue_info")
         if not v:
+            print(f"[i] Weather skipped: no venue_info for {m['home']} vs {m['away']}")
             continue
         if v["roof"]:
+            print(f"[i] Weather neutral: {v['name']} has a roof for {m['home']} vs {m['away']}")
             _note(m, f"{v['name']} has a roof — weather neutral")
             continue
         try:
@@ -124,6 +164,8 @@ def attach_weather(matches: list[dict]) -> None:
             continue
 
         summary = f"{temp:.0f}°C, {hum:.0f}% humidity, wind {wind:.0f} km/h, rain {rain:.0f}%"
+        weather_checked += 1
+        print(f"[i] Weather loaded: {m['home']} vs {m['away']} at {v['name']}: {summary}")
         _note(m, f"Kickoff forecast at {v['name']}: {summary}")
 
         if temp >= 30 and hum >= 55:
@@ -139,6 +181,8 @@ def attach_weather(matches: list[dict]) -> None:
             _nudge(m, "over_under_2_5", "under", 0.015)
         if rain >= 70:
             _note(m, "→ Likely rain: greasy surface, marginally more goal chaos; no adjustment, just awareness")
+
+    print(f"[i] Weather layer complete: loaded weather for {weather_checked} match(es).")
 
 
 # -------------------------------------------------------------- 3. movement
@@ -234,7 +278,9 @@ def attach_ai_news(matches: list[dict], model: str = "claude-sonnet-4-6") -> Non
 # ------------------------------------------------------------- entry point
 
 def enrich(matches: list[dict]) -> None:
+    print(f"[i] Enrichment layer started for {len(matches)} match(es).")
     attach_venues(matches)
     attach_weather(matches)
     attach_movement(matches)
     attach_ai_news(matches)
+    print("[i] Enrichment layer complete.")
