@@ -110,6 +110,8 @@ def load_from_api(sport_key: str | None = None, region: str = "eu",
     blow past the free tier's 500. Default OFF — base h2h+totals+spreads
     already feed the parlay builder well. Enable via --extra-markets."""
     key = sport_key or discover_world_cup_key()
+     print(f"[i] Using sport key: {key}")
+
     commence_from, commence_to, window_date = _daily_window_7am_reykjavik()
 
     events, meta = _get(
