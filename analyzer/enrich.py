@@ -76,13 +76,13 @@ def attach_venues(matches: list[dict]) -> None:
 
     venues = json.load(open(os.path.join(DATA_DIR, "venues.json")))["venues"]
 
-    def find_venue(venue_text: str) -> dict | None:
-        t = (venue_text or "").lower()
-        return next((v for v in venues if any(k in t for k in v["match"])), None)
+    from .teams import normalize as _norm
 
-    def team_match(a: str, b: str) -> bool:
-        a, b = a.lower(), b.lower()
-        return a in b or b in a or _initials(a) == _initials(b)
+    def find_venue(venue_text: str) -> dict | None:
+        t = _norm(venue_text)            # lowercases, strips accents/punctuation
+        return next((v for v in venues if any(_norm(k) in t for k in v["match"])), None)
+
+    from .teams import team_match   # alias-aware: Czechia/Czech Republic, Korea Republic/South Korea
 
     for m in matches:
         matched_fixture = False
@@ -111,9 +111,12 @@ def attach_venues(matches: list[dict]) -> None:
                 break
 
         if not matched_fixture:
+            fd_names = ", ".join(
+                f"{f.get('homeTeam',{}).get('name','?')} v {f.get('awayTeam',{}).get('name','?')}"
+                for f in fixtures) or "(none)"
             print(
                 f"[i] No football-data fixture match for {m['home']} vs {m['away']} — "
-                "weather skipped for this match."
+                f"weather skipped. football-data offered: {fd_names}"
             )
         elif not matched_venue:
             print(
