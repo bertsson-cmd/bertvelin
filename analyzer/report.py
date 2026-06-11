@@ -159,7 +159,7 @@ def _scoreboard(sb: dict | None) -> str:
     if sb["n"] == 0:
         pend = (f" {len(sb['pending_days'])} day(s) pending settlement."
                 if sb.get("pending_days") else "")
-        body = f'<div class="settled">Ekkert enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
+        body = f'<div class="settled">Engin uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
     else:
         units_cls = "pos" if sb["units"] > 0 else "neg" if sb["units"] < 0 else ""
         s, c = sb["safe"], sb["longshot"]
@@ -234,7 +234,7 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
   <div class="tbar"><span>reasoning.txt — Notepad</span>{WINDOW_BTNS}</div>
   <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>S</u>earch&nbsp;&nbsp;<u>H</u>elp</div>
   <div class="win-body"><ul>{notes_html}
-  <li class="warnline">* Velur tvo líklegustu seðla til að detta á bilinu 2.0 og 2.5 í stuðli. Notast er aðallega við 1x2, over/unders og fjölda marka. Þriðji seðilinn er vibe seðill sem er með hærri stuðul.
+  <li class="warnline">* Velur tvo líklegustu seðla til að detta á bilinu 2.0 og 2.99 í stuðli. Notast er aðallega við 1x2, over/unders og fjölda marka. Þriðji seðilinn er vibe seðill sem er með hærri stuðul.
   Ef seðlar tapast þá bara it is what it is, gerir þetta á eigin ábyrgð kútur.</li>
   <li>Odds source: {source}. Ekki hægt að taka beint frá Epicbet/Coolbet. Stuðlarnir kunna því að vera örlítið frábrugðnir Epicbet/Coolbet - þið metið þetta bara kútar.</li>
   <li>Spilið smátt og fyrir skemmtunina. Ef þetta hættir að vera gaman: SÁÁ (saa.is) eða hjálparsími Rauða krossins 1717.</li>

@@ -2,7 +2,7 @@
 Parlay construction.
 
 Searches all 1-3 leg combinations whose combined decimal odds land in the
-target band (default 2.0-2.5), then ranks them by estimated probability of
+target band (default 2.0-2.99), then ranks them by estimated probability of
 winning ("most likely outcome, relatively safe"), with expected value as a
 tiebreaker. Produces two slips that share no matches when possible, so one
 bad result is less likely to sink both.
@@ -55,7 +55,7 @@ class Parlay:
 def build_parlays(
     legs: list[Leg],
     min_odds: float = 2.0,
-    max_odds: float = 2.5,
+    max_odds: float = 2.99,
     min_leg_prob: float = 0.55,
     max_legs: int = 3,
     allow_same_match_on_short_days: bool = True,
@@ -143,7 +143,7 @@ def _market_family(market: str) -> str:
 def band_for_day(
     legs: list[Leg],
     min_odds: float = 2.0,
-    max_odds: float = 2.5,
+    max_odds: float = 2.99,
     short_day_min_odds: float = 1.8,
     short_day_match_threshold: int = 2,
 ) -> tuple[float, float]:
