@@ -81,5 +81,79 @@
     }
    ]
   }
+ },
+ "2026-06-12": {
+  "A": {
+   "combined_odds": 2.3288,
+   "est_probability": 0.3846,
+   "legs": [
+    {
+     "match_id": "d1f4f946",
+     "label": "Canada vs Bosnia & Herzegovina: under 2.5 goals",
+     "home": "Canada",
+     "away": "Bosnia & Herzegovina",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.64
+    },
+    {
+     "match_id": "c12986f4",
+     "label": "USA vs Paraguay: over 1.5 goals",
+     "home": "USA",
+     "away": "Paraguay",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.42
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.6896,
+   "est_probability": 0.3282,
+   "legs": [
+    {
+     "match_id": "d1f4f946",
+     "label": "Canada vs Bosnia & Herzegovina: under 2.5 goals",
+     "home": "Canada",
+     "away": "Bosnia & Herzegovina",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.64
+    },
+    {
+     "match_id": "c12986f4",
+     "label": "USA vs Paraguay: under 2.5 goals",
+     "home": "USA",
+     "away": "Paraguay",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.64
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0012,
+   "est_probability": 0.2983,
+   "legs": [
+    {
+     "match_id": "d1f4f946",
+     "label": "Canada to win",
+     "home": "Canada",
+     "away": "Bosnia & Herzegovina",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.83
+    },
+    {
+     "match_id": "d1f4f946",
+     "label": "Canada vs Bosnia & Herzegovina: under 2.5 goals",
+     "home": "Canada",
+     "away": "Bosnia & Herzegovina",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.64
+    }
+   ]
+  }
  }
 }

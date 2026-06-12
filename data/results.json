@@ -1,1 +1,110 @@
-{"settled": {}}
+{
+ "settled": {
+  "2026-06-11": [
+   {
+    "slip": "A",
+    "combined_odds": 1.8306,
+    "est_probability": 0.4947,
+    "legs": [
+     {
+      "match_id": "80d82d11",
+      "label": "South Africa handicap +1.5",
+      "home": "Mexico",
+      "away": "South Africa",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.62,
+      "score": "2-0",
+      "won": false
+     },
+     {
+      "match_id": "384cbb5d",
+      "label": "Czech Republic handicap +1.5",
+      "home": "South Korea",
+      "away": "Czech Republic",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.13,
+      "score": "2-1",
+      "won": true
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 1.8532,
+    "est_probability": 0.4861,
+    "legs": [
+     {
+      "match_id": "80d82d11",
+      "label": "Mexico vs South Africa: under 2.5 goals",
+      "home": "Mexico",
+      "away": "South Africa",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.64,
+      "score": "2-0",
+      "won": true
+     },
+     {
+      "match_id": "384cbb5d",
+      "label": "Czech Republic handicap +1.5",
+      "home": "South Korea",
+      "away": "Czech Republic",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.13,
+      "score": "2-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.8532
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.0022,
+    "est_probability": 0.2877,
+    "legs": [
+     {
+      "match_id": "80d82d11",
+      "label": "Mexico vs South Africa: under 2.5 goals",
+      "home": "Mexico",
+      "away": "South Africa",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.64,
+      "score": "2-0",
+      "won": true
+     },
+     {
+      "match_id": "80d82d11",
+      "label": "South Africa handicap +1.5",
+      "home": "Mexico",
+      "away": "South Africa",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.62,
+      "score": "2-0",
+      "won": false
+     },
+     {
+      "match_id": "384cbb5d",
+      "label": "Czech Republic handicap +1.5",
+      "home": "South Korea",
+      "away": "Czech Republic",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.13,
+      "score": "2-1",
+      "won": true
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   }
+  ]
+ }
+}
