@@ -105,6 +105,101 @@
     "won": false,
     "profit": -1.0
    }
+  ],
+  "2026-06-12": [
+   {
+    "slip": "A",
+    "combined_odds": 1.8056,
+    "est_probability": 0.5038,
+    "legs": [
+     {
+      "match_id": "c12986f4",
+      "label": "USA vs Paraguay: over 1.5 goals",
+      "home": "USA",
+      "away": "Paraguay",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.48,
+      "score": "4-1",
+      "won": true
+     },
+     {
+      "match_id": "c12986f4",
+      "label": "Paraguay handicap +1.5",
+      "home": "USA",
+      "away": "Paraguay",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.22,
+      "score": "4-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.1516,
+    "est_probability": 0.4159,
+    "legs": [
+     {
+      "match_id": "d1f4f946",
+      "label": "Canada vs Bosnia & Herzegovina: under 2.5 goals",
+      "home": "Canada",
+      "away": "Bosnia & Herzegovina",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.63,
+      "score": "1-1",
+      "won": true
+     },
+     {
+      "match_id": "d1f4f946",
+      "label": "Bosnia & Herzegovina handicap +1.5",
+      "home": "Canada",
+      "away": "Bosnia & Herzegovina",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.32,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 1.1516
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.0192,
+    "est_probability": 0.307,
+    "legs": [
+     {
+      "match_id": "d1f4f946",
+      "label": "Bosnia & Herzegovina handicap +0.5",
+      "home": "Canada",
+      "away": "Bosnia & Herzegovina",
+      "market": "handicap_minus_0_5",
+      "outcome": "away",
+      "odds": 2.04,
+      "score": "1-1",
+      "won": true
+     },
+     {
+      "match_id": "c12986f4",
+      "label": "USA vs Paraguay: over 1.5 goals",
+      "home": "USA",
+      "away": "Paraguay",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.48,
+      "score": "4-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 2.0192
+   }
   ]
  }
 }

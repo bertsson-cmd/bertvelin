@@ -155,5 +155,79 @@
     }
    ]
   }
+ },
+ "2026-06-13": {
+  "A": {
+   "combined_odds": 2.0147,
+   "est_probability": 0.4472,
+   "legs": [
+    {
+     "match_id": "26634922",
+     "label": "Switzerland to win",
+     "home": "Qatar",
+     "away": "Switzerland",
+     "market": "1x2",
+     "outcome": "away",
+     "odds": 1.21
+    },
+    {
+     "match_id": "f6c8748a",
+     "label": "Brazil handicap -0.5",
+     "home": "Brazil",
+     "away": "Morocco",
+     "market": "handicap_minus_0_5",
+     "outcome": "home",
+     "odds": 1.665
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.1406,
+   "est_probability": 0.4234,
+   "legs": [
+    {
+     "match_id": "5ae41a06",
+     "label": "Scotland to win",
+     "home": "Haiti",
+     "away": "Scotland",
+     "market": "1x2",
+     "outcome": "away",
+     "odds": 1.54
+    },
+    {
+     "match_id": "564084f5",
+     "label": "Australia handicap +1.5",
+     "home": "Australia",
+     "away": "Turkey",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.39
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0561,
+   "est_probability": 0.3022,
+   "legs": [
+    {
+     "match_id": "26634922",
+     "label": "Switzerland handicap -1.5",
+     "home": "Qatar",
+     "away": "Switzerland",
+     "market": "handicap_plus_1_5",
+     "outcome": "away",
+     "odds": 1.67
+    },
+    {
+     "match_id": "564084f5",
+     "label": "Australia vs Turkey: under 2.5 goals",
+     "home": "Australia",
+     "away": "Turkey",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.83
+    }
+   ]
+  }
  }
 }
