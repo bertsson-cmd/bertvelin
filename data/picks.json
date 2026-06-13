@@ -158,8 +158,8 @@
  },
  "2026-06-13": {
   "A": {
-   "combined_odds": 2.0147,
-   "est_probability": 0.4472,
+   "combined_odds": 2.0207,
+   "est_probability": 0.4502,
    "legs": [
     {
      "match_id": "26634922",
@@ -172,18 +172,18 @@
     },
     {
      "match_id": "f6c8748a",
-     "label": "Brazil handicap -0.5",
+     "label": "Brazil to win",
      "home": "Brazil",
      "away": "Morocco",
-     "market": "handicap_minus_0_5",
+     "market": "1x2",
      "outcome": "home",
-     "odds": 1.665
+     "odds": 1.67
     }
    ]
   },
   "B": {
-   "combined_odds": 2.1406,
-   "est_probability": 0.4234,
+   "combined_odds": 2.1343,
+   "est_probability": 0.425,
    "legs": [
     {
      "match_id": "5ae41a06",
@@ -192,7 +192,7 @@
      "away": "Scotland",
      "market": "1x2",
      "outcome": "away",
-     "odds": 1.54
+     "odds": 1.53
     },
     {
      "match_id": "564084f5",
@@ -201,13 +201,13 @@
      "away": "Turkey",
      "market": "handicap_plus_1_5",
      "outcome": "home",
-     "odds": 1.39
+     "odds": 1.395
     }
    ]
   },
   "C": {
-   "combined_odds": 3.0561,
-   "est_probability": 0.3022,
+   "combined_odds": 3.0112,
+   "est_probability": 0.3057,
    "legs": [
     {
      "match_id": "26634922",
@@ -216,7 +216,7 @@
      "away": "Switzerland",
      "market": "handicap_plus_1_5",
      "outcome": "away",
-     "odds": 1.67
+     "odds": 1.65
     },
     {
      "match_id": "564084f5",
@@ -225,7 +225,7 @@
      "away": "Turkey",
      "market": "over_under_2_5",
      "outcome": "under",
-     "odds": 1.83
+     "odds": 1.8250000000000002
     }
    ]
   }
