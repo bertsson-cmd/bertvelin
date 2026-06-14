@@ -229,5 +229,79 @@
     }
    ]
   }
+ },
+ "2026-06-14": {
+  "A": {
+   "combined_odds": 2.016,
+   "est_probability": 0.4498,
+   "legs": [
+    {
+     "match_id": "d79edbd6",
+     "label": "Germany vs Curaçao: over 2.5 goals",
+     "home": "Germany",
+     "away": "Curaçao",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.2
+    },
+    {
+     "match_id": "b55f9569",
+     "label": "Sweden vs Tunisia: under 2.5 goals",
+     "home": "Sweden",
+     "away": "Tunisia",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.68
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.0496,
+   "est_probability": 0.4336,
+   "legs": [
+    {
+     "match_id": "32ec06ab",
+     "label": "Japan handicap +1.5",
+     "home": "Netherlands",
+     "away": "Japan",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.22
+    },
+    {
+     "match_id": "b55f9569",
+     "label": "Sweden vs Tunisia: under 2.5 goals",
+     "home": "Sweden",
+     "away": "Tunisia",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.68
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0408,
+   "est_probability": 0.3005,
+   "legs": [
+    {
+     "match_id": "32ec06ab",
+     "label": "Japan handicap +0.5",
+     "home": "Netherlands",
+     "away": "Japan",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.81
+    },
+    {
+     "match_id": "b55f9569",
+     "label": "Sweden vs Tunisia: under 2.5 goals",
+     "home": "Sweden",
+     "away": "Tunisia",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.68
+    }
+   ]
+  }
  }
 }
