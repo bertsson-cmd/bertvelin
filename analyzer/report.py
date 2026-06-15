@@ -99,6 +99,13 @@ body{background:var(--desktop);color:var(--ink);
 .score-cell.pos b{color:#006400}.score-cell.neg b{color:#a00000}
 .settled{font-family:"VT323",monospace;font-size:16px;line-height:1.5}
 .settled .w{color:#006400;font-weight:bold}.settled .l{color:#a00000;font-weight:bold}
+.settled{font-size:15px;max-height:240px;overflow-y:auto}
+.tab-bar{display:flex;gap:2px;margin-bottom:-1px;position:relative;z-index:1}
+.tab{padding:3px 9px;background:#a0a0a0;border:2px solid;font-size:11px;font-weight:bold;cursor:pointer;
+  border-color:var(--hilite) var(--shadow) var(--chrome) var(--hilite);white-space:nowrap;user-select:none}
+.tab.active{background:var(--chrome);border-bottom-color:var(--chrome);padding-bottom:5px}
+.tab-panel{display:none;border:2px solid;padding:8px;border-color:var(--shadow) var(--hilite) var(--hilite) var(--shadow)}
+.tab-panel.active{display:block}
 
 /* ---- error dialog for empty days ---- */
 .dialog{max-width:430px;margin:0 auto 24px}
@@ -153,45 +160,119 @@ def _ticket(name: str, p: Parlay, css: str = "") -> str:
     </div>"""
 
 
+
+def _stat_cells(bkt, label):
+    n, w = bkt.get("n", 0), bkt.get("wins", 0)
+    u = bkt.get("units", 0.0)
+    ucls = "pos" if u > 0 else "neg" if u < 0 else ""
+    rate = "{:.0%}".format(w / n) if n else "—"
+    return (
+        '<div class="score-grid">'
+        '<div class="score-cell"><b>{}</b><span>{} W–L</span></div>'
+        '<div class="score-cell"><b>{}</b><span>hit rate</span></div>'
+        '<div class="score-cell {}"><b>{:+.2f}u</b><span>units</span></div>'
+        '</div>'
+    ).format(str(w) + "–" + str(n - w), label, rate, ucls, u)
+
+
+def _slip_rows(history, slip_name):
+    rows = [r for r in history if r.get("slip") == slip_name]
+    if not rows:
+        return '<div class="settled">Engar niðurstöður enn.</div>'
+    lines = []
+    for r in reversed(rows):
+        tag = '<span class="w">WON</span>' if r["won"] else '<span class="l">LOST</span>'
+        legs_parts = []
+        for l in r.get("legs", []):
+            chk = "&#10003;" if l["won"] else "&#10007;"
+            legs_parts.append("&nbsp;&nbsp;" + chk + " " + l["label"] + " (" + l.get("score", "?") + ")")
+        legs_html = "<br>".join(legs_parts)
+        line = (r.get("day", "?") + " @ " + "{:.2f}".format(r.get("combined_odds", 0))
+                + " \u2014 " + tag + " (" + "{:+.2f}u".format(r.get("profit", 0)) + ")"
+                + "<br>" + legs_html)
+        lines.append(line)
+    return '<div class="settled">' + "<br><br>".join(lines) + "</div>"
+
+
 def _scoreboard(sb: dict | None) -> str:
     if not sb:
         return ""
-    if sb["n"] == 0:
-        pend = (f" {len(sb['pending_days'])} day(s) pending settlement."
-                if sb.get("pending_days") else "")
-        body = f'<div class="settled">Ekkert uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.{pend}</div>'
-    else:
-        units_cls = "pos" if sb["units"] > 0 else "neg" if sb["units"] < 0 else ""
-        s, c = sb["safe"], sb["longshot"]
-        latest = ""
-        if sb.get("latest"):
-            rows = []
-            for r in sb["latest"]:
-                tag = '<span class="w">WON</span>' if r["won"] else '<span class="l">LOST</span>'
-                legs = "<br>".join(
-                    f'&nbsp;&nbsp;{"&#10003;" if l["won"] else "&#10007;"} {l["label"]} ({l["score"]})'
-                    for l in r["legs"])
-                rows.append(f'Slip {r["slip"]} @ {r["combined_odds"]:.2f} — {tag} ({r["profit"]:+.2f}u)<br>{legs}')
-            latest = (f'<div class="settled"><b>Síðasti dagur ({sb["latest_day"]}):</b><br>'
-                      + "<br>".join(rows) + "</div>")
-        pend = (f'<div class="settled">({len(sb["pending_days"])} day(s) awaiting final scores)</div>'
-                if sb.get("pending_days") else "")
-        body = f"""
-        <div class="score-grid">
-          <div class="score-cell"><b>{sb['wins']}–{sb['n']-sb['wins']}</b><span>slips won–lost</span></div>
-          <div class="score-cell {units_cls}"><b>{sb['units']:+.2f}</b><span>units (1u/slip)</span></div>
-          <div class="score-cell"><b>{sb['actual_rate']:.0%}</b><span>actual hit rate</span></div>
-          <div class="score-cell"><b>{sb['est_rate']:.0%}</b><span>estimated hit rate</span></div>
-          <div class="score-cell"><b>{s['wins']}/{s['n']}</b><span>A+B ({s['units']:+.2f}u)</span></div>
-          <div class="score-cell"><b>{c['wins']}/{c['n']}</b><span>C ({c['units']:+.2f}u)</span></div>
-        </div>{latest}{pend}"""
-    return f"""
-<div class="win">
-  <div class="tbar"><span>stadan.exe — Scoreboard</span>{WINDOW_BTNS}</div>
-  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>V</u>iew&nbsp;&nbsp;<u>H</u>elp</div>
-  <div class="win-body">{body}</div>
-</div>"""
 
+    if sb["n"] == 0:
+        pend_days = sb.get("pending_days") or []
+        pend = (" " + str(len(pend_days)) + " dag(ar) bíður uppgjörs.") if pend_days else ""
+        body = '<div class="settled">Ekkert uppgjör enn — taflan byrjar að telja eftir fyrsta leikdag.' + pend + '</div>'
+        return (
+            '\n<div class="win">\n'
+            '  <div class="tbar"><span>stadan.exe \u2014 Scoreboard</span>' + WINDOW_BTNS + '</div>\n'
+            '  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>V</u>iew&nbsp;&nbsp;<u>H</u>elp</div>\n'
+            '  <div class="win-body">' + body + '</div>\n'
+            '</div>'
+        )
+
+    history = sb.get("history", [])
+    a_bkt   = sb.get("slip_a",  {"n": 0, "wins": 0, "units": 0.0})
+    b_bkt   = sb.get("slip_b",  {"n": 0, "wins": 0, "units": 0.0})
+    c_bkt   = sb.get("slip_c",  {"n": 0, "wins": 0, "units": 0.0})
+    tot_bkt = {"n": sb["n"], "wins": sb["wins"], "units": sb["units"]}
+
+    latest = ""
+    if sb.get("latest"):
+        rows = []
+        for r in sb["latest"]:
+            tag = '<span class="w">WON</span>' if r["won"] else '<span class="l">LOST</span>'
+            leg_parts = []
+            for l in r.get("legs", []):
+                chk = "&#10003;" if l["won"] else "&#10007;"
+                leg_parts.append("&nbsp;&nbsp;" + chk + " " + l["label"] + " (" + l.get("score", "?") + ")")
+            rows.append("Slip " + r["slip"] + " @ " + "{:.2f}".format(r["combined_odds"])
+                        + " \u2014 " + tag + " (" + "{:+.2f}u".format(r["profit"]) + ")"
+                        + "<br>" + "<br>".join(leg_parts))
+        latest = ('<div class="settled"><b>S\u00ed\u00f0asti dagur (' + str(sb["latest_day"]) + '):</b><br>'
+                  + "<br>".join(rows) + "</div>")
+
+    pend_days = sb.get("pending_days") or []
+    pend = ('<div class="settled">(' + str(len(pend_days)) + ' dag(ar) b\u00ed\u00f0ur uppgj\u00f6rs)</div>') if pend_days else ""
+
+    panels = {
+        "Heild":  _stat_cells(tot_bkt, "Heild")  + latest + pend,
+        "Slip A": _stat_cells(a_bkt,   "Slip A") + _slip_rows(history, "A"),
+        "Slip B": _stat_cells(b_bkt,   "Slip B") + _slip_rows(history, "B"),
+        "Slip C": _stat_cells(c_bkt,   "Slip C") + _slip_rows(history, "C"),
+    }
+
+    tab_names = list(panels.keys())
+    tab_ids   = ["sb-" + t.replace(" ", "") for t in tab_names]
+
+    tab_btns = "".join(
+        '<span class="tab' + (" active" if i == 0 else "") + '" '
+        'onclick="sbTab(this,\'' + tid + '\')">' + lbl + '</span>'
+        for i, (lbl, tid) in enumerate(zip(tab_names, tab_ids)))
+
+    tab_pnls = "".join(
+        '<div class="tab-panel' + (" active" if i == 0 else "") + '" '
+        'id="' + tid + '">' + panels[lbl] + '</div>'
+        for i, (lbl, tid) in enumerate(zip(tab_names, tab_ids)))
+
+    js = ("<script>\n"
+          "function sbTab(el,id){\n"
+          "  var w=el.closest('.win');\n"
+          "  w.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});\n"
+          "  w.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});\n"
+          "  el.classList.add('active');\n"
+          "  document.getElementById(id).classList.add('active');\n"
+          "}\n"
+          "</script>")
+
+    body = '<div class="tab-bar">' + tab_btns + '</div>' + tab_pnls + js
+
+    return (
+        '\n<div class="win">\n'
+        '  <div class="tbar"><span>stadan.exe \u2014 Scoreboard</span>' + WINDOW_BTNS + '</div>\n'
+        '  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>V</u>iew&nbsp;&nbsp;<u>H</u>elp</div>\n'
+        '  <div class="win-body">' + body + '</div>\n'
+        '</div>'
+    )
 
 def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
                   source: str, match_notes: list[str], out_path: str,
