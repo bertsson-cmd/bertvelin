@@ -133,10 +133,11 @@ def main() -> int:
                     ou_match_ids.add(leg.match_id)
 
     def _is_form_goals_note(n: str) -> bool:
-        return (n.startswith("Form (last") or
-                ("goals/game" in n) or
-                (n.startswith("→") and "form" in n.lower()) or
-                (n.startswith("→") and "form" in n.lower()))
+        # Matches only notes from attach_form_goals — unambiguous prefixes.
+        # Does NOT match weather/altitude/movement notes.
+        return (n.startswith("WC form") or
+                n.startswith("Form (last") or
+                "goals/game" in n)
 
     notes = []
     for m in data["matches"]:
