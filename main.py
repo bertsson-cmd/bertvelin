@@ -86,14 +86,34 @@ def main() -> int:
         notes += [f"<b>{m['home']} v {m['away']}</b>: {n}"
                   for n in m.get("adjustments", {}).get("notes", [])]
 
-    band_min, band_max = band_for_day(legs, args.min, args.max)
-    if band_min != args.min:
-        print(f"[i] Short day (<=2 matches): slip A/B band widened to {band_min:.2f}-{band_max:.2f}")
-    parlays = build_parlays(legs, band_min, band_max, args.min_leg_prob)
-    print(f"\n{len(parlays)} qualifying parlays in the {args.min:.2f}–{args.max:.2f} band.")
+    from analyzer.results import load_locked_slips
+    locked = None
+    try:
+        locked = load_locked_slips(data.get("date", ""), legs)
+    except Exception as e:
+        print(f"[!] Slip lock check failed ({e}) — picking fresh.")
 
-    slip_a, slip_b = pick_two_slips(parlays)
-    slip_c = pick_risky_slip(legs)
+    if locked:
+        print("[i] Slips already published today — LOCKED. Re-run refreshes odds only; "
+              "legs stay as picked at the first run.")
+        slip_a, slip_b, slip_c = locked["A"], locked["B"], locked["C"]
+    else:
+        band_min, band_max = band_for_day(legs, args.min, args.max)
+        if band_min != args.min:
+            print(f"[i] Short day (<=2 matches): slip A/B band widened to {band_min:.2f}-{band_max:.2f}")
+        parlays = build_parlays(legs, band_min, band_max, args.min_leg_prob)
+        print(f"\n{len(parlays)} qualifying parlays in the {args.min:.2f}–{args.max:.2f} band.")
+
+        slip_a, slip_b = pick_two_slips(parlays)
+        # exclude A+B match+market pairs from C so the same market on a match
+        # can't dominate multiple slips (but different markets from the same
+        # match are still allowed, e.g. "Sweden to win" vs "Sweden-Tunisia under")
+        from analyzer.parlay import _match_market_keys, _market_family
+        ab_markets = frozenset()
+        for sl in (slip_a, slip_b):
+            if sl:
+                ab_markets |= _match_market_keys(sl)
+        slip_c = pick_risky_slip(legs, exclude_legs=ab_markets or None)
     if slip_a:
         describe("SLIP A (primary)", slip_a)
     if slip_b:
@@ -108,7 +128,8 @@ def main() -> int:
     try:
         from analyzer.results import settle_pending, record_picks
         scoreboard = settle_pending(day)          # grade older picks first
-        record_picks(day, {"A": slip_a, "B": slip_b, "C": slip_c})
+        if not locked:                            # the first run of the day decides
+            record_picks(day, {"A": slip_a, "B": slip_b, "C": slip_c})
     except Exception as e:
         print(f"[!] Results tracking failed ({e}) — briefing continues without it.")
 
