@@ -283,8 +283,9 @@ def summarize(results: dict | None = None, picks: dict | None = None,
         "n": n, "wins": wins, "units": round(units, 2),
         "actual_rate": wins / n if n else 0.0, "est_rate": est_avg,
         "safe": bucket({"A", "B"}), "longshot": bucket({"C"}),
+        "slip_a": bucket({"A"}), "slip_b": bucket({"B"}), "slip_c": bucket({"C"}),
         "latest_day": last_day,
         "latest": results["settled"].get(last_day, []),
         "pending_days": pending,
-        "history": flat,    # every settled slip, oldest first, for the taskbar Uppgjör tab
+        "history": flat,
     }
