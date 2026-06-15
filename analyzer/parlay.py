@@ -163,21 +163,55 @@ def band_for_day(
     return min_odds, max_odds
 
 
+def _match_market_keys(p: Parlay) -> frozenset:
+    """Cross-slip exclusion key: match + market family.
+
+    Rule: the same market on a match (e.g. over/under goals for Sweden-Tunisia)
+    should not appear across slips, even if the outcome differs (over vs under).
+    But different markets from the same match ARE allowed across slips — so
+    "Sweden to win" in Slip A and "Sweden-Tunisia under 2.5" in Slip B is fine.
+    """
+    return frozenset((l.match_id, _market_family(l.market)) for l in p.legs)
+
+
 def pick_two_slips(parlays: list[Parlay]) -> tuple[Parlay | None, Parlay | None]:
-    """Slip A = best parlay. Slip B = best parlay sharing no matches with A when possible."""
+    """Slip A = most probable qualifying parlay.
+    Slip B = most probable qualifying parlay that shares no match+market with A.
+
+    This guarantees A and B are the two most likely independent scenarios in the
+    band. Same match CAN appear across A and B as long as it's a different market
+    family (e.g. "Sweden to win" in A and "Sweden-Tunisia under 2.5" in B is fine;
+    "over 2.5" in A and "under 2.5" in B from the same match is not).
+
+    Thin-day fallbacks: if no fully independent B exists, relax to sharing a match
+    (but never the same market on that match), then finally to any different parlay.
+    """
     if not parlays:
         return None, None
-    slip_a = parlays[0]
-    slip_b = next((p for p in parlays[1:] if not (p.match_ids & slip_a.match_ids)), None)
+    slip_a = parlays[0]                          # highest probability — guaranteed
+    a_mk = _match_market_keys(slip_a)
+
+    # Ideal: no shared match+market pairs at all (also covers no shared matches)
+    slip_b = next((p for p in parlays[1:]
+                   if not (_match_market_keys(p) & a_mk)), None)
     if slip_b is None:
-        # On one- or two-match days, every useful slip may share a match. In that
-        # case, still return the next-best different parlay rather than no Slip B.
-        slip_b = next((p for p in parlays[1:] if p.legs != slip_a.legs), None)
+        # Thin-day fallback: shares a match but uses different markets
+        slip_b = next((p for p in parlays[1:]
+                       if _match_market_keys(p) != a_mk), None)
     return slip_a, slip_b
 
 
-def pick_risky_slip(legs: list[Leg], min_odds: float = 3.0, max_odds: float = 5.0) -> Parlay | None:
+def pick_risky_slip(
+    legs: list[Leg],
+    min_odds: float = 3.0,
+    max_odds: float = 5.0,
+    exclude_legs: frozenset | None = None,
+) -> Parlay | None:
     """One longshot slip in the 3.0-5.0 band.
+
+    exclude_legs: frozenset of (match_id, market, outcome) tuples from
+    slips A and B — Slip C avoids repeating any leg already on the page,
+    so a single match result can't dominate all three tickets.
 
     Looser leg filter (45%) lets in moderate favourites; still ranked by
     probability so it's the most plausible longshot, not the wildest. At
@@ -185,4 +219,11 @@ def pick_risky_slip(legs: list[Leg], min_odds: float = 3.0, max_odds: float = 5.
     most days. It exists for fun, not for the bankroll.
     """
     risky = build_parlays(legs, min_odds, max_odds, min_leg_prob=0.45)
-    return risky[0] if risky else None
+    if not exclude_legs:
+        return risky[0] if risky else None
+    # Prefer a slip sharing no match+market pairs with A/B
+    clean = [p for p in risky if not (_match_market_keys(p) & exclude_legs)]
+    if clean:
+        return clean[0]
+    # Nothing fully clean — take the least overlapping option
+    return min(risky, key=lambda p: len(_match_market_keys(p) & exclude_legs)) if risky else None
