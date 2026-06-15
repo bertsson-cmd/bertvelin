@@ -437,10 +437,24 @@ def attach_form_goals(matches: list[dict]) -> None:
             # qualifiers / friendlies / Nations League history across seasons.
             d_to = datetime.now(timezone.utc).date()
             d_from = d_to - timedelta(days=550)
-            data = _http_json(
-                f"https://api.football-data.org/v4/teams/{team_id}/matches"
-                f"?dateFrom={d_from}&dateTo={d_to}&status=FINISHED",
-                headers={"X-Auth-Token": key})
+            _url = (f"https://api.football-data.org/v4/teams/{team_id}/matches"
+                    f"?dateFrom={d_from}&dateTo={d_to}&status=FINISHED")
+            data = _http_json(_url, headers={"X-Auth-Token": key})
+            # ---- DIAGNOSTIC (temporary): show what the API actually returned ----
+            print(f"[DIAG] URL: {_url}")
+            print(f"[DIAG] top-level keys: {list(data.keys())}")
+            print(f"[DIAG] filters: {data.get('filters')}")
+            print(f"[DIAG] resultSet: {data.get('resultSet')}")
+            if data.get('errorCode') or data.get('message'):
+                print(f"[DIAG] errorCode={data.get('errorCode')} message={data.get('message')}")
+            _mlist = data.get("matches", [])
+            print(f"[DIAG] matches count: {len(_mlist)}")
+            if _mlist:
+                _s = _mlist[0]
+                print(f"[DIAG] first match keys: {list(_s.keys())}")
+                print(f"[DIAG] first match score node: {_s.get('score')}")
+                print(f"[DIAG] first match utcDate: {_s.get('utcDate')} status: {_s.get('status')}")
+            # ---- END DIAGNOSTIC ----
             allm = data.get("matches", [])
             # Sort by date so "last 10" is genuinely the most recent 10
             def _md(rm):
