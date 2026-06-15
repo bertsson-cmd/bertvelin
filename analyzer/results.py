@@ -71,6 +71,7 @@ def record_picks(day: str, slips: dict) -> None:
                 "match_id": l.match_id, "label": l.label,
                 "home": _home_from(l), "away": _away_from(l),
                 "market": l.market, "outcome": l.outcome, "odds": l.odds,
+                "est": round(l.adj_prob, 4),
             } for l in p.legs],
         }
     picks[day] = entry
@@ -83,6 +84,56 @@ def _home_from(leg) -> str:
 
 def _away_from(leg) -> str:
     return getattr(leg, "away", "") or ""
+
+
+# ------------------------------------------------------- slip locking
+
+def load_locked_slips(day: str, todays_legs: list) -> dict | None:
+    """If picks were already recorded for `day`, rebuild those exact slips.
+
+    Why: the picker is otherwise stateless — a midday manual re-run would
+    re-rank with drifted prices and could swap the slips someone already
+    placed. Locked slips keep the morning's LEGS; only the displayed odds
+    refresh (matched against today's feed by teams+market+outcome). The
+    ledger keeps the 07:00 odds — those are the prices the slips were
+    published at, so settlement stays honest.
+
+    Returns {"A": Parlay|None, "B": ..., "C": ...} or None if nothing
+    recorded yet (e.g. the 07:00 run failed before recording — then a
+    re-run picks fresh, which is exactly right).
+    """
+    entry = _load(PICKS_PATH, {}).get(day)
+    if not entry:
+        return None
+    from .parlay import Parlay      # local import: no circular dependency
+    from .odds import Leg
+    from .teams import team_match
+
+    def fresh_leg(st: dict):
+        for l in todays_legs:
+            if (l.market == st["market"] and l.outcome == st["outcome"]
+                    and team_match(l.home, st.get("home", ""))
+                    and team_match(l.away, st.get("away", ""))):
+                return l
+        return None
+
+    out = {}
+    for name in ("A", "B", "C"):
+        s = entry.get(name)
+        if not s:
+            out[name] = None
+            continue
+        legs = []
+        for st in s["legs"]:
+            l = fresh_leg(st)
+            if l is None:           # match gone from feed: keep morning's numbers
+                l = Leg(match_id=st.get("match_id", "?"), label=st["label"],
+                        market=st["market"], outcome=st["outcome"], odds=st["odds"],
+                        fair_prob=st.get("est", 0.5), adj_prob=st.get("est", 0.5),
+                        home=st.get("home", ""), away=st.get("away", ""))
+            legs.append(l)
+        out[name] = Parlay(legs)
+    return out
 
 
 # -------------------------------------------------------------- settlement
@@ -214,7 +265,8 @@ def summarize(results: dict | None = None, picks: dict | None = None,
     picks = picks if picks is not None else _load(PICKS_PATH, {})
     today = today or datetime.utcnow().date().isoformat()
 
-    flat = [r for day in sorted(results["settled"]) for r in results["settled"][day]]
+    flat = [{**r, "day": day}
+            for day in sorted(results["settled"]) for r in results["settled"][day]]
     n, wins = len(flat), sum(r["won"] for r in flat)
     units = sum(r["profit"] for r in flat)
     est_avg = sum(r["est_probability"] for r in flat) / n if n else 0.0
@@ -234,4 +286,5 @@ def summarize(results: dict | None = None, picks: dict | None = None,
         "latest_day": last_day,
         "latest": results["settled"].get(last_day, []),
         "pending_days": pending,
+        "history": flat,    # every settled slip, oldest first, for the taskbar Uppgjör tab
     }
