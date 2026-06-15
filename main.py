@@ -77,15 +77,20 @@ def main() -> int:
     else:
         print("[i] Enrichment disabled — run with --enrich to enable venues/weather/news.")
 
-    legs = []
+    legs, notes = [], []
+    _form_notes: dict[str, list[str]] = {}   # match_id → form-goals notes, added after slips
     print(f"\nWC26 Parlay Analyzer — {data.get('date','?')} — source: {data.get('bookmaker','?')}")
     for m in data["matches"]:
         margin = market_margin(m["markets"]["1x2"]) if "1x2" in m["markets"] else 0
         print(f"  {m['home']} vs {m['away']}  (1x2 margin {margin:.1%})")
         legs += build_legs(m)
-    # Notes collected AFTER slips are picked so form-goals notes can be filtered
-    # to only matches that actually have an over/under leg in one of the slips.
-    # notes list is populated below, after slip selection.
+        for n in m.get("adjustments", {}).get("notes", []):
+            # Separate form-goals notes — added later only when O/U is in a slip
+            if "goals/game" in n or n.startswith("WC form") or n.startswith("Form (last"):
+                _form_notes.setdefault(m["id"], []).append(
+                    f"<b>{m['home']} v {m['away']}</b>: {n}")
+            else:
+                notes.append(f"<b>{m['home']} v {m['away']}</b>: {n}")
 
     locked = None
     try:
@@ -124,28 +129,12 @@ def main() -> int:
     if not slip_a:
         print("  No qualifying parlay today — that's a legitimate answer. Don't force a bet.")
 
-    # Collect notes now that we know which legs made the slips
-    ou_match_ids = set()
+    # Append form-goals notes only for matches that have an O/U leg in a slip
     for sl in (slip_a, slip_b, slip_c):
         if sl:
             for leg in sl.legs:
-                if leg.market.startswith("over_under_"):
-                    ou_match_ids.add(leg.match_id)
-
-    def _is_form_goals_note(n: str) -> bool:
-        # Matches only notes from attach_form_goals — unambiguous prefixes.
-        # Does NOT match weather/altitude/movement notes.
-        return (n.startswith("WC form") or
-                n.startswith("Form (last") or
-                "goals/game" in n)
-
-    notes = []
-    for m in data["matches"]:
-        for n in m.get("adjustments", {}).get("notes", []):
-            # Only include form-goals notes when that match has an O/U leg in a slip
-            if _is_form_goals_note(n) and m["id"] not in ou_match_ids:
-                continue
-            notes.append(f"<b>{m['home']} v {m['away']}</b>: {n}")
+                if leg.market.startswith("over_under_") and leg.match_id in _form_notes:
+                    notes.extend(_form_notes.pop(leg.match_id))
 
     day = data.get("date", "")
     scoreboard = None
