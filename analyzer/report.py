@@ -220,11 +220,11 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
 
     html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bertpicker 1.0 — {today}</title>
+<title>Bertpicker 1.1 — {today}</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>{CSS}</style></head><body><div class="wrap">
 
-<div class="logo">BERTPICKER <small>1.0</small></div>
+<div class="logo">BERTPICKER <small>1.1</small></div>
 <div class="splash">Á ég að skjótast í búðina og sækja stuðla?</div>
 
 <div class="slips">{tickets}</div>
@@ -244,7 +244,7 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
 </div>
 <div class="taskbar">
   <span class="start"><span class="flag">&#9632;&#9632;</span>Start</span>
-  <span class="task">&#127942; Bertpicker 1.0 </span>
+  <span class="task">&#127942; Bertpicker 1.1 </span>
   <span class="task">&#127942; Búðin - úrval </span>
   {f'<a class="task" style="text-decoration:none;color:#000" href="{archive_href}">&#128193; Gamlir seðlar</a>' if archive_href else ""}
   <span class="clock">{today}</span>
