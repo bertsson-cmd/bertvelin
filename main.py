@@ -86,9 +86,9 @@ def main() -> int:
         notes += [f"<b>{m['home']} v {m['away']}</b>: {n}"
                   for n in m.get("adjustments", {}).get("notes", [])]
 
-    from analyzer.results import load_locked_slips
     locked = None
     try:
+        from analyzer.results import load_locked_slips
         locked = load_locked_slips(data.get("date", ""), legs)
     except Exception as e:
         print(f"[!] Slip lock check failed ({e}) — picking fresh.")
@@ -128,10 +128,22 @@ def main() -> int:
     try:
         from analyzer.results import settle_pending, record_picks
         scoreboard = settle_pending(day)          # grade older picks first
+        if scoreboard is None:
+            scoreboard = {"n": 0, "wins": 0, "units": 0.0, "actual_rate": 0.0,
+                          "est_rate": 0.0, "safe": {"n":0,"wins":0,"units":0.0},
+                          "longshot": {"n":0,"wins":0,"units":0.0},
+                          "latest_day": None, "latest": [], "pending_days": [],
+                          "history": []}
         if not locked:                            # the first run of the day decides
             record_picks(day, {"A": slip_a, "B": slip_b, "C": slip_c})
     except Exception as e:
         print(f"[!] Results tracking failed ({e}) — briefing continues without it.")
+        # Provide an empty but valid scoreboard so the stadan window still renders
+        scoreboard = {"n": 0, "wins": 0, "units": 0.0, "actual_rate": 0.0,
+                      "est_rate": 0.0, "safe": {"n":0,"wins":0,"units":0.0},
+                      "longshot": {"n":0,"wins":0,"units":0.0},
+                      "latest_day": None, "latest": [], "pending_days": [],
+                      "history": []}
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     out = render_report(slip_a, slip_b, data.get("bookmaker", "manual"), notes, args.out,
