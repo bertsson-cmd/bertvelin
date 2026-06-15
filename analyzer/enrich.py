@@ -370,18 +370,23 @@ def attach_ai_news(matches: list[dict], model: str = "claude-sonnet-4-6") -> Non
 # -------------------------------------------------------------- 5. form goals
 
 def attach_form_goals(matches: list[dict]) -> None:
-    """Compute average total goals per game for each team using ALL finished
-    WC 2026 matches — one API call, guaranteed on the free tier.
+    """Average total goals/game from each team's last 10 matches across ALL
+    competitions (qualifiers, friendlies, Nations League, WC) — far more stable
+    than the 1-2 games available from the WC alone during the group stage.
 
-    Total goals = home + away goals per match (not just one team's goals).
-    Early in the tournament each team has 1-3 games; the note says how many.
-    Gets more informative as the tournament progresses.
+    Total goals = home + away per match (both teams). One fixture-list call to
+    get team IDs, then one /teams/{id}/matches call per team (cached, rate-paced).
 
-    Nudge scale (within the global ±5pt cap):
-      combined avg >= 3.2  → +2pt over    combined avg <= 1.8  → +2pt under
-      combined avg >= 2.8  → +1pt over    combined avg <= 2.2  → +1pt under
-      2.2 < avg < 2.8      → no nudge (too close to the 2.5 line)
+    If /teams/{id}/matches is NOT on the free tier, the per-team call returns an
+    error which is logged loudly and that team is skipped — the run continues.
+
+    Nudge scale (within the global +/-5pt cap):
+      combined avg >= 3.2  -> +2pt over     combined avg <= 1.8  -> +2pt under
+      combined avg >= 2.8  -> +1pt over     combined avg <= 2.2  -> +1pt under
+      2.2 < avg < 2.8       -> no nudge (too close to the 2.5 line)
     """
+    import time
+
     key = os.environ.get("FOOTBALL_DATA_KEY", "")
     if not key:
         print("[i] Form goals: FOOTBALL_DATA_KEY not set — skipping.")
@@ -389,103 +394,108 @@ def attach_form_goals(matches: list[dict]) -> None:
 
     from .teams import team_match
 
-    # Single call — all finished WC 2026 matches. Free tier confirmed.
+    # Step 1: get team IDs from the upcoming WC fixtures (free-tier call)
     try:
-        wc_resp = _http_json(
-            "https://api.football-data.org/v4/competitions/WC/matches"
-            "?status=FINISHED",
+        today = datetime.now(timezone.utc).date()
+        resp = _http_json(
+            f"https://api.football-data.org/v4/competitions/WC/matches"
+            f"?dateFrom={today}&dateTo={today + timedelta(days=2)}",
             headers={"X-Auth-Token": key})
-        wc_finished = wc_resp.get("matches", [])
-        print(f"[i] Form goals: {len(wc_finished)} finished WC matches loaded.")
+        fixtures = resp.get("matches", [])
     except Exception as e:
-        print(f"[!] Form goals: WC match fetch failed ({e}) — skipping.")
+        print(f"[!] Form goals: fixture fetch failed ({e}) — skipping.")
         return
 
-    if not wc_finished:
-        print("[i] Form goals: no finished WC matches yet — skipping.")
-        return
+    team_id_map: dict[str, int] = {}
+    for f in fixtures:
+        for side in ("homeTeam", "awayTeam"):
+            t = f.get(side, {})
+            if t.get("id") and t.get("name"):
+                team_id_map[t["name"]] = t["id"]
+    print(f"[i] Form goals: {len(team_id_map)} team IDs from today's fixtures.")
 
-    # Build id→name map AND name→goals list from the finished matches
-    # team_goals[team_id] = list of total goals (home+away) in each game
-    team_goals: dict[int, list[int]] = {}
-    team_names: dict[int, str] = {}
-    for fm in wc_finished:
-        ft = fm.get("score", {}).get("fullTime", {})
-        hg, ag = ft.get("home"), ft.get("away")
-        if hg is None or ag is None:
-            continue
-        total = int(hg) + int(ag)
-        for side, opp_side in (("homeTeam", "awayTeam"), ("awayTeam", "homeTeam")):
-            t = fm.get(side, {})
-            tid = t.get("id")
-            if tid:
-                team_goals.setdefault(tid, []).append(total)
-                team_names[tid] = t.get("name", str(tid))
-
-    print(f"[i] Form goals: {len(team_goals)} teams have WC results data.")
-
-    def find_team(name: str) -> tuple[int | None, str]:
-        for tid, tname in team_names.items():
+    def find_id(name: str):
+        for tname, tid in team_id_map.items():
             if team_match(name, tname):
-                return tid, tname
-        return None, name
+                return tid
+        return None
+
+    # Step 2: per-team last-10 average (cached). Returns (avg, n_games).
+    form_cache: dict[int, tuple] = {}
+    endpoint_blocked = {"flag": False}
+
+    def get_form(team_id: int, label: str):
+        if team_id in form_cache:
+            return form_cache[team_id]
+        if endpoint_blocked["flag"]:
+            return (None, 0)
+        try:
+            time.sleep(0.4)   # stay inside the rate limit
+            data = _http_json(
+                f"https://api.football-data.org/v4/teams/{team_id}/matches"
+                f"?status=FINISHED&limit=10",
+                headers={"X-Auth-Token": key})
+            totals = []
+            for rm in data.get("matches", []):
+                ft = rm.get("score", {}).get("fullTime", {})
+                h, a = ft.get("home"), ft.get("away")
+                if h is not None and a is not None:
+                    totals.append(int(h) + int(a))
+            # keep only the 10 most recent that had scores
+            totals = totals[-10:]
+            avg = round(sum(totals) / len(totals), 1) if totals else None
+            form_cache[team_id] = (avg, len(totals))
+            print(f"[i] Form goals: {label} last {len(totals)} games "
+                  f"avg {avg if avg is not None else 'n/a'} total goals.")
+        except Exception as e:
+            msg = str(e)
+            # 403/restricted = endpoint not on this plan: stop trying, log once
+            if "403" in msg or "forbidden" in msg.lower() or "restricted" in msg.lower():
+                endpoint_blocked["flag"] = True
+                print(f"[!] Form goals: /teams/{{id}}/matches is NOT available on "
+                      f"this football-data plan ({msg}). Goals form disabled for "
+                      f"this run. Upgrade tier or rely on WC-only data.")
+            else:
+                print(f"[!] Form goals: {label} (id {team_id}) fetch failed ({msg})")
+            form_cache[team_id] = (None, 0)
+        return form_cache[team_id]
 
     resolved = 0
     for m in matches:
-        h_id, h_fd_name = find_team(m["home"])
-        a_id, a_fd_name = find_team(m["away"])
-
+        h_id, a_id = find_id(m["home"]), find_id(m["away"])
         if not h_id or not a_id:
-            missing = []
-            if not h_id: missing.append(m["home"])
-            if not a_id: missing.append(m["away"])
-            print(f"[i] Form goals: no WC results yet for {', '.join(missing)} "
-                  f"— they may not have played yet.")
+            miss = [t for t, i in ((m["home"], h_id), (m["away"], a_id)) if not i]
+            print(f"[i] Form goals: no team ID for {', '.join(miss)} — skipping fixture.")
             continue
 
-        h_games = team_goals.get(h_id, [])
-        a_games = team_goals.get(a_id, [])
-
-        if not h_games or not a_games:
-            print(f"[i] Form goals: {m['home']} ({len(h_games)}g) or "
-                  f"{m['away']} ({len(a_games)}g) has no finished WC games — skipping.")
+        h_avg, h_n = get_form(h_id, m["home"])
+        a_avg, a_n = get_form(a_id, m["away"])
+        if h_avg is None or a_avg is None:
+            print(f"[i] Form goals: insufficient data for {m['home']} or {m['away']} — skip.")
             continue
 
-        h_avg = round(sum(h_games) / len(h_games), 1)
-        a_avg = round(sum(a_games) / len(a_games), 1)
         combined = round((h_avg + a_avg) / 2, 1)
-        h_n, a_n = len(h_games), len(a_games)
-
-        print(f"[i] Form goals: {m['home']} {h_avg:.1f} avg ({h_n}g), "
-              f"{m['away']} {a_avg:.1f} avg ({a_n}g), combined {combined:.1f}")
-
         _note(m,
-              f"WC form ({h_n} game{'s' if h_n != 1 else ''}): "
-              f"{m['home']} avg {h_avg:.1f} total goals/game; "
-              f"{m['away']} avg {a_avg:.1f}; combined avg {combined:.1f}")
+              f"Form (last 10): {m['home']} avg {h_avg:.1f} total goals/game "
+              f"({h_n}g); {m['away']} avg {a_avg:.1f} ({a_n}g); combined {combined:.1f}")
 
         if "over_under_2_5" not in m.get("markets", {}):
             continue
 
         if combined >= 3.2:
-            _note(m, f"→ High-scoring WC form ({combined:.1f} goals/game)"
-                     " — nudge toward over 2.5")
+            _note(m, f"→ High-scoring form ({combined:.1f} goals/game) — nudge toward over 2.5")
             _nudge(m, "over_under_2_5", "over", 0.02)
         elif combined >= 2.8:
-            _note(m, f"→ Above-average WC form ({combined:.1f} goals/game)"
-                     " — small nudge toward over 2.5")
+            _note(m, f"→ Above-average form ({combined:.1f} goals/game) — small nudge toward over 2.5")
             _nudge(m, "over_under_2_5", "over", 0.01)
         elif combined <= 1.8:
-            _note(m, f"→ Low-scoring WC form ({combined:.1f} goals/game)"
-                     " — nudge toward under 2.5")
+            _note(m, f"→ Low-scoring form ({combined:.1f} goals/game) — nudge toward under 2.5")
             _nudge(m, "over_under_2_5", "under", 0.02)
         elif combined <= 2.2:
-            _note(m, f"→ Below-average WC form ({combined:.1f} goals/game)"
-                     " — small nudge toward under 2.5")
+            _note(m, f"→ Below-average form ({combined:.1f} goals/game) — small nudge toward under 2.5")
             _nudge(m, "over_under_2_5", "under", 0.01)
         else:
-            _note(m, f"→ Average WC form ({combined:.1f} goals/game)"
-                     " — no over/under nudge applied")
+            _note(m, f"→ Average form ({combined:.1f} goals/game) — no over/under nudge applied")
         resolved += 1
 
     print(f"[i] Form goals: notes applied to {resolved}/{len(matches)} fixture(s).")
