@@ -431,12 +431,23 @@ def attach_form_goals(matches: list[dict]) -> None:
             return (None, 0)
         try:
             time.sleep(0.4)   # stay inside the rate limit
+            # Explicit ~18-month window: the team endpoint otherwise defaults to
+            # the "current season" (the WC itself), where these national teams
+            # have 0 finished games. A date range forces it to return their
+            # qualifiers / friendlies / Nations League history across seasons.
+            d_to = datetime.now(timezone.utc).date()
+            d_from = d_to - timedelta(days=550)
             data = _http_json(
                 f"https://api.football-data.org/v4/teams/{team_id}/matches"
-                f"?status=FINISHED&limit=10",
+                f"?dateFrom={d_from}&dateTo={d_to}&status=FINISHED",
                 headers={"X-Auth-Token": key})
+            allm = data.get("matches", [])
+            # Sort by date so "last 10" is genuinely the most recent 10
+            def _md(rm):
+                return rm.get("utcDate", "")
+            allm.sort(key=_md)
             totals = []
-            for rm in data.get("matches", []):
+            for rm in allm:
                 ft = rm.get("score", {}).get("fullTime", {})
                 h, a = ft.get("home"), ft.get("away")
                 if h is not None and a is not None:
