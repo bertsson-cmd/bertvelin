@@ -14,7 +14,7 @@ import os
 import sys
 
 from analyzer.odds import build_legs, market_margin
-from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip, Parlay
+from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip, pick_banker_slip, Parlay
 from analyzer.report import render_report
 from analyzer.scraper_epicbet import fetch_epicbet_odds, load_local_odds
 
@@ -102,7 +102,7 @@ def main() -> int:
     if locked:
         print("[i] Slips already published today — LOCKED. Re-run refreshes odds only; "
               "legs stay as picked at the first run.")
-        slip_a, slip_b, slip_c = locked["A"], locked["B"], locked["C"]
+        slip_a, slip_b, slip_c, slip_d = locked["A"], locked["B"], locked["C"], locked["D"]
     else:
         band_min, band_max = band_for_day(legs, args.min, args.max)
         if band_min != args.min:
@@ -120,17 +120,24 @@ def main() -> int:
             if sl:
                 ab_markets |= _match_market_keys(sl)
         slip_c = pick_risky_slip(legs, exclude_legs=ab_markets or None)
+        # Veltusedill: banker 1.6-1.8, excluding markets already used by A/B/C
+        abc_markets = ab_markets
+        if slip_c:
+            abc_markets = abc_markets | _match_market_keys(slip_c)
+        slip_d = pick_banker_slip(legs, exclude_legs=abc_markets or None)
     if slip_a:
         describe("SLIP A (primary)", slip_a)
     if slip_b:
         describe("SLIP B (alternate, no shared matches)", slip_b)
     if slip_c:
         describe("SLIP C (longshot 3-5, expect it to lose most days)", slip_c)
+    if slip_d:
+        describe("VELTUSEDILL (banker 1.6-1.8)", slip_d)
     if not slip_a:
         print("  No qualifying parlay today — that's a legitimate answer. Don't force a bet.")
 
     # Append form-goals notes only for matches that have an O/U leg in a slip
-    for sl in (slip_a, slip_b, slip_c):
+    for sl in (slip_a, slip_b, slip_c, slip_d):
         if sl:
             for leg in sl.legs:
                 if leg.market.startswith("over_under_") and leg.match_id in _form_notes:
@@ -148,7 +155,7 @@ def main() -> int:
                           "latest_day": None, "latest": [], "pending_days": [],
                           "history": []}
         if not locked:                            # the first run of the day decides
-            record_picks(day, {"A": slip_a, "B": slip_b, "C": slip_c})
+            record_picks(day, {"A": slip_a, "B": slip_b, "C": slip_c, "D": slip_d})
     except Exception as e:
         print(f"[!] Results tracking failed ({e}) — briefing continues without it.")
         # Provide an empty but valid scoreboard so the stadan window still renders
@@ -160,7 +167,8 @@ def main() -> int:
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     out = render_report(slip_a, slip_b, data.get("bookmaker", "manual"), notes, args.out,
-                        slip_c=slip_c, scoreboard=scoreboard, archive_href="archive/index.html")
+                        slip_c=slip_c, scoreboard=scoreboard, archive_href="archive/index.html",
+                        slip_d=slip_d)
     try:
         from analyzer.archive import archive_report
         archive_report(out, day, reports_dir=os.path.dirname(args.out) or "reports")
