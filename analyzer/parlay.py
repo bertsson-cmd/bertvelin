@@ -237,17 +237,17 @@ def pick_banker_slip(
 ) -> Parlay | None:
     """The "veltusedill" — a low-odds banker slip in the 1.6-1.8 band.
 
-    Tighter leg filter (60%) than the safe slips: a banker should lean on
-    the clearest favourites available. Usually one short-priced leg, or two
-    very short ones. Honest framing: ~1.7 odds implies the market thinks it
-    lands roughly 60% of the time after margin — safer than A/B, but a banker
-    is exactly where a single upset stings, since the payout is small and the
-    loss is the full stake. Not a sure thing, just the least unlikely slip.
+    Leg filter (55%) leans on clear favourites without being so strict that
+    a lone ~1.70 favourite is excluded (1.70 implies roughly 56% after margin,
+    which 60% would have rejected). Usually one short-priced leg, or two very
+    short ones. Honest framing: a banker is exactly where a single upset
+    stings, since the payout is small and the loss is the full stake. Not a
+    sure thing, just the least unlikely slip.
 
     exclude_legs: match+market pairs already used by A/B/C, so the banker
     doesn't simply echo another slip's leg.
     """
-    bankers = build_parlays(legs, min_odds, max_odds, min_leg_prob=0.60)
+    bankers = build_parlays(legs, min_odds, max_odds, min_leg_prob=0.55)
     if not bankers:
         return None
     if not exclude_legs:
