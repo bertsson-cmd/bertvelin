@@ -118,7 +118,7 @@ def load_locked_slips(day: str, todays_legs: list) -> dict | None:
         return None
 
     out = {}
-    for name in ("A", "B", "C"):
+    for name in ("A", "B", "C", "D"):
         s = entry.get(name)
         if not s:
             out[name] = None
@@ -284,6 +284,7 @@ def summarize(results: dict | None = None, picks: dict | None = None,
         "actual_rate": wins / n if n else 0.0, "est_rate": est_avg,
         "safe": bucket({"A", "B"}), "longshot": bucket({"C"}),
         "slip_a": bucket({"A"}), "slip_b": bucket({"B"}), "slip_c": bucket({"C"}),
+        "slip_d": bucket({"D"}),
         "latest_day": last_day,
         "latest": results["settled"].get(last_day, []),
         "pending_days": pending,

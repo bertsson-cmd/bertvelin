@@ -49,6 +49,7 @@ body{background:var(--desktop);color:var(--ink);
   background:linear-gradient(90deg,var(--titlebar1),var(--titlebar2));
   color:#fff;font-weight:bold;font-size:12px;padding:3px 4px 3px 8px;gap:8px}
 .win.risky .tbar{background:linear-gradient(90deg,var(--warnbar1),var(--warnbar2))}
+.win.banker .tbar{background:linear-gradient(90deg,#0a5a2a,#1e9c54)}
 .tbtns{display:flex;gap:2px}
 .tbtns i{font-style:normal;width:18px;height:16px;display:inline-flex;
   align-items:center;justify-content:center;background:var(--chrome);color:#000;
@@ -75,6 +76,7 @@ body{background:var(--desktop);color:var(--ink);
 .pbar i{display:block;height:100%;
   background:repeating-linear-gradient(90deg,var(--navy) 0 8px,transparent 8px 11px)}
 .win.risky .pbar i{background:repeating-linear-gradient(90deg,#a04000 0 8px,transparent 8px 11px)}
+.win.banker .pbar i{background:repeating-linear-gradient(90deg,#0a5a2a 0 8px,transparent 8px 11px)}
 
 /* ---- status bar / EV ---- */
 .status{display:flex;gap:4px;margin-top:10px;font-size:11px}
@@ -214,6 +216,7 @@ def _scoreboard(sb: dict | None) -> str:
     a_bkt   = sb.get("slip_a",  {"n": 0, "wins": 0, "units": 0.0})
     b_bkt   = sb.get("slip_b",  {"n": 0, "wins": 0, "units": 0.0})
     c_bkt   = sb.get("slip_c",  {"n": 0, "wins": 0, "units": 0.0})
+    d_bkt   = sb.get("slip_d",  {"n": 0, "wins": 0, "units": 0.0})
     tot_bkt = {"n": sb["n"], "wins": sb["wins"], "units": sb["units"]}
 
     latest = ""
@@ -239,6 +242,7 @@ def _scoreboard(sb: dict | None) -> str:
         "Slip A": _stat_cells(a_bkt,   "Slip A") + _slip_rows(history, "A"),
         "Slip B": _stat_cells(b_bkt,   "Slip B") + _slip_rows(history, "B"),
         "Slip C": _stat_cells(c_bkt,   "Slip C") + _slip_rows(history, "C"),
+        "Velta":  _stat_cells(d_bkt,   "Veltuseðill") + _slip_rows(history, "D"),
     }
 
     tab_names = list(panels.keys())
@@ -277,13 +281,15 @@ def _scoreboard(sb: dict | None) -> str:
 def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
                   source: str, match_notes: list[str], out_path: str,
                   slip_c: Parlay | None = None, scoreboard: dict | None = None,
-                  archive_href: str | None = None) -> str:
+                  archive_href: str | None = None, slip_d: Parlay | None = None) -> str:
     today = date.today().strftime("%A %d %B %Y")
     tickets = ""
     if slip_a:
         tickets += _ticket("Slip A · primary", slip_a)
     if slip_b:
         tickets += _ticket("Slip B · alternate", slip_b)
+    if slip_d:
+        tickets += _ticket("Veltuseðill · banki 1.6–1.8", slip_d, css="banker")
     if slip_c:
         tickets += _ticket("Slip C · longshot 3–5 &#9888;", slip_c, css="risky")
     if not tickets:
