@@ -491,6 +491,107 @@
     "won": false,
     "profit": -1.0
    }
+  ],
+  "2026-06-16": [
+   {
+    "slip": "A",
+    "combined_odds": 2.028,
+    "est_probability": 0.4543,
+    "legs": [
+     {
+      "match_id": "4d4f2b9b",
+      "label": "Norway to win",
+      "home": "Iraq",
+      "away": "Norway",
+      "market": "1x2",
+      "outcome": "away",
+      "odds": 1.2,
+      "est": 0.7955,
+      "score": "1-4",
+      "won": true
+     },
+     {
+      "match_id": "f31b2ee9",
+      "label": "Algeria handicap +1.5",
+      "home": "Argentina",
+      "away": "Algeria",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.69,
+      "est": 0.5711,
+      "score": "3-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.04,
+    "est_probability": 0.4461,
+    "legs": [
+     {
+      "match_id": "73a4fcd1",
+      "label": "France to win",
+      "home": "France",
+      "away": "Senegal",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.5,
+      "est": 0.6397,
+      "score": "3-1",
+      "won": true
+     },
+     {
+      "match_id": "25161cf6",
+      "label": "Austria to win",
+      "home": "Austria",
+      "away": "Jordan",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.36,
+      "est": 0.6973,
+      "score": "3-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 1.04
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.08,
+    "est_probability": 0.2996,
+    "legs": [
+     {
+      "match_id": "73a4fcd1",
+      "label": "France vs Senegal: under 2.5 goals",
+      "home": "France",
+      "away": "Senegal",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 2.0,
+      "est": 0.4805,
+      "score": "3-1",
+      "won": false
+     },
+     {
+      "match_id": "4d4f2b9b",
+      "label": "Iraq vs Norway: under 3.5 goals",
+      "home": "Iraq",
+      "away": "Norway",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.54,
+      "est": 0.6235,
+      "score": "1-4",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   }
   ]
  }
 }

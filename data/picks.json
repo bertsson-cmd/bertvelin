@@ -463,5 +463,101 @@
     }
    ]
   }
+ },
+ "2026-06-17": {
+  "A": {
+   "combined_odds": 2.0382,
+   "est_probability": 0.4394,
+   "legs": [
+    {
+     "match_id": "6cc871c1",
+     "label": "Portugal to win",
+     "home": "Portugal",
+     "away": "DR Congo",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.29,
+     "est": 0.7374
+    },
+    {
+     "match_id": "87afdb85",
+     "label": "Ghana vs Panama: under 2.5 goals",
+     "home": "Ghana",
+     "away": "Panama",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.58,
+     "est": 0.5959
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.2304,
+   "est_probability": 0.4135,
+   "legs": [
+    {
+     "match_id": "87afdb85",
+     "label": "Panama handicap +0.5",
+     "home": "Ghana",
+     "away": "Panama",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.64,
+     "est": 0.591
+    },
+    {
+     "match_id": "22083e7a",
+     "label": "Colombia to win",
+     "home": "Uzbekistan",
+     "away": "Colombia",
+     "market": "1x2",
+     "outcome": "away",
+     "odds": 1.36,
+     "est": 0.6996
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0609,
+   "est_probability": 0.2925,
+   "legs": [
+    {
+     "match_id": "6cc871c1",
+     "label": "Portugal vs DR Congo: over 2.5 goals",
+     "home": "Portugal",
+     "away": "DR Congo",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.79,
+     "est": 0.5277
+    },
+    {
+     "match_id": "689096c8",
+     "label": "England to win",
+     "home": "England",
+     "away": "Croatia",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.71,
+     "est": 0.5543
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.64,
+   "est_probability": 0.591,
+   "legs": [
+    {
+     "match_id": "87afdb85",
+     "label": "Panama handicap +0.5",
+     "home": "Ghana",
+     "away": "Panama",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.64,
+     "est": 0.591
+    }
+   ]
+  }
  }
 }
