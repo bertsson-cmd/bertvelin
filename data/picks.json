@@ -559,5 +559,101 @@
     }
    ]
   }
+ },
+ "2026-06-18": {
+  "A": {
+   "combined_odds": 2.0306,
+   "est_probability": 0.447,
+   "legs": [
+    {
+     "match_id": "fa950228",
+     "label": "Canada vs Qatar: under 3.5 goals",
+     "home": "Canada",
+     "away": "Qatar",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.42,
+     "est": 0.6713
+    },
+    {
+     "match_id": "0f2aeae6",
+     "label": "Mexico vs South Korea: over 1.5 goals",
+     "home": "Mexico",
+     "away": "South Korea",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.43,
+     "est": 0.6659
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.015,
+   "est_probability": 0.4431,
+   "legs": [
+    {
+     "match_id": "66ebb9e3",
+     "label": "South Africa handicap +1.5",
+     "home": "Czech Republic",
+     "away": "South Africa",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.3,
+     "est": 0.7234
+    },
+    {
+     "match_id": "289bc2e9",
+     "label": "Switzerland to win",
+     "home": "Switzerland",
+     "away": "Bosnia & Herzegovina",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.55,
+     "est": 0.6125
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0861,
+   "est_probability": 0.2956,
+   "legs": [
+    {
+     "match_id": "66ebb9e3",
+     "label": "Czech Republic vs South Africa: under 2.5 goals",
+     "home": "Czech Republic",
+     "away": "South Africa",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.705,
+     "est": 0.5566
+    },
+    {
+     "match_id": "0f2aeae6",
+     "label": "South Korea handicap +0.5",
+     "home": "Mexico",
+     "away": "South Korea",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.81,
+     "est": 0.5311
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.66,
+   "est_probability": 0.5683,
+   "legs": [
+    {
+     "match_id": "0f2aeae6",
+     "label": "Mexico vs South Korea: under 2.5 goals",
+     "home": "Mexico",
+     "away": "South Korea",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.66,
+     "est": 0.5683
+    }
+   ]
+  }
  }
 }
