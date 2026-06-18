@@ -211,6 +211,27 @@ def _grade_day(day_picks: dict, scores: list[dict]) -> list[dict] | None:
         for leg in slip["legs"]:
             res = _find_score(leg, scores)
             if res is None:
+                # Diagnose why: name mismatch vs not-yet-finished
+                cand = None
+                for fd in scores:
+                    ht = fd.get("homeTeam", {}).get("name", "")
+                    at = fd.get("awayTeam", {}).get("name", "")
+                    if _team_match(leg.get("home", ""), ht) and _team_match(leg.get("away", ""), at):
+                        cand = fd
+                        break
+                if cand is None:
+                    avail = ", ".join(
+                        f"{f.get('homeTeam',{}).get('name','?')} v {f.get('awayTeam',{}).get('name','?')}"
+                        for f in scores) or "(none returned)"
+                    print(f"[i] Settle: no score row matched {leg.get('home','?')} v "
+                          f"{leg.get('away','?')} (slip {slip_name}). "
+                          f"football-data returned: {avail}")
+                else:
+                    st = cand.get("status", "?")
+                    dur = cand.get("score", {}).get("duration", "?")
+                    print(f"[i] Settle: {leg.get('home','?')} v {leg.get('away','?')} "
+                          f"matched but no usable score (status={st}, duration={dur}). "
+                          f"Day stays pending.")
                 return None
             hg, ag = res
             won = _grade_leg(leg["market"], leg["outcome"], hg, ag)
