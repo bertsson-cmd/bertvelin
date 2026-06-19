@@ -71,7 +71,7 @@ def main() -> int:
     if args.enrich:
         print("[i] Running enrichment layer...")
         print(f"[i] FOOTBALL_DATA_KEY present: {bool(os.environ.get('FOOTBALL_DATA_KEY'))}")
-        print(f"[i] ANTHROPIC_API_KEY present: {bool(os.environ.get('ANTHROPIC_API_KEY'))}")
+        print(f"[i] GEMINI_API_KEY present: {bool(os.environ.get('GEMINI_API_KEY'))}")
         from analyzer.enrich import enrich
         enrich(data["matches"])
     else:
@@ -103,6 +103,28 @@ def main() -> int:
         print("[i] Slips already published today — LOCKED. Re-run refreshes odds only; "
               "legs stay as picked at the first run.")
         slip_a, slip_b, slip_c, slip_d = locked["A"], locked["B"], locked["C"], locked["D"]
+        # Gemini intelligence re-runs even on locked days — news changes through the day
+        # and the reasoning box should reflect the latest information even when legs are frozen.
+        if args.enrich:
+            try:
+                from analyzer.enrich import attach_gemini_intelligence
+                print("[i] Re-running Gemini intelligence to refresh notes on locked slips...")
+                # Clear old Gemini notes so they don't duplicate
+                for m in data["matches"]:
+                    notes_list = m.get("adjustments", {}).get("notes", [])
+                    m["adjustments"]["notes"] = [
+                        n for n in notes_list if not n.startswith("Gemini")]
+                attach_gemini_intelligence(data["matches"])
+                # Re-collect notes now they're refreshed
+                for m in data["matches"]:
+                    for n in m.get("adjustments", {}).get("notes", []):
+                        if "goals/game" in n or n.startswith("WC form") or n.startswith("Form (last"):
+                            _form_notes.setdefault(m["id"], []).append(
+                                f"<b>{m['home']} v {m['away']}</b>: {n}")
+                        elif f"<b>{m['home']} v {m['away']}</b>: {n}" not in notes:
+                            notes.append(f"<b>{m['home']} v {m['away']}</b>: {n}")
+            except Exception as _ge:
+                print(f"[!] Gemini re-run failed ({_ge}) — using cached notes.")
     else:
         band_min, band_max = band_for_day(legs, args.min, args.max)
         if band_min != args.min:
