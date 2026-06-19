@@ -307,12 +307,12 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
 
     html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bertpicker 1.1 — {today}</title>
+<title>Bertpicker 1.2 — {today}</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>{CSS}</style></head><body><div class="wrap">
 
-<div class="logo">BERTPICKER <small>1.1</small></div>
-<div class="splash">Á ég að skjótast í búðina og sækja stuðla?</div>
+<div class="logo">BERTPICKER <small>1.2</small></div>
+<div class="splash">REMONTADA EDITION</div>
 
 <div class="slips">{tickets}</div>
 {_scoreboard(scoreboard)}
