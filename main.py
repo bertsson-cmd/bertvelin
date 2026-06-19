@@ -115,13 +115,17 @@ def main() -> int:
                     m["adjustments"]["notes"] = [
                         n for n in notes_list if not n.startswith("Gemini")]
                 attach_gemini_intelligence(data["matches"])
-                # Re-collect notes now they're refreshed
+                # Re-collect notes now they're refreshed.
+                # Clear _form_notes and existing notes first to avoid duplicates
+                # (they were already populated from the initial loop above).
+                _form_notes.clear()
+                notes.clear()
                 for m in data["matches"]:
                     for n in m.get("adjustments", {}).get("notes", []):
                         if "goals/game" in n or n.startswith("WC form") or n.startswith("Form (last"):
                             _form_notes.setdefault(m["id"], []).append(
                                 f"<b>{m['home']} v {m['away']}</b>: {n}")
-                        elif f"<b>{m['home']} v {m['away']}</b>: {n}" not in notes:
+                        else:
                             notes.append(f"<b>{m['home']} v {m['away']}</b>: {n}")
             except Exception as _ge:
                 print(f"[!] Gemini re-run failed ({_ge}) — using cached notes.")
@@ -164,6 +168,10 @@ def main() -> int:
             for leg in sl.legs:
                 if leg.market.startswith("over_under_") and leg.match_id in _form_notes:
                     notes.extend(_form_notes.pop(leg.match_id))
+
+    # Deduplicate notes preserving order — guards against any double-collection
+    # on locked re-runs (same note text appearing from both initial and re-run pass)
+    seen, notes = set(), [n for n in notes if not (n in seen or seen.add(n))]
 
     day = data.get("date", "")
     scoreboard = None
