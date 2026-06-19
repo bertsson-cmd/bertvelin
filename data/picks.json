@@ -655,5 +655,101 @@
     }
    ]
   }
+ },
+ "2026-06-19": {
+  "A": {
+   "combined_odds": 2.0313,
+   "est_probability": 0.4393,
+   "legs": [
+    {
+     "match_id": "4cd769aa",
+     "label": "Scotland vs Morocco: under 2.5 goals",
+     "home": "Scotland",
+     "away": "Morocco",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.665,
+     "est": 0.5732
+    },
+    {
+     "match_id": "f955d4b3",
+     "label": "Paraguay handicap +1.5",
+     "home": "Turkey",
+     "away": "Paraguay",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.22,
+     "est": 0.7663
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.16,
+   "est_probability": 0.4226,
+   "legs": [
+    {
+     "match_id": "065b3573",
+     "label": "USA to win",
+     "home": "USA",
+     "away": "Australia",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.6,
+     "est": 0.597
+    },
+    {
+     "match_id": "4cd769aa",
+     "label": "Scotland handicap +1.5",
+     "home": "Scotland",
+     "away": "Morocco",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.35,
+     "est": 0.7078
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.222,
+   "est_probability": 0.2748,
+   "legs": [
+    {
+     "match_id": "ef0f74a9",
+     "label": "Brazil vs Haiti: over 3.5 goals",
+     "home": "Brazil",
+     "away": "Haiti",
+     "market": "over_under_3_5",
+     "outcome": "over",
+     "odds": 1.79,
+     "est": 0.5326
+    },
+    {
+     "match_id": "f955d4b3",
+     "label": "Turkey vs Paraguay: under 2.5 goals",
+     "home": "Turkey",
+     "away": "Paraguay",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.8,
+     "est": 0.516
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.6,
+   "est_probability": 0.597,
+   "legs": [
+    {
+     "match_id": "065b3573",
+     "label": "USA to win",
+     "home": "USA",
+     "away": "Australia",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.6,
+     "est": 0.597
+    }
+   ]
+  }
  }
 }
