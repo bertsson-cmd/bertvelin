@@ -419,10 +419,10 @@ def attach_gemini_intelligence(matches: list[dict]) -> None:
         resp = _http_json(
             f"https://generativelanguage.googleapis.com/v1beta/models/"
             f"gemini-2.0-flash:generateContent?key={key}",
+            headers={"Content-Type": "application/json"},
             payload={
                 "contents": [{"parts": [{"text": prompt}]}],
                 "tools": [{"google_search": {}}],
-                "generationConfig": {"temperature": 0.1, "maxOutputTokens": 2000},
             })
 
         text = ""
