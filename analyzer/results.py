@@ -56,6 +56,18 @@ def _save(path: str, obj) -> None:
 
 # ------------------------------------------------------------ record picks
 
+def gemini_already_ran(day: str) -> bool:
+    """True if Gemini intelligence already ran today (checked before calling it)."""
+    return bool(_load(PICKS_PATH, {}).get(day, {}).get("_gemini_ran"))
+
+
+def record_gemini_ran(day: str) -> None:
+    """Mark that Gemini has run for today so re-runs skip it."""
+    picks = _load(PICKS_PATH, {})
+    picks.setdefault(day, {})["_gemini_ran"] = True
+    _save(PICKS_PATH, picks)
+
+
 def record_picks(day: str, slips: dict) -> None:
     """slips: {"A": Parlay|None, "B": ..., "C": ...}. Re-running a day
     overwrites that day's picks (manual workflow re-runs are fine)."""
