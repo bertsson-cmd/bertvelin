@@ -71,12 +71,13 @@ def main() -> int:
     if args.enrich:
         print("[i] Running enrichment layer...")
         print(f"[i] FOOTBALL_DATA_KEY present: {bool(os.environ.get('FOOTBALL_DATA_KEY'))}")
-        print(f"[i] GEMINI_API_KEY present: {bool(os.environ.get('GEMINI_API_KEY'))}")
-        from analyzer.enrich import enrich, attach_gemini_intelligence
-        from analyzer.results import gemini_already_ran, record_gemini_ran
+        print(f"[i] GROQ_API_KEY present: {bool(os.environ.get('GROQ_API_KEY'))}")
+        print(f"[i] BRAVE_API_KEY present: {bool(os.environ.get('BRAVE_API_KEY'))}")
+        from analyzer.enrich import enrich, attach_ai_intelligence
+        from analyzer.results import ai_intelligence_already_ran, record_ai_intelligence_ran
         _day_for_gemini = data.get("date", "")
-        if gemini_already_ran(_day_for_gemini):
-            print(f"[i] Gemini intelligence: already ran today ({_day_for_gemini}) — "
+        if ai_intelligence_already_ran(_day_for_gemini):
+            print(f"[i] AI intelligence: already ran today ({_day_for_gemini}) — "
                   "skipping to preserve quota.")
             # Run all other enrichment layers but skip Gemini
             from analyzer.enrich import (attach_venues, attach_weather,
@@ -87,7 +88,7 @@ def main() -> int:
             attach_form_goals(data["matches"])
         else:
             enrich(data["matches"])   # includes Gemini
-            record_gemini_ran(_day_for_gemini)
+            record_ai_intelligence_ran(_day_for_gemini)
     else:
         print("[i] Enrichment disabled — run with --enrich to enable venues/weather/news.")
 
