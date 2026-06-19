@@ -72,23 +72,8 @@ def main() -> int:
         print("[i] Running enrichment layer...")
         print(f"[i] FOOTBALL_DATA_KEY present: {bool(os.environ.get('FOOTBALL_DATA_KEY'))}")
         print(f"[i] GROQ_API_KEY present: {bool(os.environ.get('GROQ_API_KEY'))}")
-        print(f"[i] BRAVE_API_KEY present: {bool(os.environ.get('BRAVE_API_KEY'))}")
-        from analyzer.enrich import enrich, attach_ai_intelligence
-        from analyzer.results import ai_intelligence_already_ran, record_ai_intelligence_ran
-        _day_for_gemini = data.get("date", "")
-        if ai_intelligence_already_ran(_day_for_gemini):
-            print(f"[i] AI intelligence: already ran today ({_day_for_gemini}) — "
-                  "skipping to preserve quota.")
-            # Run all other enrichment layers but skip Gemini
-            from analyzer.enrich import (attach_venues, attach_weather,
-                                         attach_movement, attach_form_goals)
-            attach_venues(data["matches"])
-            attach_weather(data["matches"])
-            attach_movement(data["matches"])
-            attach_form_goals(data["matches"])
-        else:
-            enrich(data["matches"])   # includes Gemini
-            record_ai_intelligence_ran(_day_for_gemini)
+        from analyzer.enrich import enrich
+        enrich(data["matches"])   # runs every build including Groq
     else:
         print("[i] Enrichment disabled — run with --enrich to enable venues/weather/news.")
 
