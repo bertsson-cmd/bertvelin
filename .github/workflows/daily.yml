@@ -33,19 +33,19 @@ jobs:
           python3 -m py_compile main.py analyzer/*.py
           python3 -c "
           from analyzer.odds import build_legs, market_margin
-          from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip
+          from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip, pick_banker_slip
           from analyzer.api_source import load_from_api
           from analyzer.report import render_report
-          from analyzer.enrich import enrich
-          from analyzer.results import settle_pending, record_picks
+          from analyzer.enrich import enrich, attach_gemini_intelligence
+          from analyzer.results import settle_pending, record_picks, load_locked_slips
           from analyzer.archive import archive_report
           print('integrity OK: every module is in its right file')"
 
-      - name: Build briefing (settle yesterday + odds + reasoning + 3 slips + archive)
+      - name: Build briefing (settle yesterday + odds + reasoning + slips + archive)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           FOOTBALL_DATA_KEY: ${{ secrets.FOOTBALL_DATA_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ODDS_SHEET_URL: ${{ secrets.ODDS_SHEET_URL }}
         run: |
           python3 main.py --api --enrich --out reports/index.html
