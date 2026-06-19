@@ -352,16 +352,25 @@ Adjustment rules:
 - Known injury-prone key player: small downgrade when primary goal threat
 - Manager known for rotation: slight downgrade in dead-rubber group games
 - Historically low-scoring fixture pattern: nudge toward under
-- Must-win vs already qualified: boost must-win team slightly"""
+- Must-win vs already qualified: boost must-win team slightly
+
+If tournament performance data is provided, use it to calibrate confidence:
+- Actual hit rate well below estimate → market has been efficient, be more conservative
+- Specific market types consistently missing → reduce adjustments on those markets
+- Strong positive units → model and market reasonably aligned
+{tournament_context}"""
 
 
 
 
-def attach_ai_intelligence(matches: list[dict]) -> None:
+def attach_ai_intelligence(matches: list[dict],
+                           scoreboard: dict | None = None) -> None:
     """Groq-only intelligence layer (Llama 3.3 70B, free tier, no card required).
 
     Analyses fixtures from training knowledge — squad depth, manager rotation
     patterns, injury history, tactical tendencies, motivation factors.
+    Receives tournament scoreboard so Groq can self-calibrate based on what
+    markets have actually been right/wrong about during this tournament.
     One call per day. 14,400 req/day free limit on console.groq.com.
     Falls soft on any error — math picks still run if this layer fails.
     """
@@ -396,9 +405,46 @@ def attach_ai_intelligence(matches: list[dict]) -> None:
         return
 
     print(f"[i] AI intelligence: analysing {len(fixture_lines)} fixture(s) with Groq...")
+
+    tournament_context = ""
+    if scoreboard and scoreboard.get("n", 0) > 0:
+        n   = scoreboard["n"]
+        actual   = scoreboard.get("actual_rate", 0)
+        estimated = scoreboard.get("est_rate", 0)
+        units     = scoreboard.get("units", 0)
+        history   = scoreboard.get("history", [])
+        market_stats: dict[str, dict] = {}
+        for rec in history:
+            for leg in rec.get("legs", []):
+                mkt = leg.get("market", "")
+                fam = ("result"  if ("1x2" in mkt or "double_chance" in mkt or "handicap" in mkt)
+                       else "totals" if "over_under" in mkt
+                       else "btts"   if "btts" in mkt
+                       else "other")
+                ms = market_stats.setdefault(fam, {"n": 0, "wins": 0})
+                ms["n"] += 1
+                if leg.get("won"):
+                    ms["wins"] += 1
+        mkt_lines = [
+            f"  {fam}: {ms['wins']}/{ms['n']} legs won ({ms['wins']/ms['n']:.0%})"
+            for fam, ms in market_stats.items() if ms["n"] > 0]
+        gap = actual - estimated
+        calibration = ("market more accurate than estimated — be conservative"
+                       if gap < -0.05 else
+                       "model estimates tracking well" if abs(gap) <= 0.05 else
+                       "model slightly overestimating — consider smaller nudges")
+        tournament_context = (
+            f"\n\nTOURNAMENT PERFORMANCE ({n} slips settled):"
+            f"\n  {scoreboard.get('wins',0)}/{n} slips won "
+            f"({actual:.0%} actual vs {estimated:.0%} estimated)"
+            f"\n  Units: {units:+.2f} | {calibration}"
+            + (f"\n  By market:\n" + "\n".join(mkt_lines) if mkt_lines else ""))
+        print(f"[i] AI intelligence: tournament context included ({n} settled slips)")
+
     prompt = GROQ_INTELLIGENCE_PROMPT.format(
         date=datetime.now(timezone.utc).date(),
-        fixtures="\n".join(fixture_lines))
+        fixtures="\n".join(fixture_lines),
+        tournament_context=tournament_context)
 
     try:
         resp = _http_json(
@@ -581,11 +627,11 @@ def attach_form_goals(matches: list[dict]) -> None:
 
 # ------------------------------------------------------------- entry point
 
-def enrich(matches: list[dict]) -> None:
+def enrich(matches: list[dict], scoreboard: dict | None = None) -> None:
     print(f"[i] Enrichment layer started for {len(matches)} match(es).")
     attach_venues(matches)
     attach_weather(matches)
     attach_movement(matches)
     attach_form_goals(matches)
-    attach_ai_intelligence(matches)
+    attach_ai_intelligence(matches, scoreboard=scoreboard)
     print("[i] Enrichment layer complete.")

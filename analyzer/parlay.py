@@ -48,6 +48,30 @@ class Parlay:
         return self.est_probability * self.combined_odds - 1.0
 
     @property
+    def market_probability(self) -> float:
+        """Product of vig-stripped fair probs — what the market itself believes.
+        This is the baseline we compare against to find genuine value."""
+        return prod(l.fair_prob for l in self.legs)
+
+    @property
+    def perceived_edge(self) -> float:
+        """How much our adjusted estimate exceeds the market's fair estimate.
+        Positive = we think this is more likely than the market prices it.
+        The key value signal: not raw probability, but divergence from the market."""
+        mp = self.market_probability
+        return (self.est_probability / mp - 1.0) if mp > 0 else 0.0
+
+    @property
+    def kelly_fraction(self) -> float:
+        """Full Kelly fraction: f* = (p*b - q) / b
+        Positive means our estimate implies positive EV vs the market price.
+        Ranks parlays by the balance of perceived edge and odds offered."""
+        b = self.combined_odds - 1.0
+        if b <= 0:
+            return -1.0
+        return (self.est_probability * self.combined_odds - 1.0) / b
+
+    @property
     def match_ids(self) -> set[str]:
         return {l.match_id for l in self.legs}
 
@@ -97,8 +121,11 @@ def build_parlays(
             if min_odds <= p.combined_odds <= max_odds:
                 out.append(p)
 
-    # Rank: most likely to win first; break ties with EV (least bad price).
-    out.sort(key=lambda p: (p.est_probability, p.expected_value), reverse=True)
+    # Rank by perceived edge first (how much our estimate diverges from the market's
+    # own fair probability — the closest thing to genuine value in a parlay),
+    # then Kelly fraction (balances that edge against the odds), then raw probability.
+    out.sort(key=lambda p: (p.perceived_edge, p.kelly_fraction, p.est_probability),
+             reverse=True)
     return out
 
 

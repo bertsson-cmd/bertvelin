@@ -155,8 +155,8 @@ def _ticket(name: str, p: Parlay, css: str = "") -> str:
         {legs}
         <div class="status">
           <div class="cell">Hit rate ~{p.est_probability*100:.0f}%</div>
-          <div class="cell">Loses ~{(1-p.est_probability)*100:.0f}% of days</div>
-          <div class="cell ev">EV {p.expected_value:+.1%}</div>
+          <div class="cell">Market: ~{p.market_probability*100:.0f}%</div>
+          <div class="cell ev" title="Perceived edge vs market fair probability">Edge {p.perceived_edge:+.1%} | EV {p.expected_value:+.1%}</div>
         </div>
       </div>
     </div>"""
