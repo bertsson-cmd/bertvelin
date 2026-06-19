@@ -115,7 +115,8 @@ def load_locked_slips(day: str, todays_legs: list) -> dict | None:
     re-run picks fresh, which is exactly right).
     """
     entry = _load(PICKS_PATH, {}).get(day)
-    if not entry:
+    # Only treat as locked if actual slip data exists (not just the _ai_ran flag)
+    if not entry or not any(k in entry for k in ("A", "B", "C", "D")):
         return None
     from .parlay import Parlay      # local import: no circular dependency
     from .odds import Leg
