@@ -308,61 +308,195 @@ def attach_movement(matches: list[dict]) -> None:
         json.dump(history, f, indent=1)
 
 
-# ---------------------------------------------------------- 4. AI news desk
 
-AI_PROMPT = """You are a cautious football analyst. Today is {date}.
-For each fixture below, use web search to check the latest team news: confirmed
-injuries, suspensions, likely heavy rotation, manager quotes, anything from the
-last 72 hours that materially affects the result probability.
+# -------------------------------------------------- 4b. Gemini intelligence
+# -------------------------------------------------- 5b. Gemini intelligence
 
-Fixtures:
+GEMINI_INTELLIGENCE_PROMPT = """You are a sharp, conservative football intelligence analyst.
+Today is {date}. The World Cup 2026 is in progress.
+
+Your job is to search for the very latest news (last 48 hours) on each fixture below
+and produce STRUCTURED, CALIBRATED probability adjustments that feed directly into a
+mathematical betting model. These adjustments change which legs get picked — they have
+real consequences, so be conservative and concrete.
+
+Fixtures and current market odds (after bookmaker margin removal — these are "fair" probabilities):
 {fixtures}
 
-Respond with ONLY a JSON array, no markdown fences, no preamble. One object per
-fixture that has noteworthy news (omit fixtures with nothing notable):
-[{{"home": "...", "away": "...",
-   "reasoning": ["one short readable bullet per finding, with what it implies"],
-   "adjustments": {{"1x2": {{"home": 0.0, "draw": 0.0, "away": 0.0}}}}}}]
+For each fixture, search for:
+- Confirmed injuries or suspensions (named player, confirmed status)
+- Lineup rotation (manager confirmed resting players, B-squad named)
+- Tactical setup changes (confirmed defensive/attacking shift)
+- Motivation factors (already qualified, must-win, nothing to play for)
+- Any other concrete factor from a credible source in the last 48 hours
 
-Adjustment rules: absolute probability points, conservative, each within
--0.03..0.03, and 0 unless the news is concrete (named player, confirmed status).
-Markets already price public news quickly, so most days most values are 0."""
+Then produce a JSON array. Include ONLY fixtures where you found concrete news.
+Omit fixtures where nothing material was found — a short empty response is correct
+and honest when there is no news. Do NOT include speculation or rumour.
+
+Respond with ONLY a JSON array, no markdown, no preamble:
+[
+  {{
+    "home": "exact home team name",
+    "away": "exact away team name",
+    "intelligence": [
+      "one concrete, readable sentence per finding — what was found, source, and what it implies"
+    ],
+    "adjustments": {{
+      "1x2": {{"home": 0.0, "draw": 0.0, "away": 0.0}},
+      "over_under_2_5": {{"over": 0.0, "under": 0.0}}
+    }},
+    "confidence": "high | medium | low"
+  }}
+]
+
+Adjustment rules (CRITICAL — these feed directly into the model):
+- Values are absolute probability point changes, e.g. 0.04 = +4 percentage points
+- Each value must be within -0.05 to +0.05
+- Only adjust when you found CONCRETE news (named player, confirmed status, official source)
+- Most values should be 0.0 — the market already prices public information quickly
+- Confidence: high = official confirmation; medium = strong indication; low = credible rumour
+- A key striker confirmed out → home -0.03 to -0.05, draw +0.01 to +0.02
+- B-squad confirmed → away team gets a boost proportional to squad depth gap
+- Must-win motivation → slight home boost if they're the team needing the win
+- Already qualified and resting → significant downgrade across all their legs"""
 
 
-def attach_ai_news(matches: list[dict], model: str = "claude-sonnet-4-6") -> None:
-    key = os.environ.get("ANTHROPIC_API_KEY", "")
+def attach_gemini_intelligence(matches: list[dict]) -> None:
+    """Gemini intelligence layer — searches for real news and adjusts fair
+    probabilities before leg selection.
+
+    This is fundamentally different from a commentary layer: it changes the
+    NUMBERS the picker sees, so if Mbappé is confirmed out, the model
+    naturally avoids France home win legs without being explicitly told to.
+
+    Deliberately excluded from slip locking: legs lock at 07:00, but Gemini
+    re-runs on every build so the reasoning box always reflects latest news.
+    The locked legs are already decided — Gemini can only update the notes
+    and the displayed adjustments, not change the legs themselves.
+
+    Falls soft on any error — the model runs on math alone if Gemini fails.
+    """
+    key = os.environ.get("GEMINI_API_KEY", "")
     if not key:
-        print("[i] ANTHROPIC_API_KEY not set — skipping AI news layer.")
+        print("[i] Gemini intelligence: GEMINI_API_KEY not set — skipping.")
         return
-    fixtures = "\n".join(f"- {m['home']} vs {m['away']} ({m.get('kickoff','')})" for m in matches)
+
+    from .teams import team_match
+
+    # Build fixture list with vig-stripped probabilities for the prompt
+    fixture_lines = []
+    for m in matches:
+        h2h = m.get("markets", {}).get("1x2", {})
+        ou  = m.get("markets", {}).get("over_under_2_5", {})
+        if not h2h:
+            continue
+        # compute fair probs inline (vig removal)
+        total_inv = sum(1/v for v in h2h.values() if v)
+        def fp(odds):
+            return round((1/odds) / total_inv, 3) if odds else 0
+        line = (
+            f"- {m['home']} vs {m['away']}"
+            f" | fair probs: home {fp(h2h.get('home',0)):.0%}"
+            f" draw {fp(h2h.get('draw',0)):.0%}"
+            f" away {fp(h2h.get('away',0)):.0%}"
+        )
+        if ou:
+            ou_inv = sum(1/v for v in ou.values() if v)
+            def fpo(odds): return round((1/odds)/ou_inv, 3) if odds else 0
+            line += (f" | goals over {fpo(ou.get('over',0)):.0%}"
+                     f" under {fpo(ou.get('under',0)):.0%}")
+        fixture_lines.append(line)
+
+    if not fixture_lines:
+        return
+
+    prompt = GEMINI_INTELLIGENCE_PROMPT.format(
+        date=datetime.now(timezone.utc).date(),
+        fixtures="\n".join(fixture_lines))
+
     try:
         resp = _http_json(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": key, "anthropic-version": "2023-06-01",
-                     "content-type": "application/json"},
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"gemini-2.0-flash:generateContent?key={key}",
             payload={
-                "model": model, "max_tokens": 3000,
-                "tools": [{"type": "web_search_20250305", "name": "web_search", "max_uses": 8}],
-                "messages": [{"role": "user", "content": AI_PROMPT.format(
-                    date=datetime.now(timezone.utc).date(), fixtures=fixtures)}],
+                "contents": [{"parts": [{"text": prompt}]}],
+                "tools": [{"google_search": {}}],
+                "generationConfig": {"temperature": 0.1, "maxOutputTokens": 2000},
             })
-        text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
-        items = json.loads(re.sub(r"```json|```", "", text).strip())
+
+        text = ""
+        for cand in resp.get("candidates", []):
+            for part in cand.get("content", {}).get("parts", []):
+                if "text" in part:
+                    text += part["text"]
+
+        if not text.strip():
+            print("[i] Gemini intelligence: no response text — skipping.")
+            return
+
+        # Strip markdown fences if present
+        clean = re.sub(r"```json|```", "", text).strip()
+        if not clean or clean in ("[]", "[ ]"):
+            print("[i] Gemini intelligence: no material news found today.")
+            return
+
+        items = json.loads(clean)
+        if not isinstance(items, list):
+            print("[!] Gemini intelligence: unexpected response format — skipping.")
+            return
+
+    except json.JSONDecodeError as e:
+        print(f"[!] Gemini intelligence: JSON parse failed ({e}) — skipping.")
+        return
     except Exception as e:
-        print(f"[!] AI news layer failed ({e}) — continuing without it.")
+        print(f"[!] Gemini intelligence: API call failed ({e}) — skipping.")
         return
 
+    applied = 0
     for item in items:
+        if not isinstance(item, dict):
+            continue
+        matched = None
         for m in matches:
-            if item.get("home", "").lower() in m["home"].lower() and \
-               item.get("away", "").lower() in m["away"].lower():
-                for line in item.get("reasoning", []):
-                    _note(m, f"News desk: {line}")
-                for market, omap in item.get("adjustments", {}).items():
-                    for outcome, delta in omap.items():
-                        d = max(-0.03, min(0.03, float(delta)))
-                        if d:
-                            _nudge(m, market, outcome, d)
+            if (team_match(item.get("home", ""), m["home"]) and
+                    team_match(item.get("away", ""), m["away"])):
+                matched = m
+                break
+        if not matched:
+            print(f"[i] Gemini intelligence: fixture not matched — "
+                  f"{item.get('home')} vs {item.get('away')}")
+            continue
+
+        confidence = item.get("confidence", "medium").lower()
+        # Scale cap by confidence: high=0.05, medium=0.03, low=0.015
+        cap = {"high": 0.05, "medium": 0.03, "low": 0.015}.get(confidence, 0.03)
+
+        # Apply intelligence notes
+        for line in item.get("intelligence", []):
+            conf_tag = f"[{confidence} confidence]" if confidence != "medium" else ""
+            _note(matched, f"Gemini \U0001f916{conf_tag}: {line}")
+
+        # Apply probability adjustments (capped by confidence level)
+        adj_applied = []
+        for market, outcomes in item.get("adjustments", {}).items():
+            for outcome, delta in outcomes.items():
+                if delta and abs(float(delta)) >= 0.005:  # ignore noise
+                    d = max(-cap, min(cap, float(delta)))
+                    _nudge(matched, market, outcome, d)
+                    adj_applied.append(f"{market}/{outcome}: {d:+.3f}")
+
+        if adj_applied:
+            print(f"[i] Gemini intelligence: {matched['home']} vs {matched['away']} "
+                  f"({confidence}) — {', '.join(adj_applied)}")
+            applied += 1
+        else:
+            print(f"[i] Gemini intelligence: {matched['home']} vs {matched['away']} "
+                  f"— news found but no probability adjustment warranted.")
+
+    print(f"[i] Gemini intelligence: probability adjustments applied to "
+          f"{applied}/{len(matches)} fixture(s).")
+
 
 
 
@@ -484,5 +618,5 @@ def enrich(matches: list[dict]) -> None:
     attach_weather(matches)
     attach_movement(matches)
     attach_form_goals(matches)
-    attach_ai_news(matches)
+    attach_gemini_intelligence(matches)
     print("[i] Enrichment layer complete.")
