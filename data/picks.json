@@ -1,5 +1,98 @@
 {
  "2026-06-19": {
-  "_ai_ran": true
+  "A": {
+   "combined_odds": 2.03,
+   "est_probability": 0.4489,
+   "legs": [
+    {
+     "match_id": "065b3573",
+     "label": "Australia handicap +1.5",
+     "home": "USA",
+     "away": "Australia",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.45,
+     "est": 0.6584
+    },
+    {
+     "match_id": "4cd769aa",
+     "label": "Scotland vs Morocco: over 1.5 goals",
+     "home": "Scotland",
+     "away": "Morocco",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.4,
+     "est": 0.6818
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.0496,
+   "est_probability": 0.4379,
+   "legs": [
+    {
+     "match_id": "4cd769aa",
+     "label": "Morocco handicap -0.5",
+     "home": "Scotland",
+     "away": "Morocco",
+     "market": "handicap_plus_0_5",
+     "outcome": "away",
+     "odds": 1.68,
+     "est": 0.5714
+    },
+    {
+     "match_id": "f955d4b3",
+     "label": "Paraguay handicap +1.5",
+     "home": "Turkey",
+     "away": "Paraguay",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.22,
+     "est": 0.7663
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.2129,
+   "est_probability": 0.2714,
+   "legs": [
+    {
+     "match_id": "ef0f74a9",
+     "label": "Brazil vs Haiti: over 3.5 goals",
+     "home": "Brazil",
+     "away": "Haiti",
+     "market": "over_under_3_5",
+     "outcome": "over",
+     "odds": 1.8050000000000002,
+     "est": 0.5231
+    },
+    {
+     "match_id": "f955d4b3",
+     "label": "Turkey vs Paraguay: under 2.5 goals",
+     "home": "Turkey",
+     "away": "Paraguay",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.78,
+     "est": 0.5187
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.6,
+   "est_probability": 0.5962,
+   "legs": [
+    {
+     "match_id": "065b3573",
+     "label": "USA to win",
+     "home": "USA",
+     "away": "Australia",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.6,
+     "est": 0.5962
+    }
+   ]
+  }
  }
 }
