@@ -415,15 +415,30 @@ def attach_gemini_intelligence(matches: list[dict]) -> None:
         date=datetime.now(timezone.utc).date(),
         fixtures="\n".join(fixture_lines))
 
+    import time as _time
+
     try:
-        resp = _http_json(
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-2.0-flash:generateContent?key={key}",
-            headers={"Content-Type": "application/json"},
-            payload={
-                "contents": [{"parts": [{"text": prompt}]}],
-                "tools": [{"google_search": {}}],
-            })
+        # Retry up to 3 times on 429 (rate limit) with backoff
+        resp = None
+        for _attempt in range(3):
+            try:
+                resp = _http_json(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/"
+                    f"gemini-2.0-flash:generateContent?key={key}",
+                    headers={"Content-Type": "application/json"},
+                    payload={
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "tools": [{"google_search": {}}],
+                    })
+                break  # success — exit retry loop
+            except Exception as _err:
+                if "429" in str(_err) and _attempt < 2:
+                    wait = 30 * (_attempt + 1)   # 30s then 60s
+                    print(f"[i] Gemini intelligence: rate limited (429) — "
+                          f"waiting {wait}s before retry {_attempt + 2}/3...")
+                    _time.sleep(wait)
+                else:
+                    raise  # non-429 or final attempt → caught by outer except
 
         text = ""
         for cand in resp.get("candidates", []):
@@ -435,7 +450,6 @@ def attach_gemini_intelligence(matches: list[dict]) -> None:
             print("[i] Gemini intelligence: no response text — skipping.")
             return
 
-        # Strip markdown fences if present
         clean = re.sub(r"```json|```", "", text).strip()
         if not clean or clean in ("[]", "[ ]"):
             print("[i] Gemini intelligence: no material news found today.")
