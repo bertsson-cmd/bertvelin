@@ -309,38 +309,32 @@ def attach_movement(matches: list[dict]) -> None:
 
 
 
-# -------------------------------------------------- 4b. Gemini intelligence
-# -------------------------------------------------- 5b. Gemini intelligence
+# --------------------------------------------------------- 4b. AI intelligence
+# Brave Search fetches live news snippets per fixture.
+# Groq (Llama 3.3 70B) reads those snippets and produces structured probability
+# adjustments. One Brave search + one Groq call per run. No rate-limit drama.
 
-GEMINI_INTELLIGENCE_PROMPT = """You are a sharp, conservative football intelligence analyst.
+GROQ_INTELLIGENCE_PROMPT = """You are a sharp, conservative football intelligence analyst.
 Today is {date}. The World Cup 2026 is in progress.
 
-Your job is to search for the very latest news (last 48 hours) on each fixture below
-and produce STRUCTURED, CALIBRATED probability adjustments that feed directly into a
-mathematical betting model. These adjustments change which legs get picked — they have
-real consequences, so be conservative and concrete.
-
-Fixtures and current market odds (after bookmaker margin removal — these are "fair" probabilities):
+Today's fixtures with fair market probabilities (bookmaker margin removed):
 {fixtures}
 
-For each fixture, search for:
-- Confirmed injuries or suspensions (named player, confirmed status)
-- Lineup rotation (manager confirmed resting players, B-squad named)
-- Tactical setup changes (confirmed defensive/attacking shift)
-- Motivation factors (already qualified, must-win, nothing to play for)
-- Any other concrete factor from a credible source in the last 48 hours
-
-Then produce a JSON array. Include ONLY fixtures where you found concrete news.
-Omit fixtures where nothing material was found — a short empty response is correct
-and honest when there is no news. Do NOT include speculation or rumour.
+Your job: for each fixture, use your knowledge of these teams — squad depth,
+injury history, manager rotation patterns, tactical tendencies, motivation
+factors, head-to-head patterns — to produce STRUCTURED, CALIBRATED probability
+adjustments. Only include a fixture where you have genuine knowledge that
+meaningfully shifts the fair probability. Be conservative: the market already
+prices most public information. An empty array [] is correct when you have
+nothing material to add.
 
 Respond with ONLY a JSON array, no markdown, no preamble:
 [
   {{
-    "home": "exact home team name",
-    "away": "exact away team name",
+    "home": "exact home team name from fixtures",
+    "away": "exact away team name from fixtures",
     "intelligence": [
-      "one concrete, readable sentence per finding — what was found, source, and what it implies"
+      "one concrete readable sentence per finding and its implication"
     ],
     "adjustments": {{
       "1x2": {{"home": 0.0, "draw": 0.0, "away": 0.0}},
@@ -350,178 +344,129 @@ Respond with ONLY a JSON array, no markdown, no preamble:
   }}
 ]
 
-Adjustment rules (CRITICAL — these feed directly into the model):
-- Values are absolute probability point changes, e.g. 0.04 = +4 percentage points
-- Each value must be within -0.05 to +0.05
-- Only adjust when you found CONCRETE news (named player, confirmed status, official source)
-- Most values should be 0.0 — the market already prices public information quickly
-- Confidence: high = official confirmation; medium = strong indication; low = credible rumour
-- A key striker confirmed out → home -0.03 to -0.05, draw +0.01 to +0.02
-- B-squad confirmed → away team gets a boost proportional to squad depth gap
-- Must-win motivation → slight home boost if they're the team needing the win
-- Already qualified and resting → significant downgrade across all their legs"""
+Adjustment rules:
+- Absolute probability point changes (0.04 = +4 percentage points)
+- Each value within -0.05 to +0.05
+- 0.0 unless you have concrete specific knowledge
+- Confidence: high = well established fact, medium = strong pattern, low = tendency
+- Known injury-prone key player: small downgrade when primary goal threat
+- Manager known for rotation: slight downgrade in dead-rubber group games
+- Historically low-scoring fixture pattern: nudge toward under
+- Must-win vs already qualified: boost must-win team slightly"""
 
 
-def attach_gemini_intelligence(matches: list[dict]) -> None:
-    """Gemini intelligence layer — searches for real news and adjusts fair
-    probabilities before leg selection.
 
-    This is fundamentally different from a commentary layer: it changes the
-    NUMBERS the picker sees, so if Mbappé is confirmed out, the model
-    naturally avoids France home win legs without being explicitly told to.
 
-    Deliberately excluded from slip locking: legs lock at 07:00, but Gemini
-    re-runs on every build so the reasoning box always reflects latest news.
-    The locked legs are already decided — Gemini can only update the notes
-    and the displayed adjustments, not change the legs themselves.
+def attach_ai_intelligence(matches: list[dict]) -> None:
+    """Groq-only intelligence layer (Llama 3.3 70B, free tier, no card required).
 
-    Falls soft on any error — the model runs on math alone if Gemini fails.
+    Analyses fixtures from training knowledge — squad depth, manager rotation
+    patterns, injury history, tactical tendencies, motivation factors.
+    One call per day. 14,400 req/day free limit on console.groq.com.
+    Falls soft on any error — math picks still run if this layer fails.
     """
-    key = os.environ.get("GEMINI_API_KEY", "")
-    if not key:
-        print("[i] Gemini intelligence: GEMINI_API_KEY not set — skipping.")
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+    if not groq_key:
+        print("[i] AI intelligence: GROQ_API_KEY not set — skipping.")
         return
 
     from .teams import team_match
 
-    # Build fixture list with vig-stripped probabilities for the prompt
+    # ---- Build fixture summaries with fair probs ----
     fixture_lines = []
     for m in matches:
         h2h = m.get("markets", {}).get("1x2", {})
         ou  = m.get("markets", {}).get("over_under_2_5", {})
         if not h2h:
             continue
-        # compute fair probs inline (vig removal)
-        total_inv = sum(1/v for v in h2h.values() if v)
-        def fp(odds):
-            return round((1/odds) / total_inv, 3) if odds else 0
-        line = (
-            f"- {m['home']} vs {m['away']}"
-            f" | fair probs: home {fp(h2h.get('home',0)):.0%}"
-            f" draw {fp(h2h.get('draw',0)):.0%}"
-            f" away {fp(h2h.get('away',0)):.0%}"
-        )
+        total_inv = sum(1 / v for v in h2h.values() if v)
+        def fp(o): return round((1 / o) / total_inv, 3) if o else 0
+        line = (f"- {m['home']} vs {m['away']}"
+                f" | home {fp(h2h.get('home',0)):.0%}"
+                f" draw {fp(h2h.get('draw',0)):.0%}"
+                f" away {fp(h2h.get('away',0)):.0%}")
         if ou:
-            ou_inv = sum(1/v for v in ou.values() if v)
-            def fpo(odds): return round((1/odds)/ou_inv, 3) if odds else 0
-            line += (f" | goals over {fpo(ou.get('over',0)):.0%}"
+            ou_inv = sum(1 / v for v in ou.values() if v)
+            def fpo(o): return round((1 / o) / ou_inv, 3) if o else 0
+            line += (f" | over {fpo(ou.get('over',0)):.0%}"
                      f" under {fpo(ou.get('under',0)):.0%}")
         fixture_lines.append(line)
 
     if not fixture_lines:
         return
 
-    prompt = GEMINI_INTELLIGENCE_PROMPT.format(
+    print(f"[i] AI intelligence: analysing {len(fixture_lines)} fixture(s) with Groq...")
+    prompt = GROQ_INTELLIGENCE_PROMPT.format(
         date=datetime.now(timezone.utc).date(),
         fixtures="\n".join(fixture_lines))
 
-    import time as _time
-
-    def _gemini_call(with_search: bool) -> dict:
-        """Single Gemini call, with or without Google Search grounding."""
-        payload: dict = {"contents": [{"parts": [{"text": prompt}]}]}
-        if with_search:
-            payload["tools"] = [{"google_search": {}}]
-        return _http_json(
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-2.0-flash:generateContent?key={key}",
-            headers={"Content-Type": "application/json"},
-            payload=payload)
-
     try:
-        # Attempt 1: with Google Search grounding (live web news)
-        # Attempt 2: shorter wait, retry with grounding
-        # Attempt 3: fallback without grounding (training knowledge only — faster, no quota)
-        resp = None
-        for _attempt in range(3):
-            try:
-                use_search = _attempt < 2   # attempts 0 & 1 use search; attempt 2 does not
-                resp = _gemini_call(with_search=use_search)
-                if not use_search:
-                    print("[i] Gemini intelligence: running without live search "
-                          "(rate-limited — using training knowledge).")
-                break
-            except Exception as _err:
-                if "429" in str(_err) and _attempt < 2:
-                    wait = 10 * (_attempt + 1)   # 10s then 20s — short enough not to slow build
-                    print(f"[i] Gemini intelligence: rate limited — "
-                          f"waiting {wait}s before retry {_attempt + 2}/3...")
-                    _time.sleep(wait)
-                else:
-                    raise
-
-        text = ""
-        for cand in resp.get("candidates", []):
-            for part in cand.get("content", {}).get("parts", []):
-                if "text" in part:
-                    text += part["text"]
-
+        resp = _http_json(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {groq_key}",
+                     "Content-Type": "application/json"},
+            payload={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.1,
+                "max_tokens": 2000,
+            })
+        text = resp.get("choices", [{}])[0].get("message", {}).get("content", "")
         if not text.strip():
-            print("[i] Gemini intelligence: no response text — skipping.")
+            print("[i] AI intelligence: empty Groq response — skipping.")
             return
-
         clean = re.sub(r"```json|```", "", text).strip()
         if not clean or clean in ("[]", "[ ]"):
-            print("[i] Gemini intelligence: no material news found today.")
+            print("[i] AI intelligence: no material news found today.")
             return
-
         items = json.loads(clean)
         if not isinstance(items, list):
-            print("[!] Gemini intelligence: unexpected response format — skipping.")
+            print("[!] AI intelligence: unexpected response format — skipping.")
             return
-
     except json.JSONDecodeError as e:
-        print(f"[!] Gemini intelligence: JSON parse failed ({e}) — skipping.")
+        print(f"[!] AI intelligence: JSON parse failed ({e}) — skipping.")
         return
     except Exception as e:
-        print(f"[!] Gemini intelligence: API call failed ({e}) — skipping.")
+        print(f"[!] AI intelligence: Groq call failed ({e}) — skipping.")
         return
 
+    # ---- Step 4: apply adjustments ----
     applied = 0
     for item in items:
         if not isinstance(item, dict):
             continue
-        matched = None
-        for m in matches:
-            if (team_match(item.get("home", ""), m["home"]) and
-                    team_match(item.get("away", ""), m["away"])):
-                matched = m
-                break
+        matched = next((m for m in matches
+                        if team_match(item.get("home", ""), m["home"])
+                        and team_match(item.get("away", ""), m["away"])), None)
         if not matched:
-            print(f"[i] Gemini intelligence: fixture not matched — "
+            print(f"[i] AI intelligence: fixture not matched — "
                   f"{item.get('home')} vs {item.get('away')}")
             continue
 
         confidence = item.get("confidence", "medium").lower()
-        # Scale cap by confidence: high=0.05, medium=0.03, low=0.015
         cap = {"high": 0.05, "medium": 0.03, "low": 0.015}.get(confidence, 0.03)
 
-        # Apply intelligence notes
         for line in item.get("intelligence", []):
-            conf_tag = f"[{confidence} confidence]" if confidence != "medium" else ""
-            _note(matched, f"Gemini \U0001f916{conf_tag}: {line}")
+            conf_tag = f" [{confidence}]" if confidence != "medium" else ""
+            _note(matched, f"AI\U0001f916{conf_tag}: {line}")
 
-        # Apply probability adjustments (capped by confidence level)
         adj_applied = []
         for market, outcomes in item.get("adjustments", {}).items():
-            for outcome, delta in outcomes.items():
-                if delta and abs(float(delta)) >= 0.005:  # ignore noise
+            for outcome, delta in (outcomes or {}).items():
+                if delta and abs(float(delta)) >= 0.005:
                     d = max(-cap, min(cap, float(delta)))
                     _nudge(matched, market, outcome, d)
                     adj_applied.append(f"{market}/{outcome}: {d:+.3f}")
 
         if adj_applied:
-            print(f"[i] Gemini intelligence: {matched['home']} vs {matched['away']} "
+            print(f"[i] AI intelligence: {matched['home']} vs {matched['away']} "
                   f"({confidence}) — {', '.join(adj_applied)}")
             applied += 1
         else:
-            print(f"[i] Gemini intelligence: {matched['home']} vs {matched['away']} "
-                  f"— news found but no probability adjustment warranted.")
+            print(f"[i] AI intelligence: {matched['home']} vs {matched['away']} "
+                  f"— news found, no adjustment warranted.")
 
-    print(f"[i] Gemini intelligence: probability adjustments applied to "
-          f"{applied}/{len(matches)} fixture(s).")
-
-
+    print(f"[i] AI intelligence: adjustments applied to {applied}/{len(matches)} fixture(s).")
 
 
 
@@ -642,5 +587,5 @@ def enrich(matches: list[dict]) -> None:
     attach_weather(matches)
     attach_movement(matches)
     attach_form_goals(matches)
-    attach_gemini_intelligence(matches)
+    attach_ai_intelligence(matches)
     print("[i] Enrichment layer complete.")
