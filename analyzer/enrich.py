@@ -417,28 +417,38 @@ def attach_gemini_intelligence(matches: list[dict]) -> None:
 
     import time as _time
 
+    def _gemini_call(with_search: bool) -> dict:
+        """Single Gemini call, with or without Google Search grounding."""
+        payload: dict = {"contents": [{"parts": [{"text": prompt}]}]}
+        if with_search:
+            payload["tools"] = [{"google_search": {}}]
+        return _http_json(
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"gemini-2.0-flash:generateContent?key={key}",
+            headers={"Content-Type": "application/json"},
+            payload=payload)
+
     try:
-        # Retry up to 3 times on 429 (rate limit) with backoff
+        # Attempt 1: with Google Search grounding (live web news)
+        # Attempt 2: shorter wait, retry with grounding
+        # Attempt 3: fallback without grounding (training knowledge only — faster, no quota)
         resp = None
         for _attempt in range(3):
             try:
-                resp = _http_json(
-                    f"https://generativelanguage.googleapis.com/v1beta/models/"
-                    f"gemini-2.0-flash:generateContent?key={key}",
-                    headers={"Content-Type": "application/json"},
-                    payload={
-                        "contents": [{"parts": [{"text": prompt}]}],
-                        "tools": [{"google_search": {}}],
-                    })
-                break  # success — exit retry loop
+                use_search = _attempt < 2   # attempts 0 & 1 use search; attempt 2 does not
+                resp = _gemini_call(with_search=use_search)
+                if not use_search:
+                    print("[i] Gemini intelligence: running without live search "
+                          "(rate-limited — using training knowledge).")
+                break
             except Exception as _err:
                 if "429" in str(_err) and _attempt < 2:
-                    wait = 30 * (_attempt + 1)   # 30s then 60s
-                    print(f"[i] Gemini intelligence: rate limited (429) — "
+                    wait = 10 * (_attempt + 1)   # 10s then 20s — short enough not to slow build
+                    print(f"[i] Gemini intelligence: rate limited — "
                           f"waiting {wait}s before retry {_attempt + 2}/3...")
                     _time.sleep(wait)
                 else:
-                    raise  # non-429 or final attempt → caught by outer except
+                    raise
 
         text = ""
         for cand in resp.get("candidates", []):
