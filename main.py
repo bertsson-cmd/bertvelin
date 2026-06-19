@@ -160,7 +160,8 @@ def main() -> int:
 
     # Deduplicate notes preserving order — guards against any double-collection
     # on locked re-runs (same note text appearing from both initial and re-run pass)
-    seen, notes = set(), [n for n in notes if not (n in seen or seen.add(n))]
+    _seen_notes: set = set()
+    notes = [n for n in notes if not (_seen_notes.__contains__(n) or _seen_notes.add(n))]
 
     day = data.get("date", "")
     scoreboard = None
