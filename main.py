@@ -73,7 +73,13 @@ def main() -> int:
         print(f"[i] FOOTBALL_DATA_KEY present: {bool(os.environ.get('FOOTBALL_DATA_KEY'))}")
         print(f"[i] GROQ_API_KEY present: {bool(os.environ.get('GROQ_API_KEY'))}")
         from analyzer.enrich import enrich
-        enrich(data["matches"])   # runs every build including Groq
+        from analyzer.results import summarize as _summarize
+        _pre_sb = None
+        try:
+            _pre_sb = _summarize()
+        except Exception:
+            pass
+        enrich(data["matches"], scoreboard=_pre_sb)
     else:
         print("[i] Enrichment disabled — run with --enrich to enable venues/weather/news.")
 
