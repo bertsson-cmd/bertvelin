@@ -222,9 +222,14 @@ def pick_two_slips(parlays: list[Parlay]) -> tuple[Parlay | None, Parlay | None]
     slip_b = next((p for p in parlays[1:]
                    if not (_match_market_keys(p) & a_mk)), None)
     if slip_b is None:
-        # Thin-day fallback: shares a match but uses different markets
-        slip_b = next((p for p in parlays[1:]
-                       if _match_market_keys(p) != a_mk), None)
+        # Thin-day fallback: minimise overlap rather than just "not identical" —
+        # picks the least-overlapping parlay, never silently allows a shared
+        # match+market through. Genuinely last resort: very few matches today.
+        candidates = parlays[1:]
+        if candidates:
+            min_overlap = min(len(_match_market_keys(p) & a_mk) for p in candidates)
+            slip_b = next((p for p in candidates
+                           if len(_match_market_keys(p) & a_mk) == min_overlap), None)
     return slip_a, slip_b
 
 
@@ -256,30 +261,37 @@ def pick_risky_slip(
     return min(risky, key=lambda p: len(_match_market_keys(p) & exclude_legs)) if risky else None
 
 
-def pick_banker_slip(
+def pick_value_slip(
     legs: list[Leg],
-    min_odds: float = 1.6,
-    max_odds: float = 1.8,
+    min_odds: float = 1.3,
+    max_odds: float = 6.0,
     exclude_legs: frozenset | None = None,
 ) -> Parlay | None:
-    """The "veltusedill" — a low-odds banker slip in the 1.6-1.8 band.
+    """Veltuseðill — the single best VALUE slip on the page, wherever its
+    odds happen to land.
 
-    Leg filter (55%) leans on clear favourites without being so strict that
-    a lone ~1.70 favourite is excluded (1.70 implies roughly 56% after margin,
-    which 60% would have rejected). Usually one short-priced leg, or two very
-    short ones. Honest framing: a banker is exactly where a single upset
-    stings, since the payout is small and the loss is the full stake. Not a
-    sure thing, just the least unlikely slip.
+    Unlike A/B/C, this has no fixed odds box (2.0-2.99, 1.6-1.8, etc). Those
+    bands are a price preference, not a value signal — a genuinely strong
+    edge sitting one tick outside a band would otherwise never be picked.
+    This slip searches a wide 1.3-6.0 range and takes whichever parlay has
+    the highest perceived edge / Kelly fraction in the ENTIRE pool, full stop.
 
-    exclude_legs: match+market pairs already used by A/B/C, so the banker
-    doesn't simply echo another slip's leg.
+    On a quiet day with no Groq/enrichment adjustments, every parlay's edge
+    is ~0 and this collapses to "most probable parlay somewhere in 1.3-6.0" —
+    similar in spirit to the old banker, just without the box. On a day with
+    a genuine signal, it surfaces the actual best pick regardless of price,
+    which is the entire point: paying attention to value, not to a target
+    payout multiple.
+
+    exclude_legs: match+market pairs already used by A/B/C, so this doesn't
+    simply echo another slip's leg.
     """
-    bankers = build_parlays(legs, min_odds, max_odds, min_leg_prob=0.55)
-    if not bankers:
+    pool = build_parlays(legs, min_odds, max_odds, min_leg_prob=0.50)
+    if not pool:
         return None
     if not exclude_legs:
-        return bankers[0]
-    clean = [p for p in bankers if not (_match_market_keys(p) & exclude_legs)]
+        return pool[0]   # already ranked by perceived_edge, kelly, probability
+    clean = [p for p in pool if not (_match_market_keys(p) & exclude_legs)]
     if clean:
         return clean[0]
-    return min(bankers, key=lambda p: len(_match_market_keys(p) & exclude_legs))
+    return min(pool, key=lambda p: len(_match_market_keys(p) & exclude_legs))

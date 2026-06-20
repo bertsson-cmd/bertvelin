@@ -289,7 +289,7 @@ def render_report(slip_a: Parlay | None, slip_b: Parlay | None,
     if slip_b:
         tickets += _ticket("Slip B · alternate", slip_b)
     if slip_d:
-        tickets += _ticket("Veltuseðill · banki 1.6–1.8", slip_d, css="banker")
+        tickets += _ticket("Veltuseðill · besta virði", slip_d, css="banker")
     if slip_c:
         tickets += _ticket("Slip C · longshot 3–5 &#9888;", slip_c, css="risky")
     if not tickets:
