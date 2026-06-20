@@ -14,7 +14,7 @@ import os
 import sys
 
 from analyzer.odds import build_legs, market_margin
-from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip, pick_banker_slip, Parlay
+from analyzer.parlay import band_for_day, build_parlays, pick_two_slips, pick_risky_slip, pick_value_slip, Parlay
 from analyzer.report import render_report
 from analyzer.scraper_epicbet import fetch_epicbet_odds, load_local_odds
 
@@ -130,7 +130,7 @@ def main() -> int:
         abc_markets = ab_markets
         if slip_c:
             abc_markets = abc_markets | _match_market_keys(slip_c)
-        slip_d = pick_banker_slip(legs, exclude_legs=abc_markets or None)
+        slip_d = pick_value_slip(legs, exclude_legs=abc_markets or None)
     if slip_a:
         describe("SLIP A (primary)", slip_a)
     if slip_b:
@@ -138,7 +138,7 @@ def main() -> int:
     if slip_c:
         describe("SLIP C (longshot 3-5, expect it to lose most days)", slip_c)
     if slip_d:
-        describe("VELTUSEDILL (banker 1.6-1.8)", slip_d)
+        describe("VELTUSEDILL (best value, no fixed odds band)", slip_d)
     if not slip_a:
         print("  No qualifying parlay today — that's a legitimate answer. Don't force a bet.")
 
