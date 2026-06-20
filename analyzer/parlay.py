@@ -72,6 +72,26 @@ class Parlay:
         return (self.est_probability * self.combined_odds - 1.0) / b
 
     @property
+    def value_score(self) -> float:
+        """Combined ranking score: edge x probability.
+
+        Neither raw probability nor raw edge alone is the right signal.
+        A huge edge on a coin-flip leg is a guess, not value. A near-certain
+        leg with zero edge is just the market's own favourite restated.
+        This rewards slips that are BOTH genuinely probable AND genuinely
+        divergent from the market's own view — the actual definition of value.
+
+        On quiet days with no adjustments, perceived_edge is ~0 everywhere,
+        so this collapses to a small constant and the ranking falls through
+        to raw probability via the tiebreak in build_parlays' sort key —
+        i.e. behaves exactly like the old "most probable" ranking.
+
+        Uses (1 + edge) rather than raw edge so a zero-edge slip still scores
+        proportional to its probability, rather than collapsing to zero itself.
+        """
+        return self.est_probability * (1.0 + self.perceived_edge)
+
+    @property
     def match_ids(self) -> set[str]:
         return {l.match_id for l in self.legs}
 
@@ -121,10 +141,11 @@ def build_parlays(
             if min_odds <= p.combined_odds <= max_odds:
                 out.append(p)
 
-    # Rank by perceived edge first (how much our estimate diverges from the market's
-    # own fair probability — the closest thing to genuine value in a parlay),
-    # then Kelly fraction (balances that edge against the odds), then raw probability.
-    out.sort(key=lambda p: (p.perceived_edge, p.kelly_fraction, p.est_probability),
+    # Rank by value_score (probability x edge combined) first — this requires
+    # a slip to be BOTH genuinely likely AND genuinely divergent from the
+    # market to rank highly, rather than letting either signal dominate alone.
+    # Kelly fraction and raw probability remain as tiebreaks for near-equal scores.
+    out.sort(key=lambda p: (p.value_score, p.kelly_fraction, p.est_probability),
              reverse=True)
     return out
 
