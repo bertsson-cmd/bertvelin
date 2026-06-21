@@ -836,6 +836,128 @@
     "won": true,
     "profit": 0.66
    }
+  ],
+  "2026-06-20": [
+   {
+    "slip": "A",
+    "combined_odds": 2.1375,
+    "est_probability": 0.4509,
+    "legs": [
+     {
+      "match_id": "4f0c5185",
+      "label": "Sweden handicap +1.5",
+      "home": "Netherlands",
+      "away": "Sweden",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.4249999999999998,
+      "est": 0.6705,
+      "score": "5-1",
+      "won": false
+     },
+     {
+      "match_id": "681895f2",
+      "label": "Ecuador vs Curaçao: over 2.5 goals",
+      "home": "Ecuador",
+      "away": "Curaçao",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.5,
+      "est": 0.6725,
+      "score": "0-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.22,
+    "est_probability": 0.4117,
+    "legs": [
+     {
+      "match_id": "4f0c5185",
+      "label": "Netherlands vs Sweden: under 3.5 goals",
+      "home": "Netherlands",
+      "away": "Sweden",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.48,
+      "est": 0.6501,
+      "score": "5-1",
+      "won": false
+     },
+     {
+      "match_id": "dfc5202c",
+      "label": "Tunisia handicap +1.5",
+      "home": "Tunisia",
+      "away": "Japan",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.5,
+      "est": 0.6333,
+      "score": "0-4",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.0906,
+    "est_probability": 0.2983,
+    "legs": [
+     {
+      "match_id": "f1ab0f69",
+      "label": "Germany to win",
+      "home": "Germany",
+      "away": "Ivory Coast",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.5150000000000001,
+      "est": 0.6298,
+      "score": "2-1",
+      "won": true
+     },
+     {
+      "match_id": "dfc5202c",
+      "label": "Tunisia vs Japan: over 2.5 goals",
+      "home": "Tunisia",
+      "away": "Japan",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 2.04,
+      "est": 0.4737,
+      "score": "0-4",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 2.0906
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.545,
+    "est_probability": 0.6157,
+    "legs": [
+     {
+      "match_id": "f1ab0f69",
+      "label": "Germany vs Ivory Coast: under 3.5 goals",
+      "home": "Germany",
+      "away": "Ivory Coast",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.545,
+      "est": 0.6157,
+      "score": "2-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.545
+   }
   ]
  }
 }
