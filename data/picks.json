@@ -190,5 +190,101 @@
     }
    ]
   }
+ },
+ "2026-06-22": {
+  "A": {
+   "combined_odds": 2.0925,
+   "est_probability": 0.4648,
+   "legs": [
+    {
+     "match_id": "7ad7a0ce",
+     "label": "France vs Iraq: over 2.5 goals",
+     "home": "France",
+     "away": "Iraq",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.35,
+     "est": 0.7309
+    },
+    {
+     "match_id": "fd8533b6",
+     "label": "Algeria to win",
+     "home": "Jordan",
+     "away": "Algeria",
+     "market": "1x2",
+     "outcome": "away",
+     "odds": 1.55,
+     "est": 0.6358
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.0984,
+   "est_probability": 0.4318,
+   "legs": [
+    {
+     "match_id": "7ad7a0ce",
+     "label": "France handicap -2.5",
+     "home": "France",
+     "away": "Iraq",
+     "market": "handicap_minus_2_5",
+     "outcome": "home",
+     "odds": 1.72,
+     "est": 0.5573
+    },
+    {
+     "match_id": "3f484737",
+     "label": "Senegal handicap +1.5",
+     "home": "Norway",
+     "away": "Senegal",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.22,
+     "est": 0.7749
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0369,
+   "est_probability": 0.3043,
+   "legs": [
+    {
+     "match_id": "be6c63f4",
+     "label": "Austria handicap +1.5",
+     "home": "Argentina",
+     "away": "Austria",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.59,
+     "est": 0.6015
+    },
+    {
+     "match_id": "fd8533b6",
+     "label": "Jordan vs Algeria: over 2.5 goals",
+     "home": "Jordan",
+     "away": "Algeria",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.91,
+     "est": 0.5059
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.85,
+   "est_probability": 0.5202,
+   "legs": [
+    {
+     "match_id": "3f484737",
+     "label": "Norway vs Senegal: over 2.5 goals",
+     "home": "Norway",
+     "away": "Senegal",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.85,
+     "est": 0.5202
+    }
+   ]
+  }
  }
 }

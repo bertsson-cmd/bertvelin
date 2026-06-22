@@ -958,6 +958,128 @@
     "won": true,
     "profit": 0.545
    }
+  ],
+  "2026-06-21": [
+   {
+    "slip": "A",
+    "combined_odds": 2.0164,
+    "est_probability": 0.4482,
+    "legs": [
+     {
+      "match_id": "5f92f257",
+      "label": "Belgium to win",
+      "home": "Belgium",
+      "away": "Iran",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.42,
+      "est": 0.6677,
+      "score": "0-0",
+      "won": false
+     },
+     {
+      "match_id": "852a3abe",
+      "label": "Uruguay vs Cape Verde: over 1.5 goals",
+      "home": "Uruguay",
+      "away": "Cape Verde",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.42,
+      "est": 0.6713,
+      "score": "2-2",
+      "won": true
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.1242,
+    "est_probability": 0.4234,
+    "legs": [
+     {
+      "match_id": "852a3abe",
+      "label": "Uruguay to win",
+      "home": "Uruguay",
+      "away": "Cape Verde",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.45,
+      "est": 0.6493,
+      "score": "2-2",
+      "won": false
+     },
+     {
+      "match_id": "c1ec9a65",
+      "label": "New Zealand handicap +1.5",
+      "home": "New Zealand",
+      "away": "Egypt",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.4649999999999999,
+      "est": 0.652,
+      "score": "1-3",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.1506,
+    "est_probability": 0.2838,
+    "legs": [
+     {
+      "match_id": "73529a24",
+      "label": "Spain vs Saudi Arabia: under 3.5 goals",
+      "home": "Spain",
+      "away": "Saudi Arabia",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.77,
+      "est": 0.5317,
+      "score": "4-0",
+      "won": false
+     },
+     {
+      "match_id": "5f92f257",
+      "label": "Belgium vs Iran: over 2.5 goals",
+      "home": "Belgium",
+      "away": "Iran",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.78,
+      "est": 0.5338,
+      "score": "0-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.83,
+    "est_probability": 0.5222,
+    "legs": [
+     {
+      "match_id": "73529a24",
+      "label": "Spain handicap -2.5",
+      "home": "Spain",
+      "away": "Saudi Arabia",
+      "market": "handicap_minus_2_5",
+      "outcome": "home",
+      "odds": 1.83,
+      "est": 0.5222,
+      "score": "4-0",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.83
+   }
   ]
  }
 }
