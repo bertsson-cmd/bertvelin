@@ -286,5 +286,111 @@
     }
    ]
   }
+ },
+ "2026-06-23": {
+  "A": {
+   "combined_odds": 2.0355,
+   "est_probability": 0.4554,
+   "legs": [
+    {
+     "match_id": "2f49dd8d",
+     "label": "England to win",
+     "home": "England",
+     "away": "Ghana",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.18,
+     "est": 0.8129
+    },
+    {
+     "match_id": "c1bc8c26",
+     "label": "Panama vs Croatia: over 2.5 goals",
+     "home": "Panama",
+     "away": "Croatia",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.725,
+     "est": 0.5602
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.0727,
+   "est_probability": 0.4477,
+   "legs": [
+    {
+     "match_id": "8ba93d19",
+     "label": "Portugal vs Uzbekistan: over 2.5 goals",
+     "home": "Portugal",
+     "away": "Uzbekistan",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.47,
+     "est": 0.6617
+    },
+    {
+     "match_id": "68bfc965",
+     "label": "Colombia vs DR Congo: over 1.5 goals",
+     "home": "Colombia",
+     "away": "DR Congo",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.41,
+     "est": 0.6766
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.5343,
+   "est_probability": 0.2505,
+   "legs": [
+    {
+     "match_id": "2f49dd8d",
+     "label": "England vs Ghana: under 3.5 goals",
+     "home": "England",
+     "away": "Ghana",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.53,
+     "est": 0.6295
+    },
+    {
+     "match_id": "c1bc8c26",
+     "label": "Croatia to win",
+     "home": "Panama",
+     "away": "Croatia",
+     "market": "1x2",
+     "outcome": "away",
+     "odds": 1.5,
+     "est": 0.635
+    },
+    {
+     "match_id": "68bfc965",
+     "label": "Colombia to win",
+     "home": "Colombia",
+     "away": "DR Congo",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.54,
+     "est": 0.6266
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.68,
+   "est_probability": 0.5614,
+   "legs": [
+    {
+     "match_id": "8ba93d19",
+     "label": "Uzbekistan handicap +2.5",
+     "home": "Portugal",
+     "away": "Uzbekistan",
+     "market": "handicap_minus_2_5",
+     "outcome": "away",
+     "odds": 1.68,
+     "est": 0.5614
+    }
+   ]
+  }
  }
 }
