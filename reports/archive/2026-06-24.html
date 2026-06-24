@@ -1,0 +1,259 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bertpicker 1.2 — Wednesday 24 June 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desktop:#008080; --chrome:#c0c0c0; --titlebar1:#000080; --titlebar2:#1084d0;
+  --ink:#000; --shadow:#404040; --hilite:#fff; --mid:#808080;
+  --grass:#5d9c3a; --grassdark:#3e6b26; --dirt:#6b4a2f;
+  --navy:#000080; --warnbar1:#7a0a0a; --warnbar2:#c43a10;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--desktop);color:var(--ink);
+  font-family:Tahoma,"MS Sans Serif",Geneva,sans-serif;font-size:12px;
+  min-height:100vh;padding:28px 16px 64px}
+.wrap{max-width:960px;margin:0 auto}
+
+/* ---- pixel-block logo ---- */
+.logo{ text-align:center;margin:8px 0 6px;
+  font-family:"Press Start 2P",monospace;color:var(--grass);
+  font-size:clamp(20px,4.6vw,40px);letter-spacing:2px;line-height:1.2;
+  text-shadow:0 3px 0 var(--grassdark),0 6px 0 var(--dirt),
+              3px 0 0 var(--grassdark),-3px 0 0 var(--grassdark),
+              6px 9px 0 rgba(0,0,0,.35);
+  -webkit-text-stroke:1px #1d3312}
+.logo small{font-size:.45em;color:#e9e2c8;
+  text-shadow:0 2px 0 #6b6450,2px 3px 0 rgba(0,0,0,.35);-webkit-text-stroke:1px #444}
+.splash{ text-align:center;font-family:"Press Start 2P",monospace;
+  font-size:10px;color:#ff0;transform:rotate(-6deg);margin:2px 0 22px;
+  text-shadow:2px 2px 0 #5a5a00}
+@media (prefers-reduced-motion:no-preference){
+  .splash{animation:pulse 1s infinite alternate}
+  @keyframes pulse{from{scale:1}to{scale:1.06}}
+}
+
+/* ---- win95 window chrome ---- */
+.win{background:var(--chrome);padding:3px;margin-bottom:24px;
+  border:2px solid;border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite);
+  box-shadow:1px 1px 0 #000,4px 4px 0 rgba(0,0,0,.25)}
+.tbar{display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(90deg,var(--titlebar1),var(--titlebar2));
+  color:#fff;font-weight:bold;font-size:12px;padding:3px 4px 3px 8px;gap:8px}
+.win.risky .tbar{background:linear-gradient(90deg,var(--warnbar1),var(--warnbar2))}
+.win.banker .tbar{background:linear-gradient(90deg,#0a5a2a,#1e9c54)}
+.tbtns{display:flex;gap:2px}
+.tbtns i{font-style:normal;width:18px;height:16px;display:inline-flex;
+  align-items:center;justify-content:center;background:var(--chrome);color:#000;
+  font:bold 10px Tahoma;border:2px solid;
+  border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite)}
+.menu{font-size:12px;padding:3px 8px;border-bottom:1px solid var(--mid)}
+.menu u{text-decoration:underline}
+.win-body{padding:10px}
+
+/* ---- slips grid ---- */
+.slips{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 20px}
+
+/* ---- legs ---- */
+.combined{display:flex;justify-content:space-between;align-items:baseline;
+  background:#fff;border:2px solid;margin-bottom:10px;padding:6px 10px;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.combined b{font-family:"VT323",monospace;font-size:30px}
+.leg{margin-bottom:12px}
+.leg .pick{font-weight:bold}
+.leg .meta{display:flex;justify-content:space-between;color:#222;margin:2px 0 4px;
+  font-family:"VT323",monospace;font-size:16px}
+.pbar{height:16px;background:#fff;padding:2px;border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.pbar i{display:block;height:100%;
+  background:repeating-linear-gradient(90deg,var(--navy) 0 8px,transparent 8px 11px)}
+.win.risky .pbar i{background:repeating-linear-gradient(90deg,#a04000 0 8px,transparent 8px 11px)}
+.win.banker .pbar i{background:repeating-linear-gradient(90deg,#0a5a2a 0 8px,transparent 8px 11px)}
+
+/* ---- status bar / EV ---- */
+.status{display:flex;gap:4px;margin-top:10px;font-size:11px}
+.cell{flex:1;padding:3px 8px;background:var(--chrome);border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.cell.ev{color:#a00000;font-weight:bold;flex:0 0 auto}
+
+/* ---- notepad (reasoning) ---- */
+.notepad .win-body{background:#fff;border:2px solid;margin:0 3px 3px;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid);
+  font-family:"VT323",monospace;font-size:17px;line-height:1.45;padding:12px 14px}
+.notepad li{margin-bottom:6px;list-style:none}
+.notepad li::before{content:"> ";color:var(--navy)}
+.notepad .warnline{color:#a00000}
+
+/* ---- scoreboard ---- */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:4px;margin-bottom:10px}
+.score-cell{background:#fff;border:2px solid;padding:6px 8px;text-align:center;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.score-cell b{display:block;font-family:"VT323",monospace;font-size:26px;line-height:1}
+.score-cell span{font-size:10px;color:#444}
+.score-cell.pos b{color:#006400}.score-cell.neg b{color:#a00000}
+.settled{font-family:"VT323",monospace;font-size:16px;line-height:1.5}
+.settled .w{color:#006400;font-weight:bold}.settled .l{color:#a00000;font-weight:bold}
+.settled{font-size:15px;max-height:240px;overflow-y:auto}
+.tab-bar{display:flex;gap:2px;margin-bottom:-1px;position:relative;z-index:1}
+.tab{padding:3px 9px;background:#a0a0a0;border:2px solid;font-size:11px;font-weight:bold;cursor:pointer;
+  border-color:var(--hilite) var(--shadow) var(--chrome) var(--hilite);white-space:nowrap;user-select:none}
+.tab.active{background:var(--chrome);border-bottom-color:var(--chrome);padding-bottom:5px}
+.tab-panel{display:none;border:2px solid;padding:8px;border-color:var(--shadow) var(--hilite) var(--hilite) var(--shadow)}
+.tab-panel.active{display:block}
+
+/* ---- error dialog for empty days ---- */
+.dialog{max-width:430px;margin:0 auto 24px}
+.dialog .win-body{display:flex;gap:12px;align-items:flex-start}
+.dialog .icon{font-size:30px;line-height:1}
+.dialog .ok{display:block;margin:12px auto 4px;padding:4px 28px;background:var(--chrome);
+  font:bold 12px Tahoma;border:2px solid;
+  border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite)}
+
+/* ---- taskbar ---- */
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:34px;background:var(--chrome);
+  border-top:2px solid var(--hilite);display:flex;align-items:center;gap:6px;
+  padding:3px 6px;z-index:9}
+.start{display:inline-flex;align-items:center;gap:5px;font:bold 12px Tahoma;
+  padding:3px 10px;background:var(--chrome);border:2px solid;
+  border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite)}
+.start .flag{font-family:"Press Start 2P",monospace;font-size:9px;color:var(--grass)}
+.task{font-size:11px;padding:4px 10px;background:#dcdcdc;border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.clock{margin-left:auto;font-size:11px;padding:4px 10px;border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+</style></head><body><div class="wrap">
+
+<div class="logo">BERTPICKER <small>1.2</small></div>
+<div class="splash">REMONTADA EDITION</div>
+
+<div class="slips">
+    <div class="win ">
+      <div class="tbar"><span>Slip_A.exe — Slip A · primary</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+      <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>B</u>et&nbsp;&nbsp;<u>H</u>elp</div>
+      <div class="win-body">
+        <div class="combined"><span>Combined odds</span><b>2.09</b></div>
+        
+      <div class="leg">
+        <div class="pick">Czech Republic handicap +1.5</div>
+        <div class="meta"><span>handicap plus 1 5</span><span>@ 1.25</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:75%"></i></div>
+        <div class="meta"><span>est. probability</span><span>75%</span></div>
+      </div>
+      <div class="leg">
+        <div class="pick">South Korea to win</div>
+        <div class="meta"><span>1x2</span><span>@ 1.67</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:59%"></i></div>
+        <div class="meta"><span>est. probability</span><span>59%</span></div>
+      </div>
+        <div class="status">
+          <div class="cell">Hit rate ~45%</div>
+          <div class="cell">Market: ~43%</div>
+          <div class="cell ev" title="Perceived edge vs market fair probability">Edge +3.5% | EV -7.0%</div>
+        </div>
+      </div>
+    </div>
+    <div class="win ">
+      <div class="tbar"><span>Slip_B.exe — Slip B · alternate</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+      <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>B</u>et&nbsp;&nbsp;<u>H</u>elp</div>
+      <div class="win-body">
+        <div class="combined"><span>Combined odds</span><b>2.06</b></div>
+        
+      <div class="leg">
+        <div class="pick">Bosnia & Herzegovina vs Qatar: over 2.5 goals</div>
+        <div class="meta"><span>over under 2 5</span><span>@ 1.55</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:61%"></i></div>
+        <div class="meta"><span>est. probability</span><span>61%</span></div>
+      </div>
+      <div class="leg">
+        <div class="pick">Brazil to win</div>
+        <div class="meta"><span>1x2</span><span>@ 1.33</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:72%"></i></div>
+        <div class="meta"><span>est. probability</span><span>72%</span></div>
+      </div>
+        <div class="status">
+          <div class="cell">Hit rate ~44%</div>
+          <div class="cell">Market: ~44%</div>
+          <div class="cell ev" title="Perceived edge vs market fair probability">Edge +1.2% | EV -9.2%</div>
+        </div>
+      </div>
+    </div>
+    <div class="win banker">
+      <div class="tbar"><span>Veltuseðill.exe — Veltuseðill · besta virði</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+      <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>B</u>et&nbsp;&nbsp;<u>H</u>elp</div>
+      <div class="win-body">
+        <div class="combined"><span>Combined odds</span><b>1.39</b></div>
+        
+      <div class="leg">
+        <div class="pick">Bosnia & Herzegovina to win</div>
+        <div class="meta"><span>1x2</span><span>@ 1.39</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:69%"></i></div>
+        <div class="meta"><span>est. probability</span><span>69%</span></div>
+      </div>
+        <div class="status">
+          <div class="cell">Hit rate ~69%</div>
+          <div class="cell">Market: ~69%</div>
+          <div class="cell ev" title="Perceived edge vs market fair probability">Edge +0.0% | EV -4.6%</div>
+        </div>
+      </div>
+    </div>
+    <div class="win risky">
+      <div class="tbar"><span>Slip_C.exe — Slip C · longshot 3–5 &#9888;</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+      <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>B</u>et&nbsp;&nbsp;<u>H</u>elp</div>
+      <div class="win-body">
+        <div class="combined"><span>Combined odds</span><b>3.12</b></div>
+        
+      <div class="leg">
+        <div class="pick">Switzerland vs Canada: over 2.5 goals</div>
+        <div class="meta"><span>over under 2 5</span><span>@ 2.05</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:47%"></i></div>
+        <div class="meta"><span>est. probability</span><span>47%</span></div>
+      </div>
+      <div class="leg">
+        <div class="pick">Morocco vs Haiti: over 2.5 goals</div>
+        <div class="meta"><span>over under 2 5</span><span>@ 1.52</span></div>
+        <div class="pbar" title="estimated probability"><i style="width:62%"></i></div>
+        <div class="meta"><span>est. probability</span><span>62%</span></div>
+      </div>
+        <div class="status">
+          <div class="cell">Hit rate ~29%</div>
+          <div class="cell">Market: ~29%</div>
+          <div class="cell ev" title="Perceived edge vs market fair probability">Edge +1.9% | EV -8.4%</div>
+        </div>
+      </div>
+    </div></div>
+
+<div class="win">
+  <div class="tbar"><span>stadan.exe — Scoreboard</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>V</u>iew&nbsp;&nbsp;<u>H</u>elp</div>
+  <div class="win-body"><div class="tab-bar"><span class="tab active" onclick="sbTab(this,'sb-Heild')">Heild</span><span class="tab" onclick="sbTab(this,'sb-SlipA')">Slip A</span><span class="tab" onclick="sbTab(this,'sb-SlipB')">Slip B</span><span class="tab" onclick="sbTab(this,'sb-SlipC')">Slip C</span><span class="tab" onclick="sbTab(this,'sb-Velta')">Velta</span></div><div class="tab-panel active" id="sb-Heild"><div class="score-grid"><div class="score-cell"><b>15–27</b><span>Heild W–L</span></div><div class="score-cell"><b>36%</b><span>hit rate</span></div><div class="score-cell neg"><b>-9.09u</b><span>units</span></div></div><div class="settled"><b>Síðasti dagur (2026-06-23):</b><br>Slip A @ 2.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; England to win (0-0)<br>&nbsp;&nbsp;&#10007; Panama vs Croatia: over 2.5 goals (0-1)<br>Slip B @ 2.07 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Portugal vs Uzbekistan: over 2.5 goals (5-0)<br>&nbsp;&nbsp;&#10007; Colombia vs DR Congo: over 1.5 goals (1-0)<br>Slip C @ 3.53 — <span class="w">WON</span> (+2.53u)<br>&nbsp;&nbsp;&#10003; England vs Ghana: under 3.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Croatia to win (0-1)<br>&nbsp;&nbsp;&#10003; Colombia to win (1-0)<br>Slip D @ 1.68 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Uzbekistan handicap +2.5 (5-0)</div></div><div class="tab-panel" id="sb-SlipA"><div class="score-grid"><div class="score-cell"><b>1–11</b><span>Slip A W–L</span></div><div class="score-cell"><b>8%</b><span>hit rate</span></div><div class="score-cell neg"><b>-9.91u</b><span>units</span></div></div><div class="settled">2026-06-23 @ 2.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; England to win (0-0)<br>&nbsp;&nbsp;&#10007; Panama vs Croatia: over 2.5 goals (0-1)<br><br>2026-06-22 @ 2.09 — <span class="w">WON</span> (+1.09u)<br>&nbsp;&nbsp;&#10003; France vs Iraq: over 2.5 goals (3-0)<br>&nbsp;&nbsp;&#10003; Algeria to win (1-2)<br><br>2026-06-21 @ 2.02 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Belgium to win (0-0)<br>&nbsp;&nbsp;&#10003; Uruguay vs Cape Verde: over 1.5 goals (2-2)<br><br>2026-06-20 @ 2.14 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Sweden handicap +1.5 (5-1)<br>&nbsp;&nbsp;&#10007; Ecuador vs Curaçao: over 2.5 goals (0-0)<br><br>2026-06-18 @ 2.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Canada vs Qatar: under 3.5 goals (6-0)<br>&nbsp;&nbsp;&#10007; Mexico vs South Korea: over 1.5 goals (1-0)<br><br>2026-06-17 @ 2.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Portugal to win (1-1)<br>&nbsp;&nbsp;&#10003; Ghana vs Panama: under 2.5 goals (1-0)<br><br>2026-06-16 @ 2.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Norway to win (1-4)<br>&nbsp;&nbsp;&#10007; Algeria handicap +1.5 (3-0)<br><br>2026-06-15 @ 2.00 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Cape Verde: over 2.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Egypt handicap +1.5 (1-1)<br><br>2026-06-14 @ 2.02 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Germany vs Curaçao: over 2.5 goals (7-1)<br>&nbsp;&nbsp;&#10007; Sweden vs Tunisia: under 2.5 goals (5-1)<br><br>2026-06-13 @ 2.02 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Switzerland to win (1-1)<br>&nbsp;&nbsp;&#10007; Brazil to win (1-1)<br><br>2026-06-12 @ 1.81 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; USA vs Paraguay: over 1.5 goals (4-1)<br>&nbsp;&nbsp;&#10007; Paraguay handicap +1.5 (4-1)<br><br>2026-06-11 @ 1.83 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; South Africa handicap +1.5 (2-0)<br>&nbsp;&nbsp;&#10003; Czech Republic handicap +1.5 (2-1)</div></div><div class="tab-panel" id="sb-SlipB"><div class="score-grid"><div class="score-cell"><b>7–5</b><span>Slip B W–L</span></div><div class="score-cell"><b>58%</b><span>hit rate</span></div><div class="score-cell pos"><b>+2.29u</b><span>units</span></div></div><div class="settled">2026-06-23 @ 2.07 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Portugal vs Uzbekistan: over 2.5 goals (5-0)<br>&nbsp;&nbsp;&#10007; Colombia vs DR Congo: over 1.5 goals (1-0)<br><br>2026-06-22 @ 2.10 — <span class="w">WON</span> (+1.10u)<br>&nbsp;&nbsp;&#10003; France handicap -2.5 (3-0)<br>&nbsp;&nbsp;&#10003; Senegal handicap +1.5 (3-2)<br><br>2026-06-21 @ 2.12 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Uruguay to win (2-2)<br>&nbsp;&nbsp;&#10007; New Zealand handicap +1.5 (1-3)<br><br>2026-06-20 @ 2.22 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Netherlands vs Sweden: under 3.5 goals (5-1)<br>&nbsp;&nbsp;&#10007; Tunisia handicap +1.5 (0-4)<br><br>2026-06-18 @ 2.02 — <span class="w">WON</span> (+1.01u)<br>&nbsp;&nbsp;&#10003; South Africa handicap +1.5 (1-1)<br>&nbsp;&nbsp;&#10003; Switzerland to win (4-1)<br><br>2026-06-17 @ 2.23 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Panama handicap +0.5 (1-0)<br>&nbsp;&nbsp;&#10003; Colombia to win (1-3)<br><br>2026-06-16 @ 2.04 — <span class="w">WON</span> (+1.04u)<br>&nbsp;&nbsp;&#10003; France to win (3-1)<br>&nbsp;&nbsp;&#10003; Austria to win (3-1)<br><br>2026-06-15 @ 2.00 — <span class="w">WON</span> (+1.00u)<br>&nbsp;&nbsp;&#10003; Saudi Arabia handicap +1.5 (1-1)<br>&nbsp;&nbsp;&#10003; New Zealand handicap +1.5 (2-2)<br><br>2026-06-14 @ 2.05 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Japan handicap +1.5 (2-2)<br>&nbsp;&nbsp;&#10007; Sweden vs Tunisia: under 2.5 goals (5-1)<br><br>2026-06-13 @ 2.13 — <span class="w">WON</span> (+1.13u)<br>&nbsp;&nbsp;&#10003; Scotland to win (0-1)<br>&nbsp;&nbsp;&#10003; Australia handicap +1.5 (2-0)<br><br>2026-06-12 @ 2.15 — <span class="w">WON</span> (+1.15u)<br>&nbsp;&nbsp;&#10003; Canada vs Bosnia & Herzegovina: under 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; Bosnia & Herzegovina handicap +1.5 (1-1)<br><br>2026-06-11 @ 1.85 — <span class="w">WON</span> (+0.85u)<br>&nbsp;&nbsp;&#10003; Mexico vs South Africa: under 2.5 goals (2-0)<br>&nbsp;&nbsp;&#10003; Czech Republic handicap +1.5 (2-1)</div></div><div class="tab-panel" id="sb-SlipC"><div class="score-grid"><div class="score-cell"><b>3–9</b><span>Slip C W–L</span></div><div class="score-cell"><b>25%</b><span>hit rate</span></div><div class="score-cell neg"><b>-2.36u</b><span>units</span></div></div><div class="settled">2026-06-23 @ 3.53 — <span class="w">WON</span> (+2.53u)<br>&nbsp;&nbsp;&#10003; England vs Ghana: under 3.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Croatia to win (0-1)<br>&nbsp;&nbsp;&#10003; Colombia to win (1-0)<br><br>2026-06-22 @ 3.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Austria handicap +1.5 (2-0)<br>&nbsp;&nbsp;&#10003; Jordan vs Algeria: over 2.5 goals (1-2)<br><br>2026-06-21 @ 3.15 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Saudi Arabia: under 3.5 goals (4-0)<br>&nbsp;&nbsp;&#10007; Belgium vs Iran: over 2.5 goals (0-0)<br><br>2026-06-20 @ 3.09 — <span class="w">WON</span> (+2.09u)<br>&nbsp;&nbsp;&#10003; Germany to win (2-1)<br>&nbsp;&nbsp;&#10003; Tunisia vs Japan: over 2.5 goals (0-4)<br><br>2026-06-18 @ 3.09 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Czech Republic vs South Africa: under 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10007; South Korea handicap +0.5 (1-0)<br><br>2026-06-17 @ 3.06 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Portugal vs DR Congo: over 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; England to win (4-2)<br><br>2026-06-16 @ 3.08 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; France vs Senegal: under 2.5 goals (3-1)<br>&nbsp;&nbsp;&#10007; Iraq vs Norway: under 3.5 goals (1-4)<br><br>2026-06-15 @ 3.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Saudi Arabia vs Uruguay: over 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; Iran vs New Zealand: over 1.5 goals (2-2)<br><br>2026-06-14 @ 3.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Japan handicap +0.5 (2-2)<br>&nbsp;&nbsp;&#10007; Sweden vs Tunisia: under 2.5 goals (5-1)<br><br>2026-06-13 @ 3.01 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Switzerland handicap -1.5 (1-1)<br>&nbsp;&nbsp;&#10003; Australia vs Turkey: under 2.5 goals (2-0)<br><br>2026-06-12 @ 3.02 — <span class="w">WON</span> (+2.02u)<br>&nbsp;&nbsp;&#10003; Bosnia & Herzegovina handicap +0.5 (1-1)<br>&nbsp;&nbsp;&#10003; USA vs Paraguay: over 1.5 goals (4-1)<br><br>2026-06-11 @ 3.00 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Mexico vs South Africa: under 2.5 goals (2-0)<br>&nbsp;&nbsp;&#10007; South Africa handicap +1.5 (2-0)<br>&nbsp;&nbsp;&#10003; Czech Republic handicap +1.5 (2-1)</div></div><div class="tab-panel" id="sb-Velta"><div class="score-grid"><div class="score-cell"><b>4–2</b><span>Veltuseðill W–L</span></div><div class="score-cell"><b>67%</b><span>hit rate</span></div><div class="score-cell pos"><b>+0.89u</b><span>units</span></div></div><div class="settled">2026-06-23 @ 1.68 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Uzbekistan handicap +2.5 (5-0)<br><br>2026-06-22 @ 1.85 — <span class="w">WON</span> (+0.85u)<br>&nbsp;&nbsp;&#10003; Norway vs Senegal: over 2.5 goals (3-2)<br><br>2026-06-21 @ 1.83 — <span class="w">WON</span> (+0.83u)<br>&nbsp;&nbsp;&#10003; Spain handicap -2.5 (4-0)<br><br>2026-06-20 @ 1.54 — <span class="w">WON</span> (+0.55u)<br>&nbsp;&nbsp;&#10003; Germany vs Ivory Coast: under 3.5 goals (2-1)<br><br>2026-06-18 @ 1.66 — <span class="w">WON</span> (+0.66u)<br>&nbsp;&nbsp;&#10003; Mexico vs South Korea: under 2.5 goals (1-0)<br><br>2026-06-17 @ 1.64 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Panama handicap +0.5 (1-0)</div></div><script>
+function sbTab(el,id){
+  var w=el.closest('.win');
+  w.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  w.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+</script></div>
+</div>
+
+<div class="win notepad">
+  <div class="tbar"><span>reasoning.txt — Notepad</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>S</u>earch&nbsp;&nbsp;<u>H</u>elp</div>
+  <div class="win-body"><ul><li><b>Bosnia & Herzegovina v Qatar</b>: Kickoff forecast at Lumen Field, Seattle: 27°C, 43% humidity, wind 7 km/h, rain 0%</li><li><b>Bosnia & Herzegovina v Qatar</b>: → High-scoring WC form (3.8/game) — nudge toward over 2.5</li><li><b>Switzerland v Canada</b>: BC Place, Vancouver has a roof — weather neutral</li><li><b>Switzerland v Canada</b>: → High-scoring WC form (3.8/game) — nudge toward over 2.5</li><li><b>Scotland v Brazil</b>: Kickoff forecast at Hard Rock Stadium, Miami: 31°C, 59% humidity, wind 12 km/h, rain 19%</li><li><b>Scotland v Brazil</b>: → Severe heat+humidity: tempo drops, more draws/unders historically; small nudge toward draw and under 2.5</li><li><b>Scotland v Brazil</b>: → Low-scoring WC form (1.8/game) — nudge toward under 2.5</li><li><b>Scotland v Brazil</b>: AI🤖 [high]: Brazil has a significant advantage in terms of squad quality and historical performance, which suggests they are likely to win against Scotland.</li><li><b>Scotland v Brazil</b>: AI🤖 [high]: Scotland's motivation to win is high as they need points to advance, but Brazil's quality might still prevail.</li><li><b>Morocco v Haiti</b>: Mercedes-Benz Stadium, Atlanta has a roof — weather neutral</li><li><b>Morocco v Haiti</b>: → Low-scoring WC form (1.8/game) — nudge toward under 2.5</li><li><b>Morocco v Haiti</b>: AI🤖: Morocco has a strong squad depth and has been consistent in their performances, which implies they are likely to dominate the game against Haiti.</li><li><b>Czech Republic v Mexico</b>: Played at altitude (2200m, Estadio Azteca, Mexico City) — favours the acclimatised side, typically the CONCACAF host</li><li><b>Czech Republic v Mexico</b>: Kickoff forecast at Estadio Azteca, Mexico City: 17°C, 81% humidity, wind 2 km/h, rain 94%</li><li><b>Czech Republic v Mexico</b>: → Likely rain: greasy surface, marginally more goal chaos; no adjustment, just awareness</li><li><b>Czech Republic v Mexico</b>: → Below-average WC form (2.0/game) — small nudge toward under 2.5</li><li><b>South Africa v South Korea</b>: Kickoff forecast at Estadio BBVA, Monterrey: 31°C, 45% humidity, wind 24 km/h, rain 0%</li><li><b>South Africa v South Korea</b>: → Below-average WC form (2.0/game) — small nudge toward under 2.5</li><li><b>South Africa v South Korea</b>: AI🤖: South Korea has been performing well and has a strong team, which implies they have a higher chance of winning against South Africa.</li><li><b>Bosnia & Herzegovina v Qatar</b>: WC form: Bosnia & Herzegovina avg 3.5 total goals/game (2g); Qatar avg 4.0 (2g); combined 3.8</li><li><b>Switzerland v Canada</b>: WC form: Switzerland avg 3.5 total goals/game (2g); Canada avg 4.0 (2g); combined 3.8</li><li><b>Morocco v Haiti</b>: WC form: Morocco avg 1.5 total goals/game (2g); Haiti avg 2.0 (2g); combined 1.8</li>
+  <li class="warnline">* Velur tvo líklegustu seðla til að detta á bilinu 2.0 og 2.99 í stuðli. Notast er aðallega við 1x2, over/unders og fjölda marka. Þriðji seðilinn er vibe seðill sem er með hærri stuðul.
+  Ef seðlar tapast þá bara it is what it is, gerir þetta á eigin ábyrgð kútur.</li>
+  <li>Odds source: market consensus (us,uk,eu,au region, median of books). Ekki hægt að taka beint frá Epicbet/Coolbet. Stuðlarnir kunna því að vera örlítið frábrugðnir Epicbet/Coolbet - þið metið þetta bara kútar.</li>
+  <li>Spilið smátt og fyrir skemmtunina. Ef þetta hættir að vera gaman: SÁÁ (saa.is) eða hjálparsími Rauða krossins 1717.</li>
+  </ul></div>
+</div>
+
+</div>
+<div class="taskbar">
+  <span class="start"><span class="flag">&#9632;&#9632;</span>Start</span>
+  <span class="task">&#127942; Bertpicker 1.1 </span>
+  <span class="task">&#127942; Búðin - úrval </span>
+  <a class="task" style="text-decoration:none;color:#000" href="index.html">&#128193; Gamlir seðlar</a>
+  <span class="clock">Wednesday 24 June 2026</span>
+</div>
+</body></html>
