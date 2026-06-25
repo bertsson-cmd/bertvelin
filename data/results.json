@@ -1336,6 +1336,128 @@
     "won": false,
     "profit": -1.0
    }
+  ],
+  "2026-06-24": [
+   {
+    "slip": "A",
+    "combined_odds": 2.0875,
+    "est_probability": 0.4453,
+    "legs": [
+     {
+      "match_id": "5993bd51",
+      "label": "Czech Republic handicap +1.5",
+      "home": "Czech Republic",
+      "away": "Mexico",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.25,
+      "est": 0.7549,
+      "score": "0-3",
+      "won": false
+     },
+     {
+      "match_id": "c0355dfc",
+      "label": "South Korea to win",
+      "home": "South Africa",
+      "away": "South Korea",
+      "market": "1x2",
+      "outcome": "away",
+      "odds": 1.67,
+      "est": 0.5899,
+      "score": "1-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.0615,
+    "est_probability": 0.4402,
+    "legs": [
+     {
+      "match_id": "512ac18b",
+      "label": "Bosnia & Herzegovina vs Qatar: over 2.5 goals",
+      "home": "Bosnia & Herzegovina",
+      "away": "Qatar",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.55,
+      "est": 0.6143,
+      "score": "3-1",
+      "won": true
+     },
+     {
+      "match_id": "885ba958",
+      "label": "Brazil to win",
+      "home": "Scotland",
+      "away": "Brazil",
+      "market": "1x2",
+      "outcome": "away",
+      "odds": 1.33,
+      "est": 0.7166,
+      "score": "0-3",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 1.0615
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.116,
+    "est_probability": 0.294,
+    "legs": [
+     {
+      "match_id": "c9ef5822",
+      "label": "Switzerland vs Canada: over 2.5 goals",
+      "home": "Switzerland",
+      "away": "Canada",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 2.05,
+      "est": 0.4711,
+      "score": "2-1",
+      "won": true
+     },
+     {
+      "match_id": "d1279ce7",
+      "label": "Morocco vs Haiti: over 2.5 goals",
+      "home": "Morocco",
+      "away": "Haiti",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.52,
+      "est": 0.6241,
+      "score": "4-2",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 2.116
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.39,
+    "est_probability": 0.6866,
+    "legs": [
+     {
+      "match_id": "512ac18b",
+      "label": "Bosnia & Herzegovina to win",
+      "home": "Bosnia & Herzegovina",
+      "away": "Qatar",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.39,
+      "est": 0.6866,
+      "score": "3-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.39
+   }
   ]
  }
 }

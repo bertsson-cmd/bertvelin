@@ -488,5 +488,101 @@
     }
    ]
   }
+ },
+ "2026-06-25": {
+  "A": {
+   "combined_odds": 2.0294,
+   "est_probability": 0.4516,
+   "legs": [
+    {
+     "match_id": "f3c4657d",
+     "label": "Tunisia vs Netherlands: over 2.5 goals",
+     "home": "Tunisia",
+     "away": "Netherlands",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.39,
+     "est": 0.6931
+    },
+    {
+     "match_id": "22f6ac06",
+     "label": "Australia handicap +0.5",
+     "home": "Paraguay",
+     "away": "Australia",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.46,
+     "est": 0.6516
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.0083,
+   "est_probability": 0.452,
+   "legs": [
+    {
+     "match_id": "0ec28b84",
+     "label": "Ecuador vs Germany: under 3.5 goals",
+     "home": "Ecuador",
+     "away": "Germany",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.51,
+     "est": 0.637
+    },
+    {
+     "match_id": "f41aeac9",
+     "label": "Turkey handicap +1.5",
+     "home": "Turkey",
+     "away": "USA",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.33,
+     "est": 0.7096
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.06,
+   "est_probability": 0.3059,
+   "legs": [
+    {
+     "match_id": "0ec28b84",
+     "label": "Germany handicap -0.5",
+     "home": "Ecuador",
+     "away": "Germany",
+     "market": "handicap_plus_0_5",
+     "outcome": "away",
+     "odds": 1.53,
+     "est": 0.6348
+    },
+    {
+     "match_id": "0ed0233b",
+     "label": "Sweden handicap +0.5",
+     "home": "Japan",
+     "away": "Sweden",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 2.0,
+     "est": 0.4819
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.395,
+   "est_probability": 0.6782,
+   "legs": [
+    {
+     "match_id": "22f6ac06",
+     "label": "Paraguay vs Australia: under 2.5 goals",
+     "home": "Paraguay",
+     "away": "Australia",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.395,
+     "est": 0.6782
+    }
+   ]
+  }
  }
 }
