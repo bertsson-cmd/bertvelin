@@ -1580,6 +1580,140 @@
     "won": true,
     "profit": 0.395
    }
+  ],
+  "2026-06-26": [
+   {
+    "slip": "A",
+    "combined_odds": 2.0142,
+    "est_probability": 0.4407,
+    "legs": [
+     {
+      "match_id": "7e6aee29",
+      "label": "Senegal vs Iraq: over 2.5 goals",
+      "home": "Senegal",
+      "away": "Iraq",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.55,
+      "est": 0.6427,
+      "score": "5-0",
+      "won": true
+     },
+     {
+      "match_id": "e07b1926",
+      "label": "Saudi Arabia handicap +1.5",
+      "home": "Cape Verde",
+      "away": "Saudi Arabia",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.13,
+      "est": 0.8358,
+      "score": "0-0",
+      "won": true
+     },
+     {
+      "match_id": "3e3b5fa2",
+      "label": "Iran handicap +1.5",
+      "home": "Egypt",
+      "away": "Iran",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.15,
+      "est": 0.8203,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 1.0142
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.0664,
+    "est_probability": 0.439,
+    "legs": [
+     {
+      "match_id": "7e6aee29",
+      "label": "Senegal to win",
+      "home": "Senegal",
+      "away": "Iraq",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.23,
+      "est": 0.7742,
+      "score": "5-0",
+      "won": true
+     },
+     {
+      "match_id": "581691da",
+      "label": "New Zealand handicap +2.5",
+      "home": "New Zealand",
+      "away": "Belgium",
+      "market": "handicap_plus_2_5",
+      "outcome": "home",
+      "odds": 1.68,
+      "est": 0.567,
+      "score": "1-5",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.1717,
+    "est_probability": 0.2922,
+    "legs": [
+     {
+      "match_id": "b86b4d60",
+      "label": "France to win",
+      "home": "Norway",
+      "away": "France",
+      "market": "1x2",
+      "outcome": "away",
+      "odds": 1.61,
+      "est": 0.6103,
+      "score": "1-4",
+      "won": true
+     },
+     {
+      "match_id": "581691da",
+      "label": "New Zealand vs Belgium: over 3.5 goals",
+      "home": "New Zealand",
+      "away": "Belgium",
+      "market": "over_under_3_5",
+      "outcome": "over",
+      "odds": 1.97,
+      "est": 0.4788,
+      "score": "1-5",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 2.1717
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.445,
+    "est_probability": 0.6596,
+    "legs": [
+     {
+      "match_id": "3e3b5fa2",
+      "label": "Egypt vs Iran: under 2.5 goals",
+      "home": "Egypt",
+      "away": "Iran",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.4449999999999998,
+      "est": 0.6596,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.445
+   }
   ]
  }
 }
