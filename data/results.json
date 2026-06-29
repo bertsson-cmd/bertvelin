@@ -1848,6 +1848,95 @@
     "won": false,
     "profit": -1.0
    }
+  ],
+  "2026-06-28": [
+   {
+    "slip": "A",
+    "combined_odds": 1.9035,
+    "est_probability": 0.4734,
+    "legs": [
+     {
+      "match_id": "def55b09",
+      "label": "South Africa handicap +1.5",
+      "home": "South Africa",
+      "away": "Canada",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.41,
+      "est": 0.6762,
+      "score": "0-1",
+      "won": true
+     },
+     {
+      "match_id": "def55b09",
+      "label": "South Africa vs Canada: over 1.5 goals",
+      "home": "South Africa",
+      "away": "Canada",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.35,
+      "est": 0.7,
+      "score": "0-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.2275,
+    "est_probability": 0.4109,
+    "legs": [
+     {
+      "match_id": "def55b09",
+      "label": "Canada to win",
+      "home": "South Africa",
+      "away": "Canada",
+      "market": "1x2",
+      "outcome": "away",
+      "odds": 1.65,
+      "est": 0.5871,
+      "score": "0-1",
+      "won": true
+     },
+     {
+      "match_id": "def55b09",
+      "label": "South Africa vs Canada: over 1.5 goals",
+      "home": "South Africa",
+      "away": "Canada",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.35,
+      "est": 0.7,
+      "score": "0-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.35,
+    "est_probability": 0.7,
+    "legs": [
+     {
+      "match_id": "def55b09",
+      "label": "South Africa vs Canada: over 1.5 goals",
+      "home": "South Africa",
+      "away": "Canada",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.35,
+      "est": 0.7,
+      "score": "0-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   }
   ]
  }
 }
