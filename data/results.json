@@ -1937,6 +1937,128 @@
     "won": false,
     "profit": -1.0
    }
+  ],
+  "2026-06-29": [
+   {
+    "slip": "A",
+    "combined_odds": 2.023,
+    "est_probability": 0.4443,
+    "legs": [
+     {
+      "match_id": "4f3d72fb",
+      "label": "Brazil to win",
+      "home": "Brazil",
+      "away": "Japan",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.7,
+      "est": 0.5617,
+      "score": "2-1",
+      "won": true
+     },
+     {
+      "match_id": "5a34afe2",
+      "label": "Morocco handicap +1.5",
+      "home": "Netherlands",
+      "away": "Morocco",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.19,
+      "est": 0.7909,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 1.023
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.2612,
+    "est_probability": 0.4038,
+    "legs": [
+     {
+      "match_id": "4930db8e",
+      "label": "Germany to win",
+      "home": "Germany",
+      "away": "Paraguay",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.35,
+      "est": 0.705,
+      "score": "1-1",
+      "won": false
+     },
+     {
+      "match_id": "5a34afe2",
+      "label": "Netherlands vs Morocco: under 2.5 goals",
+      "home": "Netherlands",
+      "away": "Morocco",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.6749999999999998,
+      "est": 0.5727,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.0272,
+    "est_probability": 0.2865,
+    "legs": [
+     {
+      "match_id": "4f3d72fb",
+      "label": "Brazil vs Japan: under 2.5 goals",
+      "home": "Brazil",
+      "away": "Japan",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.76,
+      "est": 0.5315,
+      "score": "2-1",
+      "won": false
+     },
+     {
+      "match_id": "4930db8e",
+      "label": "Germany vs Paraguay: over 2.5 goals",
+      "home": "Germany",
+      "away": "Paraguay",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.72,
+      "est": 0.539,
+      "score": "1-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.35,
+    "est_probability": 0.705,
+    "legs": [
+     {
+      "match_id": "4930db8e",
+      "label": "Germany to win",
+      "home": "Germany",
+      "away": "Paraguay",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.35,
+      "est": 0.705,
+      "score": "1-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   }
   ]
  }
 }
