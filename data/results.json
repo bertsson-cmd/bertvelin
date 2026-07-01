@@ -2059,6 +2059,128 @@
     "won": false,
     "profit": -1.0
    }
+  ],
+  "2026-06-30": [
+   {
+    "slip": "A",
+    "combined_odds": 2.0253,
+    "est_probability": 0.4517,
+    "legs": [
+     {
+      "match_id": "0b549152",
+      "label": "France to win",
+      "home": "France",
+      "away": "Sweden",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.29,
+      "est": 0.76,
+      "score": "3-0",
+      "won": true
+     },
+     {
+      "match_id": "f58c55a9",
+      "label": "Mexico vs Ecuador: over 1.5 goals",
+      "home": "Mexico",
+      "away": "Ecuador",
+      "market": "over_under_1_5",
+      "outcome": "over",
+      "odds": 1.57,
+      "est": 0.5943,
+      "score": "2-0",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 1.0253
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.0618,
+    "est_probability": 0.4408,
+    "legs": [
+     {
+      "match_id": "ce017bea",
+      "label": "Ivory Coast handicap +1.5",
+      "home": "Ivory Coast",
+      "away": "Norway",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.22,
+      "est": 0.7749,
+      "score": "1-2",
+      "won": true
+     },
+     {
+      "match_id": "f58c55a9",
+      "label": "Ecuador handicap +0.5",
+      "home": "Mexico",
+      "away": "Ecuador",
+      "market": "handicap_minus_0_5",
+      "outcome": "away",
+      "odds": 1.69,
+      "est": 0.5689,
+      "score": "2-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.108,
+    "est_probability": 0.2921,
+    "legs": [
+     {
+      "match_id": "ce017bea",
+      "label": "Ivory Coast vs Norway: over 2.5 goals",
+      "home": "Ivory Coast",
+      "away": "Norway",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.85,
+      "est": 0.5214,
+      "score": "1-2",
+      "won": true
+     },
+     {
+      "match_id": "0b549152",
+      "label": "France vs Sweden: under 3.5 goals",
+      "home": "France",
+      "away": "Sweden",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.68,
+      "est": 0.5602,
+      "score": "3-0",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 2.108
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.42,
+    "est_probability": 0.6717,
+    "legs": [
+     {
+      "match_id": "f58c55a9",
+      "label": "Mexico vs Ecuador: under 2.5 goals",
+      "home": "Mexico",
+      "away": "Ecuador",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.42,
+      "est": 0.6717,
+      "score": "2-0",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.42
+   }
   ]
  }
 }
