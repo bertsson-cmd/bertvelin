@@ -2181,6 +2181,128 @@
     "won": true,
     "profit": 0.42
    }
+  ],
+  "2026-07-01": [
+   {
+    "slip": "A",
+    "combined_odds": 2.135,
+    "est_probability": 0.4278,
+    "legs": [
+     {
+      "match_id": "658ac8cb",
+      "label": "Senegal handicap +1.5",
+      "home": "Belgium",
+      "away": "Senegal",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.22,
+      "est": 0.7663,
+      "score": "2-2",
+      "won": true
+     },
+     {
+      "match_id": "9eeb4876",
+      "label": "USA vs Bosnia & Herzegovina: over 2.5 goals",
+      "home": "USA",
+      "away": "Bosnia & Herzegovina",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.75,
+      "est": 0.5583,
+      "score": "2-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.2575,
+    "est_probability": 0.4144,
+    "legs": [
+     {
+      "match_id": "5ff77443",
+      "label": "England to win",
+      "home": "England",
+      "away": "DR Congo",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.29,
+      "est": 0.7422,
+      "score": "2-1",
+      "won": true
+     },
+     {
+      "match_id": "9eeb4876",
+      "label": "USA vs Bosnia & Herzegovina: over 2.5 goals",
+      "home": "USA",
+      "away": "Bosnia & Herzegovina",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.75,
+      "est": 0.5583,
+      "score": "2-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.141,
+    "est_probability": 0.2983,
+    "legs": [
+     {
+      "match_id": "5ff77443",
+      "label": "England vs DR Congo: under 2.5 goals",
+      "home": "England",
+      "away": "DR Congo",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.8,
+      "est": 0.5438,
+      "score": "2-1",
+      "won": false
+     },
+     {
+      "match_id": "9eeb4876",
+      "label": "Bosnia & Herzegovina handicap +1.5",
+      "home": "USA",
+      "away": "Bosnia & Herzegovina",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.745,
+      "est": 0.5485,
+      "score": "2-0",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.83,
+    "est_probability": 0.5058,
+    "legs": [
+     {
+      "match_id": "658ac8cb",
+      "label": "Belgium vs Senegal: under 2.5 goals",
+      "home": "Belgium",
+      "away": "Senegal",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.83,
+      "est": 0.5058,
+      "score": "2-2",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   }
   ]
  }
 }

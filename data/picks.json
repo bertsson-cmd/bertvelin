@@ -1154,5 +1154,101 @@
     }
    ]
   }
+ },
+ "2026-07-02": {
+  "A": {
+   "combined_odds": 2.175,
+   "est_probability": 0.4177,
+   "legs": [
+    {
+     "match_id": "852b4baf",
+     "label": "Portugal handicap -0.5",
+     "home": "Portugal",
+     "away": "Croatia",
+     "market": "handicap_minus_0_5",
+     "outcome": "home",
+     "odds": 1.74,
+     "est": 0.5533
+    },
+    {
+     "match_id": "c17fe2e4",
+     "label": "Algeria handicap +1.5",
+     "home": "Switzerland",
+     "away": "Algeria",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.25,
+     "est": 0.7549
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.171,
+   "est_probability": 0.4082,
+   "legs": [
+    {
+     "match_id": "a518ac20",
+     "label": "Spain to win",
+     "home": "Spain",
+     "away": "Austria",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.3,
+     "est": 0.7383
+    },
+    {
+     "match_id": "c17fe2e4",
+     "label": "Switzerland vs Algeria: under 2.5 goals",
+     "home": "Switzerland",
+     "away": "Algeria",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.67,
+     "est": 0.5529
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.7649,
+   "est_probability": 0.2437,
+   "legs": [
+    {
+     "match_id": "a518ac20",
+     "label": "Spain vs Austria: under 2.5 goals",
+     "home": "Spain",
+     "away": "Austria",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 2.17,
+     "est": 0.4518
+    },
+    {
+     "match_id": "852b4baf",
+     "label": "Portugal vs Croatia: over 2.5 goals",
+     "home": "Portugal",
+     "away": "Croatia",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.7349999999999999,
+     "est": 0.5393
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.3,
+   "est_probability": 0.7383,
+   "legs": [
+    {
+     "match_id": "a518ac20",
+     "label": "Spain to win",
+     "home": "Spain",
+     "away": "Austria",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.3,
+     "est": 0.7383
+    }
+   ]
+  }
  }
 }
