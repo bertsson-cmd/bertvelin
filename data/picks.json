@@ -1250,5 +1250,111 @@
     }
    ]
   }
+ },
+ "2026-07-03": {
+  "A": {
+   "combined_odds": 2.0126,
+   "est_probability": 0.4541,
+   "legs": [
+    {
+     "match_id": "fb270a3d",
+     "label": "Australia handicap +1.5",
+     "home": "Australia",
+     "away": "Egypt",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.16,
+     "est": 0.8117
+    },
+    {
+     "match_id": "88e032a2",
+     "label": "Colombia vs Ghana: under 2.5 goals",
+     "home": "Colombia",
+     "away": "Ghana",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.7349999999999999,
+     "est": 0.5594
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.0519,
+   "est_probability": 0.4506,
+   "legs": [
+    {
+     "match_id": "fb270a3d",
+     "label": "Australia vs Egypt: under 2.5 goals",
+     "home": "Australia",
+     "away": "Egypt",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.4449999999999998,
+     "est": 0.6614
+    },
+    {
+     "match_id": "88e032a2",
+     "label": "Colombia to win",
+     "home": "Colombia",
+     "away": "Ghana",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.42,
+     "est": 0.6813
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.0361,
+   "est_probability": 0.291,
+   "legs": [
+    {
+     "match_id": "fb270a3d",
+     "label": "Australia vs Egypt: over 1.5 goals",
+     "home": "Australia",
+     "away": "Egypt",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.5350000000000001,
+     "est": 0.6129
+    },
+    {
+     "match_id": "3e161b24",
+     "label": "Argentina to win",
+     "home": "Argentina",
+     "away": "Cape Verde",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.14,
+     "est": 0.8487
+    },
+    {
+     "match_id": "88e032a2",
+     "label": "Colombia vs Ghana: under 2.5 goals",
+     "home": "Colombia",
+     "away": "Ghana",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.7349999999999999,
+     "est": 0.5594
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.53,
+   "est_probability": 0.6295,
+   "legs": [
+    {
+     "match_id": "3e161b24",
+     "label": "Argentina vs Cape Verde: under 3.5 goals",
+     "home": "Argentina",
+     "away": "Cape Verde",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.53,
+     "est": 0.6295
+    }
+   ]
+  }
  }
 }
