@@ -1356,5 +1356,101 @@
     }
    ]
   }
+ },
+ "2026-07-04": {
+  "A": {
+   "combined_odds": 1.8354,
+   "est_probability": 0.4907,
+   "legs": [
+    {
+     "match_id": "9c7073ae",
+     "label": "Canada handicap +1.5",
+     "home": "Canada",
+     "away": "Morocco",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.33,
+     "est": 0.7164
+    },
+    {
+     "match_id": "9c7073ae",
+     "label": "Canada vs Morocco: over 1.5 goals",
+     "home": "Canada",
+     "away": "Morocco",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.38,
+     "est": 0.6849
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 1.888,
+   "est_probability": 0.4586,
+   "legs": [
+    {
+     "match_id": "c798a1ff",
+     "label": "France to win",
+     "home": "Paraguay",
+     "away": "France",
+     "market": "1x2",
+     "outcome": "away",
+     "odds": 1.18,
+     "est": 0.8078
+    },
+    {
+     "match_id": "c798a1ff",
+     "label": "Paraguay vs France: over 2.5 goals",
+     "home": "Paraguay",
+     "away": "France",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.6,
+     "est": 0.5678
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.1559,
+   "est_probability": 0.293,
+   "legs": [
+    {
+     "match_id": "9c7073ae",
+     "label": "Canada handicap +0.5",
+     "home": "Canada",
+     "away": "Morocco",
+     "market": "handicap_plus_0_5",
+     "outcome": "home",
+     "odds": 2.09,
+     "est": 0.4599
+    },
+    {
+     "match_id": "c798a1ff",
+     "label": "Paraguay vs France: under 3.5 goals",
+     "home": "Paraguay",
+     "away": "France",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.51,
+     "est": 0.637
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.33,
+   "est_probability": 0.7164,
+   "legs": [
+    {
+     "match_id": "9c7073ae",
+     "label": "Canada handicap +1.5",
+     "home": "Canada",
+     "away": "Morocco",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.33,
+     "est": 0.7164
+    }
+   ]
+  }
  }
 }
