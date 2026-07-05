@@ -1452,5 +1452,101 @@
     }
    ]
   }
+ },
+ "2026-07-05": {
+  "A": {
+   "combined_odds": 1.8212,
+   "est_probability": 0.4878,
+   "legs": [
+    {
+     "match_id": "e61a7b47",
+     "label": "Mexico vs England: under 2.5 goals",
+     "home": "Mexico",
+     "away": "England",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.57,
+     "est": 0.601
+    },
+    {
+     "match_id": "e61a7b47",
+     "label": "Mexico handicap +1.5",
+     "home": "Mexico",
+     "away": "England",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.16,
+     "est": 0.8117
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 1.98,
+   "est_probability": 0.4564,
+   "legs": [
+    {
+     "match_id": "a4634eae",
+     "label": "Norway handicap +1.5",
+     "home": "Brazil",
+     "away": "Norway",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.375,
+     "est": 0.6955
+    },
+    {
+     "match_id": "a4634eae",
+     "label": "Brazil vs Norway: under 3.5 goals",
+     "home": "Brazil",
+     "away": "Norway",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.44,
+     "est": 0.6563
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.034,
+   "est_probability": 0.2971,
+   "legs": [
+    {
+     "match_id": "a4634eae",
+     "label": "Brazil vs Norway: over 2.5 goals",
+     "home": "Brazil",
+     "away": "Norway",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.6949999999999998,
+     "est": 0.5591
+    },
+    {
+     "match_id": "a4634eae",
+     "label": "Brazil handicap -0.5",
+     "home": "Brazil",
+     "away": "Norway",
+     "market": "handicap_minus_0_5",
+     "outcome": "home",
+     "odds": 1.79,
+     "est": 0.5314
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.375,
+   "est_probability": 0.6955,
+   "legs": [
+    {
+     "match_id": "a4634eae",
+     "label": "Norway handicap +1.5",
+     "home": "Brazil",
+     "away": "Norway",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.375,
+     "est": 0.6955
+    }
+   ]
+  }
  }
 }
