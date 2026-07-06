@@ -1548,5 +1548,101 @@
     }
    ]
   }
+ },
+ "2026-07-06": {
+  "A": {
+   "combined_odds": 1.833,
+   "est_probability": 0.4895,
+   "legs": [
+    {
+     "match_id": "16ed3adc",
+     "label": "Portugal handicap +1.5",
+     "home": "Portugal",
+     "away": "Spain",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.3,
+     "est": 0.7234
+    },
+    {
+     "match_id": "16ed3adc",
+     "label": "Portugal vs Spain: under 3.5 goals",
+     "home": "Portugal",
+     "away": "Spain",
+     "market": "over_under_3_5",
+     "outcome": "under",
+     "odds": 1.41,
+     "est": 0.6766
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 1.9873,
+   "est_probability": 0.456,
+   "legs": [
+    {
+     "match_id": "810f80b3",
+     "label": "USA vs Belgium: over 2.5 goals",
+     "home": "USA",
+     "away": "Belgium",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 1.67,
+     "est": 0.5714
+    },
+    {
+     "match_id": "810f80b3",
+     "label": "Belgium handicap +1.5",
+     "home": "USA",
+     "away": "Belgium",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.19,
+     "est": 0.798
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.1512,
+   "est_probability": 0.3092,
+   "legs": [
+    {
+     "match_id": "16ed3adc",
+     "label": "Portugal vs Spain: under 2.5 goals",
+     "home": "Portugal",
+     "away": "Spain",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 2.02,
+     "est": 0.5061
+    },
+    {
+     "match_id": "810f80b3",
+     "label": "Belgium handicap +0.5",
+     "home": "USA",
+     "away": "Belgium",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.56,
+     "est": 0.611
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.3,
+   "est_probability": 0.7234,
+   "legs": [
+    {
+     "match_id": "16ed3adc",
+     "label": "Portugal handicap +1.5",
+     "home": "Portugal",
+     "away": "Spain",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.3,
+     "est": 0.7234
+    }
+   ]
+  }
  }
 }
