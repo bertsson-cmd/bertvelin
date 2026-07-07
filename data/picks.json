@@ -1644,5 +1644,101 @@
     }
    ]
   }
+ },
+ "2026-07-07": {
+  "A": {
+   "combined_odds": 1.8768,
+   "est_probability": 0.4881,
+   "legs": [
+    {
+     "match_id": "190922af",
+     "label": "Argentina to win",
+     "home": "Argentina",
+     "away": "Egypt",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.36,
+     "est": 0.709
+    },
+    {
+     "match_id": "a6da973c",
+     "label": "Switzerland vs Colombia: over 1.5 goals",
+     "home": "Switzerland",
+     "away": "Colombia",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.38,
+     "est": 0.6885
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 1.904,
+   "est_probability": 0.468,
+   "legs": [
+    {
+     "match_id": "a6da973c",
+     "label": "Switzerland vs Colombia: under 2.5 goals",
+     "home": "Switzerland",
+     "away": "Colombia",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.6,
+     "est": 0.5917
+    },
+    {
+     "match_id": "a6da973c",
+     "label": "Switzerland handicap +1.5",
+     "home": "Switzerland",
+     "away": "Colombia",
+     "market": "handicap_plus_1_5",
+     "outcome": "home",
+     "odds": 1.19,
+     "est": 0.7909
+    }
+   ]
+  },
+  "C": {
+   "combined_odds": 3.1008,
+   "est_probability": 0.3235,
+   "legs": [
+    {
+     "match_id": "190922af",
+     "label": "Argentina to win",
+     "home": "Argentina",
+     "away": "Egypt",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.36,
+     "est": 0.709
+    },
+    {
+     "match_id": "190922af",
+     "label": "Argentina vs Egypt: over 2.5 goals",
+     "home": "Argentina",
+     "away": "Egypt",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 2.28,
+     "est": 0.4563
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.36,
+   "est_probability": 0.709,
+   "legs": [
+    {
+     "match_id": "190922af",
+     "label": "Argentina to win",
+     "home": "Argentina",
+     "away": "Egypt",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.36,
+     "est": 0.709
+    }
+   ]
+  }
  }
 }
