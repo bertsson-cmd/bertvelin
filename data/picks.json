@@ -1741,5 +1741,49 @@
    ]
   }
  },
- "2026-07-08": {}
+ "2026-07-08": {},
+ "2026-07-09": {
+  "C": {
+   "combined_odds": 3.18,
+   "est_probability": 0.3022,
+   "legs": [
+    {
+     "match_id": "b6e926d7",
+     "label": "France to win",
+     "home": "France",
+     "away": "Morocco",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.59,
+     "est": 0.6226
+    },
+    {
+     "match_id": "b6e926d7",
+     "label": "France vs Morocco: over 2.5 goals",
+     "home": "France",
+     "away": "Morocco",
+     "market": "over_under_2_5",
+     "outcome": "over",
+     "odds": 2.0,
+     "est": 0.4854
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.59,
+   "est_probability": 0.6226,
+   "legs": [
+    {
+     "match_id": "b6e926d7",
+     "label": "France to win",
+     "home": "France",
+     "away": "Morocco",
+     "market": "1x2",
+     "outcome": "home",
+     "odds": 1.59,
+     "est": 0.6226
+    }
+   ]
+  }
+ }
 }
