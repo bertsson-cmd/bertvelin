@@ -1785,5 +1785,49 @@
     }
    ]
   }
+ },
+ "2026-07-10": {
+  "C": {
+   "combined_odds": 3.0928,
+   "est_probability": 0.3042,
+   "legs": [
+    {
+     "match_id": "fca257de",
+     "label": "Spain vs Belgium: under 2.5 goals",
+     "home": "Spain",
+     "away": "Belgium",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 2.0549999999999997,
+     "est": 0.4799
+    },
+    {
+     "match_id": "fca257de",
+     "label": "Belgium handicap +1.5",
+     "home": "Spain",
+     "away": "Belgium",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.505,
+     "est": 0.6338
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.505,
+   "est_probability": 0.6338,
+   "legs": [
+    {
+     "match_id": "fca257de",
+     "label": "Belgium handicap +1.5",
+     "home": "Spain",
+     "away": "Belgium",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.505,
+     "est": 0.6338
+    }
+   ]
+  }
  }
 }
