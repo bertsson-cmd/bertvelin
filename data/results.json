@@ -3159,6 +3159,128 @@
     "won": true,
     "profit": 0.505
    }
+  ],
+  "2026-07-11": [
+   {
+    "slip": "A",
+    "combined_odds": 2.197,
+    "est_probability": 0.4247,
+    "legs": [
+     {
+      "match_id": "e66e4478",
+      "label": "Norway handicap +1.5",
+      "home": "Norway",
+      "away": "England",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.3,
+      "est": 0.7234,
+      "score": "1-1",
+      "won": true
+     },
+     {
+      "match_id": "200d9cd5",
+      "label": "Argentina to win",
+      "home": "Argentina",
+      "away": "Switzerland",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.69,
+      "est": 0.5871,
+      "score": "1-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.8215,
+    "est_probability": 0.3157,
+    "legs": [
+     {
+      "match_id": "e66e4478",
+      "label": "Norway vs England: over 2.5 goals",
+      "home": "Norway",
+      "away": "England",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.71,
+      "est": 0.5602,
+      "score": "1-1",
+      "won": false
+     },
+     {
+      "match_id": "200d9cd5",
+      "label": "Argentina vs Switzerland: under 2.5 goals",
+      "home": "Argentina",
+      "away": "Switzerland",
+      "market": "over_under_2_5",
+      "outcome": "under",
+      "odds": 1.65,
+      "est": 0.5635,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.2279,
+    "est_probability": 0.2943,
+    "legs": [
+     {
+      "match_id": "e66e4478",
+      "label": "England handicap -0.5",
+      "home": "Norway",
+      "away": "England",
+      "market": "handicap_plus_0_5",
+      "outcome": "away",
+      "odds": 1.91,
+      "est": 0.5013,
+      "score": "1-1",
+      "won": false
+     },
+     {
+      "match_id": "200d9cd5",
+      "label": "Argentina to win",
+      "home": "Argentina",
+      "away": "Switzerland",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.69,
+      "est": 0.5871,
+      "score": "1-1",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.3,
+    "est_probability": 0.7234,
+    "legs": [
+     {
+      "match_id": "e66e4478",
+      "label": "Norway handicap +1.5",
+      "home": "Norway",
+      "away": "England",
+      "market": "handicap_plus_1_5",
+      "outcome": "home",
+      "odds": 1.3,
+      "est": 0.7234,
+      "score": "1-1",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.3
+   }
   ]
  }
 }
