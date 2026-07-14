@@ -1927,5 +1927,49 @@
   }
  },
  "2026-07-12": {},
- "2026-07-13": {}
+ "2026-07-13": {},
+ "2026-07-14": {
+  "C": {
+   "combined_odds": 3.059,
+   "est_probability": 0.2993,
+   "legs": [
+    {
+     "match_id": "f9aa13a6",
+     "label": "France vs Spain: under 2.5 goals",
+     "home": "France",
+     "away": "Spain",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.9,
+     "est": 0.5013
+    },
+    {
+     "match_id": "f9aa13a6",
+     "label": "Spain handicap +0.5",
+     "home": "France",
+     "away": "Spain",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.61,
+     "est": 0.597
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.61,
+   "est_probability": 0.597,
+   "legs": [
+    {
+     "match_id": "f9aa13a6",
+     "label": "Spain handicap +0.5",
+     "home": "France",
+     "away": "Spain",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.61,
+     "est": 0.597
+    }
+   ]
+  }
+ }
 }
