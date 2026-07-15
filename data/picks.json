@@ -1971,5 +1971,75 @@
     }
    ]
   }
+ },
+ "2026-07-15": {
+  "A": {
+   "combined_odds": 2.1584,
+   "est_probability": 0.4254,
+   "legs": [
+    {
+     "match_id": "ced22494",
+     "label": "Argentina handicap +0.5",
+     "home": "England",
+     "away": "Argentina",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.52,
+     "est": 0.6337
+    },
+    {
+     "match_id": "ced22494",
+     "label": "England vs Argentina: over 1.5 goals",
+     "home": "England",
+     "away": "Argentina",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.42,
+     "est": 0.6713
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.3788,
+   "est_probability": 0.3801,
+   "legs": [
+    {
+     "match_id": "ced22494",
+     "label": "England vs Argentina: under 2.5 goals",
+     "home": "England",
+     "away": "Argentina",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.565,
+     "est": 0.5998
+    },
+    {
+     "match_id": "ced22494",
+     "label": "Argentina handicap +0.5",
+     "home": "England",
+     "away": "Argentina",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.52,
+     "est": 0.6337
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.42,
+   "est_probability": 0.6713,
+   "legs": [
+    {
+     "match_id": "ced22494",
+     "label": "England vs Argentina: over 1.5 goals",
+     "home": "England",
+     "away": "Argentina",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.42,
+     "est": 0.6713
+    }
+   ]
+  }
  }
 }
