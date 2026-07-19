@@ -2139,5 +2139,75 @@
     }
    ]
   }
+ },
+ "2026-07-19": {
+  "A": {
+   "combined_odds": 1.8939,
+   "est_probability": 0.483,
+   "legs": [
+    {
+     "match_id": "fb30113e",
+     "label": "Spain vs Argentina: under 2.5 goals",
+     "home": "Spain",
+     "away": "Argentina",
+     "market": "over_under_2_5",
+     "outcome": "under",
+     "odds": 1.605,
+     "est": 0.603
+    },
+    {
+     "match_id": "fb30113e",
+     "label": "Argentina handicap +1.5",
+     "home": "Spain",
+     "away": "Argentina",
+     "market": "handicap_minus_1_5",
+     "outcome": "away",
+     "odds": 1.18,
+     "est": 0.801
+    }
+   ]
+  },
+  "B": {
+   "combined_odds": 2.3184,
+   "est_probability": 0.3936,
+   "legs": [
+    {
+     "match_id": "fb30113e",
+     "label": "Argentina handicap +0.5",
+     "home": "Spain",
+     "away": "Argentina",
+     "market": "handicap_minus_0_5",
+     "outcome": "away",
+     "odds": 1.68,
+     "est": 0.5747
+    },
+    {
+     "match_id": "fb30113e",
+     "label": "Spain vs Argentina: over 1.5 goals",
+     "home": "Spain",
+     "away": "Argentina",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.38,
+     "est": 0.6849
+    }
+   ]
+  },
+  "D": {
+   "combined_odds": 1.38,
+   "est_probability": 0.6849,
+   "legs": [
+    {
+     "match_id": "fb30113e",
+     "label": "Spain vs Argentina: over 1.5 goals",
+     "home": "Spain",
+     "away": "Argentina",
+     "market": "over_under_1_5",
+     "outcome": "over",
+     "odds": 1.38,
+     "est": 0.6849
+    }
+   ]
+  }
  }
 }

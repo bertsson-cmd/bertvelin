@@ -3426,6 +3426,128 @@
     "won": true,
     "profit": 0.42
    }
+  ],
+  "2026-07-18": [
+   {
+    "slip": "A",
+    "combined_odds": 1.9788,
+    "est_probability": 0.4587,
+    "legs": [
+     {
+      "match_id": "7a49e798",
+      "label": "England handicap +1.5",
+      "home": "France",
+      "away": "England",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.36,
+      "est": 0.6951,
+      "score": "4-6",
+      "won": true
+     },
+     {
+      "match_id": "7a49e798",
+      "label": "France vs England: over 2.5 goals",
+      "home": "France",
+      "away": "England",
+      "market": "over_under_2_5",
+      "outcome": "over",
+      "odds": 1.455,
+      "est": 0.6599,
+      "score": "4-6",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.9788
+   },
+   {
+    "slip": "B",
+    "combined_odds": 2.3392,
+    "est_probability": 0.3837,
+    "legs": [
+     {
+      "match_id": "7a49e798",
+      "label": "France vs England: under 3.5 goals",
+      "home": "France",
+      "away": "England",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.72,
+      "est": 0.5521,
+      "score": "4-6",
+      "won": false
+     },
+     {
+      "match_id": "7a49e798",
+      "label": "England handicap +1.5",
+      "home": "France",
+      "away": "England",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.36,
+      "est": 0.6951,
+      "score": "4-6",
+      "won": true
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "C",
+    "combined_odds": 3.2164,
+    "est_probability": 0.2928,
+    "legs": [
+     {
+      "match_id": "7a49e798",
+      "label": "France to win",
+      "home": "France",
+      "away": "England",
+      "market": "1x2",
+      "outcome": "home",
+      "odds": 1.87,
+      "est": 0.5303,
+      "score": "4-6",
+      "won": false
+     },
+     {
+      "match_id": "7a49e798",
+      "label": "France vs England: under 3.5 goals",
+      "home": "France",
+      "away": "England",
+      "market": "over_under_3_5",
+      "outcome": "under",
+      "odds": 1.72,
+      "est": 0.5521,
+      "score": "4-6",
+      "won": false
+     }
+    ],
+    "won": false,
+    "profit": -1.0
+   },
+   {
+    "slip": "D",
+    "combined_odds": 1.36,
+    "est_probability": 0.6951,
+    "legs": [
+     {
+      "match_id": "7a49e798",
+      "label": "England handicap +1.5",
+      "home": "France",
+      "away": "England",
+      "market": "handicap_minus_1_5",
+      "outcome": "away",
+      "odds": 1.36,
+      "est": 0.6951,
+      "score": "4-6",
+      "won": true
+     }
+    ],
+    "won": true,
+    "profit": 0.36
+   }
   ]
  }
 }
