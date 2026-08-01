@@ -1,0 +1,172 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bertpicker 1.2 — Saturday 01 August 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desktop:#008080; --chrome:#c0c0c0; --titlebar1:#000080; --titlebar2:#1084d0;
+  --ink:#000; --shadow:#404040; --hilite:#fff; --mid:#808080;
+  --grass:#5d9c3a; --grassdark:#3e6b26; --dirt:#6b4a2f;
+  --navy:#000080; --warnbar1:#7a0a0a; --warnbar2:#c43a10;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--desktop);color:var(--ink);
+  font-family:Tahoma,"MS Sans Serif",Geneva,sans-serif;font-size:12px;
+  min-height:100vh;padding:28px 16px 64px}
+.wrap{max-width:960px;margin:0 auto}
+
+/* ---- pixel-block logo ---- */
+.logo{ text-align:center;margin:8px 0 6px;
+  font-family:"Press Start 2P",monospace;color:var(--grass);
+  font-size:clamp(20px,4.6vw,40px);letter-spacing:2px;line-height:1.2;
+  text-shadow:0 3px 0 var(--grassdark),0 6px 0 var(--dirt),
+              3px 0 0 var(--grassdark),-3px 0 0 var(--grassdark),
+              6px 9px 0 rgba(0,0,0,.35);
+  -webkit-text-stroke:1px #1d3312}
+.logo small{font-size:.45em;color:#e9e2c8;
+  text-shadow:0 2px 0 #6b6450,2px 3px 0 rgba(0,0,0,.35);-webkit-text-stroke:1px #444}
+.splash{ text-align:center;font-family:"Press Start 2P",monospace;
+  font-size:10px;color:#ff0;transform:rotate(-6deg);margin:2px 0 22px;
+  text-shadow:2px 2px 0 #5a5a00}
+@media (prefers-reduced-motion:no-preference){
+  .splash{animation:pulse 1s infinite alternate}
+  @keyframes pulse{from{scale:1}to{scale:1.06}}
+}
+
+/* ---- win95 window chrome ---- */
+.win{background:var(--chrome);padding:3px;margin-bottom:24px;
+  border:2px solid;border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite);
+  box-shadow:1px 1px 0 #000,4px 4px 0 rgba(0,0,0,.25)}
+.tbar{display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(90deg,var(--titlebar1),var(--titlebar2));
+  color:#fff;font-weight:bold;font-size:12px;padding:3px 4px 3px 8px;gap:8px}
+.win.risky .tbar{background:linear-gradient(90deg,var(--warnbar1),var(--warnbar2))}
+.win.banker .tbar{background:linear-gradient(90deg,#0a5a2a,#1e9c54)}
+.tbtns{display:flex;gap:2px}
+.tbtns i{font-style:normal;width:18px;height:16px;display:inline-flex;
+  align-items:center;justify-content:center;background:var(--chrome);color:#000;
+  font:bold 10px Tahoma;border:2px solid;
+  border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite)}
+.menu{font-size:12px;padding:3px 8px;border-bottom:1px solid var(--mid)}
+.menu u{text-decoration:underline}
+.win-body{padding:10px}
+
+/* ---- slips grid ---- */
+.slips{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 20px}
+
+/* ---- legs ---- */
+.combined{display:flex;justify-content:space-between;align-items:baseline;
+  background:#fff;border:2px solid;margin-bottom:10px;padding:6px 10px;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.combined b{font-family:"VT323",monospace;font-size:30px}
+.leg{margin-bottom:12px}
+.leg .pick{font-weight:bold}
+.leg .meta{display:flex;justify-content:space-between;color:#222;margin:2px 0 4px;
+  font-family:"VT323",monospace;font-size:16px}
+.pbar{height:16px;background:#fff;padding:2px;border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.pbar i{display:block;height:100%;
+  background:repeating-linear-gradient(90deg,var(--navy) 0 8px,transparent 8px 11px)}
+.win.risky .pbar i{background:repeating-linear-gradient(90deg,#a04000 0 8px,transparent 8px 11px)}
+.win.banker .pbar i{background:repeating-linear-gradient(90deg,#0a5a2a 0 8px,transparent 8px 11px)}
+
+/* ---- status bar / EV ---- */
+.status{display:flex;gap:4px;margin-top:10px;font-size:11px}
+.cell{flex:1;padding:3px 8px;background:var(--chrome);border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.cell.ev{color:#a00000;font-weight:bold;flex:0 0 auto}
+
+/* ---- notepad (reasoning) ---- */
+.notepad .win-body{background:#fff;border:2px solid;margin:0 3px 3px;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid);
+  font-family:"VT323",monospace;font-size:17px;line-height:1.45;padding:12px 14px}
+.notepad li{margin-bottom:6px;list-style:none}
+.notepad li::before{content:"> ";color:var(--navy)}
+.notepad .warnline{color:#a00000}
+
+/* ---- scoreboard ---- */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:4px;margin-bottom:10px}
+.score-cell{background:#fff;border:2px solid;padding:6px 8px;text-align:center;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+.score-cell b{display:block;font-family:"VT323",monospace;font-size:26px;line-height:1}
+.score-cell span{font-size:10px;color:#444}
+.score-cell.pos b{color:#006400}.score-cell.neg b{color:#a00000}
+.settled{font-family:"VT323",monospace;font-size:16px;line-height:1.5}
+.settled .w{color:#006400;font-weight:bold}.settled .l{color:#a00000;font-weight:bold}
+.settled{font-size:15px;max-height:240px;overflow-y:auto}
+.tab-bar{display:flex;gap:2px;margin-bottom:-1px;position:relative;z-index:1}
+.tab{padding:3px 9px;background:#a0a0a0;border:2px solid;font-size:11px;font-weight:bold;cursor:pointer;
+  border-color:var(--hilite) var(--shadow) var(--chrome) var(--hilite);white-space:nowrap;user-select:none}
+.tab.active{background:var(--chrome);border-bottom-color:var(--chrome);padding-bottom:5px}
+.tab-panel{display:none;border:2px solid;padding:8px;border-color:var(--shadow) var(--hilite) var(--hilite) var(--shadow)}
+.tab-panel.active{display:block}
+
+/* ---- error dialog for empty days ---- */
+.dialog{max-width:430px;margin:0 auto 24px}
+.dialog .win-body{display:flex;gap:12px;align-items:flex-start}
+.dialog .icon{font-size:30px;line-height:1}
+.dialog .ok{display:block;margin:12px auto 4px;padding:4px 28px;background:var(--chrome);
+  font:bold 12px Tahoma;border:2px solid;
+  border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite)}
+
+/* ---- taskbar ---- */
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:34px;background:var(--chrome);
+  border-top:2px solid var(--hilite);display:flex;align-items:center;gap:6px;
+  padding:3px 6px;z-index:9}
+.start{display:inline-flex;align-items:center;gap:5px;font:bold 12px Tahoma;
+  padding:3px 10px;background:var(--chrome);border:2px solid;
+  border-color:var(--hilite) var(--shadow) var(--shadow) var(--hilite)}
+.start .flag{font-family:"Press Start 2P",monospace;font-size:9px;color:var(--grass)}
+.task{font-size:11px;padding:4px 10px;background:#dcdcdc;border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.clock{margin-left:auto;font-size:11px;padding:4px 10px;border:2px solid;
+  border-color:var(--mid) var(--hilite) var(--hilite) var(--mid)}
+</style></head><body><div class="wrap">
+
+<div class="logo">BERTPICKER <small>1.2</small></div>
+<div class="splash">REMONTADA EDITION</div>
+
+<div class="slips">
+    <div class="win dialog">
+      <div class="tbar"><span>bertpicker.exe</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+      <div class="win-body"><div class="icon">&#9888;</div>
+        <div>No parlay of sufficiently likely legs lands in the target band today.<br><br>
+        This is a valid output: the disciplined move today is <b>not to bet</b>.</div></div>
+      <span class="ok">OK</span>
+    </div></div>
+
+<div class="win">
+  <div class="tbar"><span>stadan.exe — Scoreboard</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>V</u>iew&nbsp;&nbsp;<u>H</u>elp</div>
+  <div class="win-body"><div class="tab-bar"><span class="tab active" onclick="sbTab(this,'sb-Heild')">Heild</span><span class="tab" onclick="sbTab(this,'sb-SlipA')">Slip A</span><span class="tab" onclick="sbTab(this,'sb-SlipB')">Slip B</span><span class="tab" onclick="sbTab(this,'sb-SlipC')">Slip C</span><span class="tab" onclick="sbTab(this,'sb-Velta')">Velta</span></div><div class="tab-panel active" id="sb-Heild"><div class="score-grid"><div class="score-cell"><b>54–63</b><span>Heild W–L</span></div><div class="score-cell"><b>46%</b><span>hit rate</span></div><div class="score-cell neg"><b>-6.75u</b><span>units</span></div></div><div class="settled"><b>Síðasti dagur (2026-07-19):</b><br>Slip A @ 1.89 — <span class="w">WON</span> (+0.89u)<br>&nbsp;&nbsp;&#10003; Spain vs Argentina: under 2.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Argentina handicap +1.5 (0-0)<br>Slip B @ 2.32 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Argentina handicap +0.5 (0-0)<br>&nbsp;&nbsp;&#10007; Spain vs Argentina: over 1.5 goals (0-0)<br>Slip D @ 1.38 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Argentina: over 1.5 goals (0-0)</div></div><div class="tab-panel" id="sb-SlipA"><div class="score-grid"><div class="score-cell"><b>10–20</b><span>Slip A W–L</span></div><div class="score-cell"><b>33%</b><span>hit rate</span></div><div class="score-cell neg"><b>-9.94u</b><span>units</span></div></div><div class="settled">2026-07-19 @ 1.89 — <span class="w">WON</span> (+0.89u)<br>&nbsp;&nbsp;&#10003; Spain vs Argentina: under 2.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Argentina handicap +1.5 (0-0)<br><br>2026-07-18 @ 1.98 — <span class="w">WON</span> (+0.98u)<br>&nbsp;&nbsp;&#10003; England handicap +1.5 (4-6)<br>&nbsp;&nbsp;&#10003; France vs England: over 2.5 goals (4-6)<br><br>2026-07-15 @ 2.16 — <span class="w">WON</span> (+1.16u)<br>&nbsp;&nbsp;&#10003; Argentina handicap +0.5 (1-2)<br>&nbsp;&nbsp;&#10003; England vs Argentina: over 1.5 goals (1-2)<br><br>2026-07-11 @ 2.20 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Norway handicap +1.5 (1-1)<br>&nbsp;&nbsp;&#10007; Argentina to win (1-1)<br><br>2026-07-07 @ 1.88 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Argentina to win (3-2)<br>&nbsp;&nbsp;&#10007; Switzerland vs Colombia: over 1.5 goals (0-0)<br><br>2026-07-06 @ 1.83 — <span class="w">WON</span> (+0.83u)<br>&nbsp;&nbsp;&#10003; Portugal handicap +1.5 (0-1)<br>&nbsp;&nbsp;&#10003; Portugal vs Spain: under 3.5 goals (0-1)<br><br>2026-07-05 @ 1.82 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Mexico vs England: under 2.5 goals (2-3)<br>&nbsp;&nbsp;&#10003; Mexico handicap +1.5 (2-3)<br><br>2026-07-04 @ 1.84 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Canada handicap +1.5 (0-3)<br>&nbsp;&nbsp;&#10003; Canada vs Morocco: over 1.5 goals (0-3)<br><br>2026-07-03 @ 2.01 — <span class="w">WON</span> (+1.01u)<br>&nbsp;&nbsp;&#10003; Australia handicap +1.5 (1-1)<br>&nbsp;&nbsp;&#10003; Colombia vs Ghana: under 2.5 goals (1-0)<br><br>2026-07-02 @ 2.17 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Portugal handicap -0.5 (2-1)<br>&nbsp;&nbsp;&#10007; Algeria handicap +1.5 (2-0)<br><br>2026-07-01 @ 2.13 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Senegal handicap +1.5 (2-2)<br>&nbsp;&nbsp;&#10007; USA vs Bosnia & Herzegovina: over 2.5 goals (2-0)<br><br>2026-06-30 @ 2.03 — <span class="w">WON</span> (+1.03u)<br>&nbsp;&nbsp;&#10003; France to win (3-0)<br>&nbsp;&nbsp;&#10003; Mexico vs Ecuador: over 1.5 goals (2-0)<br><br>2026-06-29 @ 2.02 — <span class="w">WON</span> (+1.02u)<br>&nbsp;&nbsp;&#10003; Brazil to win (2-1)<br>&nbsp;&nbsp;&#10003; Morocco handicap +1.5 (1-1)<br><br>2026-06-28 @ 1.90 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; South Africa handicap +1.5 (0-1)<br>&nbsp;&nbsp;&#10007; South Africa vs Canada: over 1.5 goals (0-1)<br><br>2026-06-27 @ 2.12 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Panama vs England: over 2.5 goals (0-2)<br>&nbsp;&nbsp;&#10003; Jordan vs Argentina: over 2.5 goals (1-3)<br><br>2026-06-26 @ 2.01 — <span class="w">WON</span> (+1.01u)<br>&nbsp;&nbsp;&#10003; Senegal vs Iraq: over 2.5 goals (5-0)<br>&nbsp;&nbsp;&#10003; Saudi Arabia handicap +1.5 (0-0)<br>&nbsp;&nbsp;&#10003; Iran handicap +1.5 (1-1)<br><br>2026-06-25 @ 2.03 — <span class="w">WON</span> (+1.03u)<br>&nbsp;&nbsp;&#10003; Tunisia vs Netherlands: over 2.5 goals (1-3)<br>&nbsp;&nbsp;&#10003; Australia handicap +0.5 (0-0)<br><br>2026-06-24 @ 2.09 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Czech Republic handicap +1.5 (0-3)<br>&nbsp;&nbsp;&#10007; South Korea to win (1-0)<br><br>2026-06-23 @ 2.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; England to win (0-0)<br>&nbsp;&nbsp;&#10007; Panama vs Croatia: over 2.5 goals (0-1)<br><br>2026-06-22 @ 2.09 — <span class="w">WON</span> (+1.09u)<br>&nbsp;&nbsp;&#10003; France vs Iraq: over 2.5 goals (3-0)<br>&nbsp;&nbsp;&#10003; Algeria to win (1-2)<br><br>2026-06-21 @ 2.02 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Belgium to win (0-0)<br>&nbsp;&nbsp;&#10003; Uruguay vs Cape Verde: over 1.5 goals (2-2)<br><br>2026-06-20 @ 2.14 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Sweden handicap +1.5 (5-1)<br>&nbsp;&nbsp;&#10007; Ecuador vs Curaçao: over 2.5 goals (0-0)<br><br>2026-06-18 @ 2.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Canada vs Qatar: under 3.5 goals (6-0)<br>&nbsp;&nbsp;&#10007; Mexico vs South Korea: over 1.5 goals (1-0)<br><br>2026-06-17 @ 2.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Portugal to win (1-1)<br>&nbsp;&nbsp;&#10003; Ghana vs Panama: under 2.5 goals (1-0)<br><br>2026-06-16 @ 2.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Norway to win (1-4)<br>&nbsp;&nbsp;&#10007; Algeria handicap +1.5 (3-0)<br><br>2026-06-15 @ 2.00 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Cape Verde: over 2.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Egypt handicap +1.5 (1-1)<br><br>2026-06-14 @ 2.02 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Germany vs Curaçao: over 2.5 goals (7-1)<br>&nbsp;&nbsp;&#10007; Sweden vs Tunisia: under 2.5 goals (5-1)<br><br>2026-06-13 @ 2.02 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Switzerland to win (1-1)<br>&nbsp;&nbsp;&#10007; Brazil to win (1-1)<br><br>2026-06-12 @ 1.81 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; USA vs Paraguay: over 1.5 goals (4-1)<br>&nbsp;&nbsp;&#10007; Paraguay handicap +1.5 (4-1)<br><br>2026-06-11 @ 1.83 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; South Africa handicap +1.5 (2-0)<br>&nbsp;&nbsp;&#10003; Czech Republic handicap +1.5 (2-1)</div></div><div class="tab-panel" id="sb-SlipB"><div class="score-grid"><div class="score-cell"><b>15–15</b><span>Slip B W–L</span></div><div class="score-cell"><b>50%</b><span>hit rate</span></div><div class="score-cell pos"><b>+0.54u</b><span>units</span></div></div><div class="settled">2026-07-19 @ 2.32 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Argentina handicap +0.5 (0-0)<br>&nbsp;&nbsp;&#10007; Spain vs Argentina: over 1.5 goals (0-0)<br><br>2026-07-18 @ 2.34 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; France vs England: under 3.5 goals (4-6)<br>&nbsp;&nbsp;&#10003; England handicap +1.5 (4-6)<br><br>2026-07-15 @ 2.38 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; England vs Argentina: under 2.5 goals (1-2)<br>&nbsp;&nbsp;&#10003; Argentina handicap +0.5 (1-2)<br><br>2026-07-11 @ 2.82 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Norway vs England: over 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; Argentina vs Switzerland: under 2.5 goals (1-1)<br><br>2026-07-07 @ 1.90 — <span class="w">WON</span> (+0.90u)<br>&nbsp;&nbsp;&#10003; Switzerland vs Colombia: under 2.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Switzerland handicap +1.5 (0-0)<br><br>2026-07-06 @ 1.99 — <span class="w">WON</span> (+0.99u)<br>&nbsp;&nbsp;&#10003; USA vs Belgium: over 2.5 goals (1-4)<br>&nbsp;&nbsp;&#10003; Belgium handicap +1.5 (1-4)<br><br>2026-07-05 @ 1.98 — <span class="w">WON</span> (+0.98u)<br>&nbsp;&nbsp;&#10003; Norway handicap +1.5 (1-2)<br>&nbsp;&nbsp;&#10003; Brazil vs Norway: under 3.5 goals (1-2)<br><br>2026-07-04 @ 1.89 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; France to win (0-1)<br>&nbsp;&nbsp;&#10007; Paraguay vs France: over 2.5 goals (0-1)<br><br>2026-07-03 @ 2.05 — <span class="w">WON</span> (+1.05u)<br>&nbsp;&nbsp;&#10003; Australia vs Egypt: under 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; Colombia to win (1-0)<br><br>2026-07-02 @ 2.17 — <span class="w">WON</span> (+1.17u)<br>&nbsp;&nbsp;&#10003; Spain to win (3-0)<br>&nbsp;&nbsp;&#10003; Switzerland vs Algeria: under 2.5 goals (2-0)<br><br>2026-07-01 @ 2.26 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; England to win (2-1)<br>&nbsp;&nbsp;&#10007; USA vs Bosnia & Herzegovina: over 2.5 goals (2-0)<br><br>2026-06-30 @ 2.06 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Ivory Coast handicap +1.5 (1-2)<br>&nbsp;&nbsp;&#10007; Ecuador handicap +0.5 (2-0)<br><br>2026-06-29 @ 2.26 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Germany to win (1-1)<br>&nbsp;&nbsp;&#10003; Netherlands vs Morocco: under 2.5 goals (1-1)<br><br>2026-06-28 @ 2.23 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Canada to win (0-1)<br>&nbsp;&nbsp;&#10007; South Africa vs Canada: over 1.5 goals (0-1)<br><br>2026-06-27 @ 2.08 — <span class="w">WON</span> (+1.08u)<br>&nbsp;&nbsp;&#10003; DR Congo handicap -0.5 (3-1)<br>&nbsp;&nbsp;&#10003; Algeria handicap +1.5 (3-3)<br>&nbsp;&nbsp;&#10003; Argentina to win (1-3)<br><br>2026-06-26 @ 2.07 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Senegal to win (5-0)<br>&nbsp;&nbsp;&#10007; New Zealand handicap +2.5 (1-5)<br><br>2026-06-25 @ 2.01 — <span class="w">WON</span> (+1.01u)<br>&nbsp;&nbsp;&#10003; Ecuador vs Germany: under 3.5 goals (2-1)<br>&nbsp;&nbsp;&#10003; Turkey handicap +1.5 (3-2)<br><br>2026-06-24 @ 2.06 — <span class="w">WON</span> (+1.06u)<br>&nbsp;&nbsp;&#10003; Bosnia & Herzegovina vs Qatar: over 2.5 goals (3-1)<br>&nbsp;&nbsp;&#10003; Brazil to win (0-3)<br><br>2026-06-23 @ 2.07 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Portugal vs Uzbekistan: over 2.5 goals (5-0)<br>&nbsp;&nbsp;&#10007; Colombia vs DR Congo: over 1.5 goals (1-0)<br><br>2026-06-22 @ 2.10 — <span class="w">WON</span> (+1.10u)<br>&nbsp;&nbsp;&#10003; France handicap -2.5 (3-0)<br>&nbsp;&nbsp;&#10003; Senegal handicap +1.5 (3-2)<br><br>2026-06-21 @ 2.12 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Uruguay to win (2-2)<br>&nbsp;&nbsp;&#10007; New Zealand handicap +1.5 (1-3)<br><br>2026-06-20 @ 2.22 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Netherlands vs Sweden: under 3.5 goals (5-1)<br>&nbsp;&nbsp;&#10007; Tunisia handicap +1.5 (0-4)<br><br>2026-06-18 @ 2.02 — <span class="w">WON</span> (+1.01u)<br>&nbsp;&nbsp;&#10003; South Africa handicap +1.5 (1-1)<br>&nbsp;&nbsp;&#10003; Switzerland to win (4-1)<br><br>2026-06-17 @ 2.23 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Panama handicap +0.5 (1-0)<br>&nbsp;&nbsp;&#10003; Colombia to win (1-3)<br><br>2026-06-16 @ 2.04 — <span class="w">WON</span> (+1.04u)<br>&nbsp;&nbsp;&#10003; France to win (3-1)<br>&nbsp;&nbsp;&#10003; Austria to win (3-1)<br><br>2026-06-15 @ 2.00 — <span class="w">WON</span> (+1.00u)<br>&nbsp;&nbsp;&#10003; Saudi Arabia handicap +1.5 (1-1)<br>&nbsp;&nbsp;&#10003; New Zealand handicap +1.5 (2-2)<br><br>2026-06-14 @ 2.05 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Japan handicap +1.5 (2-2)<br>&nbsp;&nbsp;&#10007; Sweden vs Tunisia: under 2.5 goals (5-1)<br><br>2026-06-13 @ 2.13 — <span class="w">WON</span> (+1.13u)<br>&nbsp;&nbsp;&#10003; Scotland to win (0-1)<br>&nbsp;&nbsp;&#10003; Australia handicap +1.5 (2-0)<br><br>2026-06-12 @ 2.15 — <span class="w">WON</span> (+1.15u)<br>&nbsp;&nbsp;&#10003; Canada vs Bosnia & Herzegovina: under 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; Bosnia & Herzegovina handicap +1.5 (1-1)<br><br>2026-06-11 @ 1.85 — <span class="w">WON</span> (+0.85u)<br>&nbsp;&nbsp;&#10003; Mexico vs South Africa: under 2.5 goals (2-0)<br>&nbsp;&nbsp;&#10003; Czech Republic handicap +1.5 (2-1)</div></div><div class="tab-panel" id="sb-SlipC"><div class="score-grid"><div class="score-cell"><b>10–20</b><span>Slip C W–L</span></div><div class="score-cell"><b>33%</b><span>hit rate</span></div><div class="score-cell pos"><b>+1.47u</b><span>units</span></div></div><div class="settled">2026-07-18 @ 3.22 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; France to win (4-6)<br>&nbsp;&nbsp;&#10007; France vs England: under 3.5 goals (4-6)<br><br>2026-07-14 @ 3.06 — <span class="w">WON</span> (+2.06u)<br>&nbsp;&nbsp;&#10003; France vs Spain: under 2.5 goals (0-2)<br>&nbsp;&nbsp;&#10003; Spain handicap +0.5 (0-2)<br><br>2026-07-11 @ 3.23 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; England handicap -0.5 (1-1)<br>&nbsp;&nbsp;&#10007; Argentina to win (1-1)<br><br>2026-07-10 @ 3.09 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Belgium: under 2.5 goals (2-1)<br>&nbsp;&nbsp;&#10003; Belgium handicap +1.5 (2-1)<br><br>2026-07-09 @ 3.18 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; France to win (2-0)<br>&nbsp;&nbsp;&#10007; France vs Morocco: over 2.5 goals (2-0)<br><br>2026-07-07 @ 3.10 — <span class="w">WON</span> (+2.10u)<br>&nbsp;&nbsp;&#10003; Argentina to win (3-2)<br>&nbsp;&nbsp;&#10003; Argentina vs Egypt: over 2.5 goals (3-2)<br><br>2026-07-06 @ 3.15 — <span class="w">WON</span> (+2.15u)<br>&nbsp;&nbsp;&#10003; Portugal vs Spain: under 2.5 goals (0-1)<br>&nbsp;&nbsp;&#10003; Belgium handicap +0.5 (1-4)<br><br>2026-07-05 @ 3.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Brazil vs Norway: over 2.5 goals (1-2)<br>&nbsp;&nbsp;&#10007; Brazil handicap -0.5 (1-2)<br><br>2026-07-04 @ 3.16 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Canada handicap +0.5 (0-3)<br>&nbsp;&nbsp;&#10003; Paraguay vs France: under 3.5 goals (0-1)<br><br>2026-07-03 @ 3.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Australia vs Egypt: over 1.5 goals (1-1)<br>&nbsp;&nbsp;&#10007; Argentina to win (1-1)<br>&nbsp;&nbsp;&#10003; Colombia vs Ghana: under 2.5 goals (1-0)<br><br>2026-07-02 @ 3.76 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Austria: under 2.5 goals (3-0)<br>&nbsp;&nbsp;&#10003; Portugal vs Croatia: over 2.5 goals (2-1)<br><br>2026-07-01 @ 3.14 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; England vs DR Congo: under 2.5 goals (2-1)<br>&nbsp;&nbsp;&#10007; Bosnia & Herzegovina handicap +1.5 (2-0)<br><br>2026-06-30 @ 3.11 — <span class="w">WON</span> (+2.11u)<br>&nbsp;&nbsp;&#10003; Ivory Coast vs Norway: over 2.5 goals (1-2)<br>&nbsp;&nbsp;&#10003; France vs Sweden: under 3.5 goals (3-0)<br><br>2026-06-29 @ 3.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Brazil vs Japan: under 2.5 goals (2-1)<br>&nbsp;&nbsp;&#10007; Germany vs Paraguay: over 2.5 goals (1-1)<br><br>2026-06-27 @ 3.12 — <span class="w">WON</span> (+2.12u)<br>&nbsp;&nbsp;&#10003; Croatia to win (2-1)<br>&nbsp;&nbsp;&#10003; Panama handicap +2.5 (0-2)<br><br>2026-06-26 @ 3.17 — <span class="w">WON</span> (+2.17u)<br>&nbsp;&nbsp;&#10003; France to win (1-4)<br>&nbsp;&nbsp;&#10003; New Zealand vs Belgium: over 3.5 goals (1-5)<br><br>2026-06-25 @ 3.06 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Germany handicap -0.5 (2-1)<br>&nbsp;&nbsp;&#10003; Sweden handicap +0.5 (1-1)<br><br>2026-06-24 @ 3.12 — <span class="w">WON</span> (+2.12u)<br>&nbsp;&nbsp;&#10003; Switzerland vs Canada: over 2.5 goals (2-1)<br>&nbsp;&nbsp;&#10003; Morocco vs Haiti: over 2.5 goals (4-2)<br><br>2026-06-23 @ 3.53 — <span class="w">WON</span> (+2.53u)<br>&nbsp;&nbsp;&#10003; England vs Ghana: under 3.5 goals (0-0)<br>&nbsp;&nbsp;&#10003; Croatia to win (0-1)<br>&nbsp;&nbsp;&#10003; Colombia to win (1-0)<br><br>2026-06-22 @ 3.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Austria handicap +1.5 (2-0)<br>&nbsp;&nbsp;&#10003; Jordan vs Algeria: over 2.5 goals (1-2)<br><br>2026-06-21 @ 3.15 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Saudi Arabia: under 3.5 goals (4-0)<br>&nbsp;&nbsp;&#10007; Belgium vs Iran: over 2.5 goals (0-0)<br><br>2026-06-20 @ 3.09 — <span class="w">WON</span> (+2.09u)<br>&nbsp;&nbsp;&#10003; Germany to win (2-1)<br>&nbsp;&nbsp;&#10003; Tunisia vs Japan: over 2.5 goals (0-4)<br><br>2026-06-18 @ 3.09 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Czech Republic vs South Africa: under 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10007; South Korea handicap +0.5 (1-0)<br><br>2026-06-17 @ 3.06 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Portugal vs DR Congo: over 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; England to win (4-2)<br><br>2026-06-16 @ 3.08 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; France vs Senegal: under 2.5 goals (3-1)<br>&nbsp;&nbsp;&#10007; Iraq vs Norway: under 3.5 goals (1-4)<br><br>2026-06-15 @ 3.03 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Saudi Arabia vs Uruguay: over 2.5 goals (1-1)<br>&nbsp;&nbsp;&#10003; Iran vs New Zealand: over 1.5 goals (2-2)<br><br>2026-06-14 @ 3.04 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Japan handicap +0.5 (2-2)<br>&nbsp;&nbsp;&#10007; Sweden vs Tunisia: under 2.5 goals (5-1)<br><br>2026-06-13 @ 3.01 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Switzerland handicap -1.5 (1-1)<br>&nbsp;&nbsp;&#10003; Australia vs Turkey: under 2.5 goals (2-0)<br><br>2026-06-12 @ 3.02 — <span class="w">WON</span> (+2.02u)<br>&nbsp;&nbsp;&#10003; Bosnia & Herzegovina handicap +0.5 (1-1)<br>&nbsp;&nbsp;&#10003; USA vs Paraguay: over 1.5 goals (4-1)<br><br>2026-06-11 @ 3.00 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10003; Mexico vs South Africa: under 2.5 goals (2-0)<br>&nbsp;&nbsp;&#10007; South Africa handicap +1.5 (2-0)<br>&nbsp;&nbsp;&#10003; Czech Republic handicap +1.5 (2-1)</div></div><div class="tab-panel" id="sb-Velta"><div class="score-grid"><div class="score-cell"><b>19–8</b><span>Veltuseðill W–L</span></div><div class="score-cell"><b>70%</b><span>hit rate</span></div><div class="score-cell pos"><b>+1.19u</b><span>units</span></div></div><div class="settled">2026-07-19 @ 1.38 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Spain vs Argentina: over 1.5 goals (0-0)<br><br>2026-07-18 @ 1.36 — <span class="w">WON</span> (+0.36u)<br>&nbsp;&nbsp;&#10003; England handicap +1.5 (4-6)<br><br>2026-07-15 @ 1.42 — <span class="w">WON</span> (+0.42u)<br>&nbsp;&nbsp;&#10003; England vs Argentina: over 1.5 goals (1-2)<br><br>2026-07-14 @ 1.61 — <span class="w">WON</span> (+0.61u)<br>&nbsp;&nbsp;&#10003; Spain handicap +0.5 (0-2)<br><br>2026-07-11 @ 1.30 — <span class="w">WON</span> (+0.30u)<br>&nbsp;&nbsp;&#10003; Norway handicap +1.5 (1-1)<br><br>2026-07-10 @ 1.50 — <span class="w">WON</span> (+0.51u)<br>&nbsp;&nbsp;&#10003; Belgium handicap +1.5 (2-1)<br><br>2026-07-09 @ 1.59 — <span class="w">WON</span> (+0.59u)<br>&nbsp;&nbsp;&#10003; France to win (2-0)<br><br>2026-07-07 @ 1.36 — <span class="w">WON</span> (+0.36u)<br>&nbsp;&nbsp;&#10003; Argentina to win (3-2)<br><br>2026-07-06 @ 1.30 — <span class="w">WON</span> (+0.30u)<br>&nbsp;&nbsp;&#10003; Portugal handicap +1.5 (0-1)<br><br>2026-07-05 @ 1.38 — <span class="w">WON</span> (+0.38u)<br>&nbsp;&nbsp;&#10003; Norway handicap +1.5 (1-2)<br><br>2026-07-04 @ 1.33 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Canada handicap +1.5 (0-3)<br><br>2026-07-03 @ 1.53 — <span class="w">WON</span> (+0.53u)<br>&nbsp;&nbsp;&#10003; Argentina vs Cape Verde: under 3.5 goals (1-1)<br><br>2026-07-02 @ 1.30 — <span class="w">WON</span> (+0.30u)<br>&nbsp;&nbsp;&#10003; Spain to win (3-0)<br><br>2026-07-01 @ 1.83 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Belgium vs Senegal: under 2.5 goals (2-2)<br><br>2026-06-30 @ 1.42 — <span class="w">WON</span> (+0.42u)<br>&nbsp;&nbsp;&#10003; Mexico vs Ecuador: under 2.5 goals (2-0)<br><br>2026-06-29 @ 1.35 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Germany to win (1-1)<br><br>2026-06-28 @ 1.35 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; South Africa vs Canada: over 1.5 goals (0-1)<br><br>2026-06-27 @ 1.38 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Algeria vs Austria: under 2.5 goals (3-3)<br><br>2026-06-26 @ 1.45 — <span class="w">WON</span> (+0.45u)<br>&nbsp;&nbsp;&#10003; Egypt vs Iran: under 2.5 goals (1-1)<br><br>2026-06-25 @ 1.40 — <span class="w">WON</span> (+0.40u)<br>&nbsp;&nbsp;&#10003; Paraguay vs Australia: under 2.5 goals (0-0)<br><br>2026-06-24 @ 1.39 — <span class="w">WON</span> (+0.39u)<br>&nbsp;&nbsp;&#10003; Bosnia & Herzegovina to win (3-1)<br><br>2026-06-23 @ 1.68 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Uzbekistan handicap +2.5 (5-0)<br><br>2026-06-22 @ 1.85 — <span class="w">WON</span> (+0.85u)<br>&nbsp;&nbsp;&#10003; Norway vs Senegal: over 2.5 goals (3-2)<br><br>2026-06-21 @ 1.83 — <span class="w">WON</span> (+0.83u)<br>&nbsp;&nbsp;&#10003; Spain handicap -2.5 (4-0)<br><br>2026-06-20 @ 1.54 — <span class="w">WON</span> (+0.55u)<br>&nbsp;&nbsp;&#10003; Germany vs Ivory Coast: under 3.5 goals (2-1)<br><br>2026-06-18 @ 1.66 — <span class="w">WON</span> (+0.66u)<br>&nbsp;&nbsp;&#10003; Mexico vs South Korea: under 2.5 goals (1-0)<br><br>2026-06-17 @ 1.64 — <span class="l">LOST</span> (-1.00u)<br>&nbsp;&nbsp;&#10007; Panama handicap +0.5 (1-0)</div></div><script>
+function sbTab(el,id){
+  var w=el.closest('.win');
+  w.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  w.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+</script></div>
+</div>
+
+<div class="win notepad">
+  <div class="tbar"><span>reasoning.txt — Notepad</span><span class="tbtns"><i>_</i><i>&#9633;</i><i>&#10005;</i></span></div>
+  <div class="menu"><u>F</u>ile&nbsp;&nbsp;<u>E</u>dit&nbsp;&nbsp;<u>S</u>earch&nbsp;&nbsp;<u>H</u>elp</div>
+  <div class="win-body"><ul><li>No automatic reasoning generated today.</li>
+  <li class="warnline">* Velur tvo líklegustu seðla til að detta á bilinu 2.0 og 2.99 í stuðli. Notast er aðallega við 1x2, over/unders og fjölda marka. Þriðji seðilinn er vibe seðill sem er með hærri stuðul.
+  Ef seðlar tapast þá bara it is what it is, gerir þetta á eigin ábyrgð kútur.</li>
+  <li>Odds source: market consensus (us,uk,eu,au region, median of books). Ekki hægt að taka beint frá Epicbet/Coolbet. Stuðlarnir kunna því að vera örlítið frábrugðnir Epicbet/Coolbet - þið metið þetta bara kútar.</li>
+  <li>Spilið smátt og fyrir skemmtunina. Ef þetta hættir að vera gaman: SÁÁ (saa.is) eða hjálparsími Rauða krossins 1717.</li>
+  </ul></div>
+</div>
+
+</div>
+<div class="taskbar">
+  <span class="start"><span class="flag">&#9632;&#9632;</span>Start</span>
+  <span class="task">&#127942; Bertpicker 1.1 </span>
+  <span class="task">&#127942; Búðin - úrval </span>
+  <a class="task" style="text-decoration:none;color:#000" href="index.html">&#128193; Gamlir seðlar</a>
+  <span class="clock">Saturday 01 August 2026</span>
+</div>
+</body></html>
